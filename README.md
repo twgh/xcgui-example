@@ -20,3 +20,8 @@ go get github.com/twgh/xcgui-example
 
 # 可视化UI设计器
 
+[![uidesigner](https://z3.ax1x.com/2021/09/15/4Vmh9S.png)](https://github.com/twgh/xcgui-example/blob/main/uidesigner/uidesigner.png)
+
+# 简单窗口
+
+[![SimpleWindow](https://z3.ax1x.com/2021/09/15/4VnNuj.jpg)](https://github.com/twgh/xcgui-example/blob/main/SimpleWindow/SimpleWindow.jpg)

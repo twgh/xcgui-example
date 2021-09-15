@@ -19,4 +19,9 @@ When the program is running, you need to put "XCGUI.dll" in the program running 
 It is best to put it in the C:\Windows\System32 directory during development, so that there is no need to put the dll in the program running directory.
 
 # Visualization UI Designer
+[![uidesigner](https://z3.ax1x.com/2021/09/15/4Vmh9S.png)](https://github.com/twgh/xcgui-example/blob/main/uidesigner/uidesigner.png)
 
+
+# Simple Window
+
+[![SimpleWindow](https://z3.ax1x.com/2021/09/15/4VnNuj.jpg)](https://github.com/twgh/xcgui-example/blob/main/SimpleWindow/SimpleWindow.jpg)
