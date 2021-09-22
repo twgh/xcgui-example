@@ -7,7 +7,7 @@
 # 获取
 
 ```go
-go get github.com/twgh/xcgui-example
+go get github.com/twgh/xcgui-example@l
 ```
 
 # 动态链接库下载

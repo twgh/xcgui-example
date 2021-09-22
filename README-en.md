@@ -7,7 +7,7 @@ English | [简体中文](./README.md)
 # Get
 
 ```go
-go get github.com/twgh/xcgui-example
+go get github.com/twgh/xcgui-example@latest
 ```
 
 # Dynamic link library download
