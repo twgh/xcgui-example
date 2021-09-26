@@ -14,7 +14,7 @@ func main() {
 	// 1.初始化UI库
 	a := app.New("")
 	// 添加资源搜索目录, 你运行时要改成自己的路径
-	a.AddFileSearchPath(`D:\GoProject\src\github.com\twgh\xcgui-example\buttonimage\res`)
+	a.AddFileSearchPath(`D:\GoProject\src\github.com\twgh\xcgui-example\ButtonImage\res`)
 	// 2.创建窗口
 	win := window.NewWindow(0, 0, 465, 300, "炫彩窗口", 0, xcc.Xc_Window_Style_Default)
 
@@ -30,7 +30,7 @@ func main() {
 	// 设置窗口背景颜色
 	bkm_win := bkmanager.NewBkManager()
 	bkm_win.AddFill(xcc.Window_State_Flag_Leave, xc.RGB(51, 57, 60), 255)
-	win.SetBkMagager(bkm_win.HBKM)
+	win.SetBkMagager(bkm_win.Handle)
 
 	// 创建标签_窗口标题
 	lbl_Title := widget.NewShapeText(15, 15, 56, 20, "Title", win.Handle)
@@ -64,6 +64,6 @@ func setBtnImg(fileName string, btn *widget.Button) {
 		x := i * 31
 		img := image.NewImage_LoadFileRect(fileName, x, 0, 30, 30)
 		img.EnableTranColor(true)
-		btn.AddBkImage(i, img.HImage)
+		btn.AddBkImage(i, img.Handle)
 	}
 }

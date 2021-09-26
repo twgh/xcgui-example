@@ -19,7 +19,7 @@ func main() {
 	// 创建字体
 	font := fontx.NewFontX2("msyh", 12, xcc.FontStyle_Regular)
 	// 设置程序默认字体
-	a.SetDefaultFont(font.HFontX)
+	a.SetDefaultFont(font.Handle)
 
 	// 2.创建窗口
 	win := window.NewWindow(0, 0, 466, 300, "炫彩窗口", 0, xcc.Xc_Window_Style_Default)

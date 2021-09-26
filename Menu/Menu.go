@@ -62,7 +62,7 @@ func main() {
 		btn_Menu.GetRect(&r)
 		// 转换到屏幕坐标
 		pt := xc.POINT{X: r.Left, Y: r.Bottom}
-		xc.Client2Screen(win.Handle, &pt)
+		xc.ClientToScreen(win.Handle, &pt)
 		// 弹出菜单
 		menu.Popup(win.Handle, int(pt.X), int(pt.Y), btn_Menu.Handle, xcc.Menu_Popup_Position_Left_Top)
 		return 0

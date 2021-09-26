@@ -69,10 +69,9 @@ func onBtnClick(hEle int, pbHandled *bool) int {
 	switch hEle {
 	case btn_Add.Handle:
 		bar.SetPos(bar.GetPos() + 10)
-		bar.Redraw(true)
 	case btn_Sub.Handle:
 		bar.SetPos(bar.GetPos() - 10)
-		bar.Redraw(true)
 	}
+	bar.Redraw(true)
 	return 0
 }

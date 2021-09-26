@@ -14,10 +14,12 @@ func main() {
 	a.LoadResourceZip("qqmusic.zip", "resource.res", "")
 	// 从zip中加载布局文件
 	hWindow := a.LoadLayoutZip("qqmusic.zip", "main.xml", "", 0)
+	if hWindow == 0 {
+		panic("error")
+	}
+	// 创建窗口对象
+	win := window.NewWindowByHandle(hWindow)
 
-	win := &window.Window{}
-	// 给类句柄赋值
-	win.SetHandle(hWindow)
 	// 调整布局
 	win.AdjustLayout()
 	// 显示窗口
