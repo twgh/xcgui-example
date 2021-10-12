@@ -13,7 +13,7 @@ import (
 func main() {
 	// 1.初始化UI库
 	a := app.New("")
-	// 添加资源搜索目录, 你运行时要改成自己的路径
+	// 添加资源搜索目录, 你运行时要改成自己的路径, 也可以使用相对路径
 	a.AddFileSearchPath(`D:\GoProject\src\github.com\twgh\xcgui-example\ButtonImage\res`)
 	// 2.创建窗口
 	win := window.NewWindow(0, 0, 465, 300, "炫彩窗口", 0, xcc.Xc_Window_Style_Default)
