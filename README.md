@@ -2,7 +2,7 @@
 
 [English](./README-en.md) | 简体中文
 
-[XCGUI](https://github.com/twgh/xcgui) 例子
+[https://github.com/twgh/xcgui](https://github.com/twgh/xcgui) 的例子
 
 # 获取
 
@@ -12,11 +12,16 @@ go get github.com/twgh/xcgui-example@latest
 
 # 动态链接库下载
 
-[xcgui.dll(x64)](https://github.com/twgh/xcgui-example/blob/main/help/x64/XCGUI.dll)        [xcgui.dll(x86)](https://github.com/twgh/xcgui-example/blob/main/help/x86/XCGUI.dll)
+| 网盘         | 下载地址                                                     |
+| ------------ | ------------------------------------------------------------ |
+| 百度网盘     | [下载](https://pan.baidu.com/s/17zri2GlDOVUY8nvFTXWLFg)，提取码：wcs7 |
+| OneDrive     | [下载](https://1drv.ms/u/s!ApZP3niad5hpdGuodyU_GvugJ_g?e=yBEKmm) |
+| Google Drive | [下载](https://drive.google.com/drive/folders/1MuisSsDIr1rjqTkdFIewOgb89SYdf5s6?usp=sharing) |
+| GIthub       | [下载](https://github.com/twgh/FileStorage/tree/main/xcgui)  |
 
-程序运行时需要把"XCGUI.dll"放到程序运行目录。
+程序运行时需要把`XCGUI.dll`放到程序运行目录。
 
-在开发时最好是放到C:\Windows\System32目录，这样就不需要把dll放到程序运行目录了。
+在开发时最好是放到C:\Windows\System32目录，这样就不需要频繁把dll放到不同程序的运行目录了。
 
 # 可视化UI设计器
 
