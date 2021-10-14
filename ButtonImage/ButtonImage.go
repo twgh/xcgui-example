@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/bkmanager"
-	"github.com/twgh/xcgui/image"
+	"github.com/twgh/xcgui/imagex"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
 	"github.com/twgh/xcgui/xc"
@@ -62,8 +62,11 @@ func main() {
 func setBtnImg(fileName string, btn *widget.Button) {
 	for i := 0; i < 3; i++ {
 		x := i * 31
-		img := image.NewImage_LoadFileRect(fileName, x, 0, 30, 30)
+		// 图片_加载从文件指定区域, 加载图片, 指定区域位置及大小
+		img := imagex.NewImage_LoadFileRect(fileName, x, 0, 30, 30)
+		// 启用图片透明色
 		img.EnableTranColor(true)
+		// 添加背景图片
 		btn.AddBkImage(i, img.Handle)
 	}
 }
