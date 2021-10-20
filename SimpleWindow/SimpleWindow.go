@@ -1,3 +1,4 @@
+// 简单窗口
 package main
 
 import (

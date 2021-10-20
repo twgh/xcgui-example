@@ -1,3 +1,4 @@
+// 调用UI设计器设计好的文件
 package main
 
 import (

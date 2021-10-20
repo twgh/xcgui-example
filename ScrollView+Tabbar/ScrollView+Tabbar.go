@@ -1,3 +1,4 @@
+// 选择夹: ScrollView+TabBar的使用
 package main
 
 import (

@@ -1,3 +1,4 @@
+// 注册元素事件
 package main
 
 import (
