@@ -1,7 +1,10 @@
-// 给按钮加上三种状态下的图片
+// 1. 给窗口添加背景色
+// 2. 给按钮加上三种状态下的图片
 package main
 
 import (
+	"fmt"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/bkmanager"
 	"github.com/twgh/xcgui/imagex"
@@ -13,46 +16,35 @@ import (
 
 func main() {
 	// 1.初始化UI库
-	a := app.New("")
-	// 添加资源搜索目录, 你运行时要改成自己的路径, 也可以使用相对路径
-	a.AddFileSearchPath(`D:\GoProject\src\github.com\twgh\xcgui-example\ButtonImage\res`)
+	a := app.New(true)
 	// 2.创建窗口
-	win := window.NewWindow(0, 0, 465, 300, "炫彩窗口", 0, xcc.Xc_Window_Style_Default)
-
+	w := window.NewWindow(0, 0, 465, 300, "Title", 0, xcc.Window_Style_Simple|xcc.Window_Style_Title|xcc.Window_Style_Drag_Window)
 	// 设置窗口透明类型
-	win.SetTransparentType(xcc.Window_Transparent_Shadow)
+	w.SetTransparentType(xcc.Window_Transparent_Shadow)
 	// 设置窗口阴影
-	win.SetShadowInfo(10, 255, 10, false, 0)
-	// 窗口置顶
-	win.SetTop()
-	// 窗口居中
-	win.Center()
+	w.SetShadowInfo(8, 255, 10, false, 0)
 
-	// 设置窗口背景颜色
-	bkm_win := bkmanager.NewBkManager()
-	bkm_win.AddFill(xcc.Window_State_Flag_Leave, xc.RGB(51, 57, 60), 255)
-	win.SetBkMagager(bkm_win.Handle)
-
-	// 创建标签_窗口标题
-	lbl_Title := widget.NewShapeText(15, 15, 56, 20, "Title", win.Handle)
-	lbl_Title.SetTextColor(xc.RGB(255, 255, 255), 255)
+	// 创建背景管理器
+	bkm := bkmanager.NewBkManager()
+	// 给整个窗口添加背景色
+	bkm.AddFill(xcc.Window_State_Flag_Leave, xc.ABGR(51, 57, 60, 254))
+	// 给窗口设置背景管理器
+	w.SetBkMagager(bkm.Handle)
 
 	// 创建最小化按钮
-	btn_Min := widget.NewButton(395, 10, 30, 30, "", win.Handle)
-	btn_Min.SetType(xcc.Button_Type_Min)
+	btn_Min := widget.NewButton(397, 8, 30, 30, "", w.Handle)
+	btn_Min.SetTypeEx(xcc.Button_Type_Min)
 	// 创建结束按钮
-	btn_Close := widget.NewButton(425, 10, 30, 30, "", win.Handle)
-	btn_Close.SetType(xcc.Button_Type_Close)
-	// 启用按钮背景透明
-	btn_Min.EnableBkTransparent(true)
-	btn_Close.EnableBkTransparent(true)
+	btn_Close := widget.NewButton(427, 8, 30, 30, "", w.Handle)
+	btn_Close.SetTypeEx(xcc.Button_Type_Close)
 
-	// 给按钮加上三态图片
-	setBtnImg(`button_min.png`, btn_Min)
-	setBtnImg(`button_close.png`, btn_Close)
+	// 给按钮加上三种状态下的图片, 这里图片使用了相对路径.
+	// 请使用go run运行程序, 如果你使用go build运行, 那么请把这里改成`res\button_min.png`和`res\button_close.png`
+	setBtnImg(`ButtonImage\res\button_min.png`, btn_Min)
+	setBtnImg(`ButtonImage\res\button_close.png`, btn_Close)
 
 	// 3.显示窗口
-	win.ShowWindow(xcc.SW_SHOW)
+	w.ShowWindow(xcc.SW_SHOW)
 	// 4.运行程序
 	a.Run()
 	// 5.释放UI库
@@ -65,9 +57,24 @@ func setBtnImg(fileName string, btn *widget.Button) {
 		x := i * 31
 		// 图片_加载从文件指定区域, 加载图片, 指定区域位置及大小
 		img := imagex.NewImage_LoadFileRect(fileName, x, 0, 30, 30)
+
+		if img.Handle == 0 {
+			fmt.Println("hImg=", img.Handle)
+			continue
+		}
+
 		// 启用图片透明色
 		img.EnableTranColor(true)
 		// 添加背景图片
-		btn.AddBkImage(i, img.Handle)
+		switch i {
+		case 0:
+			btn.AddBkImage(xcc.Button_State_Flag_Leave, img.Handle)
+		case 1:
+			btn.AddBkImage(xcc.Button_State_Flag_Stay, img.Handle)
+		case 2:
+			btn.AddBkImage(xcc.Button_State_Flag_Down, img.Handle)
+		}
+		// 启用按钮背景透明
+		btn.EnableBkTransparent(true)
 	}
 }

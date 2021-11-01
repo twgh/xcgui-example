@@ -14,7 +14,7 @@ go get github.com/twgh/xcgui-example@latest
 
 | 网盘         | 下载地址                                                     |
 | ------------ | ------------------------------------------------------------ |
-| 百度网盘     | [下载](https://pan.baidu.com/s/17zri2GlDOVUY8nvFTXWLFg)，提取码：wcs7 |
+| 百度网盘     | [下载](https://pan.baidu.com/s/1rC3unQGaxnRUCMm8z8qzvA)，提取码：1111 |
 | OneDrive     | [下载](https://1drv.ms/u/s!ApZP3niad5hpdGuodyU_GvugJ_g?e=yBEKmm) |
 | Google Drive | [下载](https://drive.google.com/drive/folders/1MuisSsDIr1rjqTkdFIewOgb89SYdf5s6?usp=sharing) |
 | GIthub       | [下载](https://github.com/twgh/FileStorage/tree/main/xcgui)  |
@@ -25,10 +25,10 @@ go get github.com/twgh/xcgui-example@latest
 
 # 可视化UI设计器
 
-[![uidesigner](https://z3.ax1x.com/2021/09/15/4Vmh9S.png)](https://github.com/twgh/xcgui-example/blob/main/uidesigner/uidesigner.png)
+[![uidesigner](https://z3.ax1x.com/2021/09/15/4Vmh9S.png)](https://github.com/twgh/xcgui-example/tree/main/uidesigner)
 
 # 简单窗口
 
-[![SimpleWindow](https://z3.ax1x.com/2021/09/15/4VnNuj.jpg)](https://github.com/twgh/xcgui-example/blob/main/SimpleWindow/SimpleWindow.jpg)
-		[![ButtonImage](https://z3.ax1x.com/2021/09/15/4VBiyd.jpg)](https://github.com/twgh/xcgui-example/blob/main/ButtonImage/ButtonImage.jpg)
+[![SimpleWindow](https://i.niupic.com/images/2021/11/01/9FiK.bmp)](https://github.com/twgh/xcgui-example/tree/main/SimpleWindow)
+		[![ButtonImage](https://i.niupic.com/images/2021/11/01/9FiN.bmp)](https://github.com/twgh/xcgui-example/tree/main/ButtonImage)
 

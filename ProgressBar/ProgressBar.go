@@ -5,7 +5,6 @@ import (
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
-	"github.com/twgh/xcgui/xc"
 	"github.com/twgh/xcgui/xcc"
 )
 
@@ -17,48 +16,30 @@ var (
 
 func main() {
 	// 1.初始化UI库
-	a := app.New("")
+	a := app.New(true)
 	// 2.创建窗口
-	win := window.NewWindow(0, 0, 436, 104, "炫彩窗口", 0, xcc.Xc_Window_Style_Default)
+	w := window.NewWindow(0, 0, 436, 104, "xc", 0, xcc.Window_Style_Simple|xcc.Window_Style_Btn_Close)
 
-	// 设置窗口边框大小
-	win.SetBorderSize(1, 30, 1, 1)
-	// 设置窗口透明类型
-	win.SetTransparentType(xcc.Window_Transparent_Shadow)
-	// 设置窗口阴影
-	win.SetShadowInfo(10, 255, 10, false, 0)
-	// 窗口置顶
-	win.SetTop()
-	// 窗口居中
-	win.Center()
-	// 创建标签_窗口标题
-	lbl_Title := widget.NewShapeText(15, 15, 56, 20, "Title", win.Handle)
-	lbl_Title.SetTextColor(xc.RGB(255, 255, 255), 255)
-
-	// 创建结束按钮
-	btn_Close := widget.NewButton(396, 10, 30, 30, "X", win.Handle)
-	btn_Close.SetTextColor(xc.RGB(255, 255, 255), 255)
-	btn_Close.SetType(xcc.Button_Type_Close)
-	btn_Close.EnableBkTransparent(true)
-
-	// 创建进度条
-	bar = widget.NewProgressBar(24, 60, 200, 10, win.Handle)
-	// 设置进度条左右两边间隔大小
-	bar.SetSpaceTwo(0, 0)
+	// 创建一个进度条
+	bar = widget.NewProgressBar(24, 60, 200, 10, w.Handle)
+	// 设置进度条边框大小
+	bar.SetBorderSize(1, 1, 1, 1)
+	// 设置进度条不显示进度文字
+	bar.EnableShowText(false)
 	// 设置进度条最大值
 	bar.SetRange(100)
 	// 设置进度条进度为0
 	bar.SetPos(0)
 
 	// 创建按钮_进度加
-	btn_Add = widget.NewButton(238, 50, 70, 30, "+", win.Handle)
+	btn_Add = widget.NewButton(238, 50, 70, 30, "+", w.Handle)
 	btn_Add.Event_BnClick1(onBtnClick)
 	// 创建按钮_进度减
-	btn_Sub = widget.NewButton(318, 50, 70, 30, "-", win.Handle)
+	btn_Sub = widget.NewButton(318, 50, 70, 30, "-", w.Handle)
 	btn_Sub.Event_BnClick1(onBtnClick)
 
 	// 3.显示窗口
-	win.ShowWindow(xcc.SW_SHOW)
+	w.ShowWindow(xcc.SW_SHOW)
 	// 4.运行程序
 	a.Run()
 	// 5.释放UI库

@@ -28,5 +28,5 @@ It is best to put it in the C:\Windows\System32 directory during development, so
 
 # Simple Window
 
-[![SimpleWindow](https://z3.ax1x.com/2021/09/15/4VnNuj.jpg)](https://github.com/twgh/xcgui-example/blob/main/SimpleWindow/SimpleWindow.jpg)
-		[![ButtonImage](https://z3.ax1x.com/2021/09/15/4VBiyd.jpg)](https://github.com/twgh/xcgui-example/blob/main/ButtonImage/ButtonImage.jpg)
+[![SimpleWindow](https://i.niupic.com/images/2021/11/01/9FiK.bmp)](https://github.com/twgh/xcgui-example/tree/main/SimpleWindow)
+		[![ButtonImage](https://i.niupic.com/images/2021/11/01/9FiN.bmp)](https://github.com/twgh/xcgui-example/tree/main/ButtonImage)
