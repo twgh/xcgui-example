@@ -31,7 +31,7 @@ func main() {
 		// 获取字体信息
 		var fontInfo xc.Font_Info_
 		f.GetFontInfo(&fontInfo)
-		w.MessageBox(fmt.Sprintf("fontName=%s, fontSize=%d, fontStyle=%d", uint16ToString(fontInfo.Name), fontInfo.NSize, fontInfo.NStyle), "Font Info", xcc.MessageBox_Flag_Ok)
+		w.MessageBox(fmt.Sprintf("fontName=%s, fontSize=%d, fontStyle=%d", uint16ToString(fontInfo.Name), fontInfo.NSize, fontInfo.NStyle), "Font Info", xcc.MessageBox_Flag_Ok, xcc.Window_Style_Pop)
 		return 0
 	})
 
