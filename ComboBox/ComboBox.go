@@ -14,7 +14,7 @@ func main() {
 	// 1.初始化UI库
 	a := app.New(true)
 	// 2.创建窗口
-	w := window.NewWindow(0, 0, 430, 300, "xc", 0, xcc.Window_Style_Simple|xcc.Window_Style_Btn_Close)
+	w := window.NewWindow(0, 0, 430, 300, "ComboBox", 0, xcc.Window_Style_Simple|xcc.Window_Style_Btn_Close)
 
 	// 创建组合框
 	cbb := widget.NewComboBox(24, 50, 100, 30, w.Handle)

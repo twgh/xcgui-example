@@ -18,7 +18,7 @@ func main() {
 	a := app.New(true)
 
 	// 创建字体
-	f := font.NewFontEX("msyh", 11, xcc.FontStyle_Regular)
+	f := font.NewFontEX("Microsoft YaHei", 11, xcc.FontStyle_Regular)
 	// 设置程序默认字体
 	a.SetDefaultFont(f.Handle)
 
@@ -26,7 +26,7 @@ func main() {
 	w := window.NewWindow(0, 0, 466, 300, "xc", 0, xcc.Window_Style_Simple|xcc.Window_Style_Btn_Close)
 
 	// 创建一个按钮
-	btn := widget.NewButton(30, 50, 150, 30, "获取字体信息", w.Handle)
+	btn := widget.NewButton(30, 50, 150, 30, "GetFontInfo", w.Handle)
 	btn.Event_BnClick(func(pbHandled *bool) int {
 		// 获取字体信息
 		var fontInfo xc.Font_Info_
