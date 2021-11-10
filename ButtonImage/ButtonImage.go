@@ -3,6 +3,7 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 
 	"github.com/twgh/xcgui/app"
@@ -14,11 +15,18 @@ import (
 	"github.com/twgh/xcgui/xcc"
 )
 
+var (
+	//go:embed res/button_min.png
+	img1 []byte
+	//go:embed res/button_close.png
+	img2 []byte
+)
+
 func main() {
 	// 1.初始化UI库
 	a := app.New(true)
 	// 2.创建窗口
-	w := window.NewWindow(0, 0, 465, 300, "Title", 0, xcc.Window_Style_Simple|xcc.Window_Style_Title|xcc.Window_Style_Drag_Window)
+	w := window.NewWindow(0, 0, 465, 300, "", 0, xcc.Window_Style_Simple|xcc.Window_Style_Title|xcc.Window_Style_Drag_Window)
 	// 设置窗口透明类型
 	w.SetTransparentType(xcc.Window_Transparent_Shadow)
 	// 设置窗口阴影
@@ -38,10 +46,9 @@ func main() {
 	btn_Close := widget.NewButton(427, 8, 30, 30, "", w.Handle)
 	btn_Close.SetTypeEx(xcc.Button_Type_Close)
 
-	// 给按钮加上三种状态下的图片, 这里图片使用了相对路径.
-	// 请使用go run运行程序, 如果你使用go build运行, 那么请把这里改成`res\button_min.png`和`res\button_close.png`
-	setBtnImg(`ButtonImage\res\button_min.png`, btn_Min)
-	setBtnImg(`ButtonImage\res\button_close.png`, btn_Close)
+	// 给按钮加上三种状态下的图片
+	setBtnImg(btn_Min, &img1)
+	setBtnImg(btn_Close, &img2)
 
 	// 3.显示窗口
 	w.ShowWindow(xcc.SW_SHOW)
@@ -52,14 +59,14 @@ func main() {
 }
 
 // 给按钮加上三态图片
-func setBtnImg(fileName string, btn *widget.Button) {
+func setBtnImg(btn *widget.Button, file *[]byte) {
 	for i := 0; i < 3; i++ {
 		x := i * 31
-		// 图片_加载从文件指定区域, 加载图片, 指定区域位置及大小
-		img := imagex.NewImage_LoadFileRect(fileName, x, 0, 30, 30)
+		// 图片_加载从内存, 指定区域位置及大小
+		img := imagex.NewImage_LoadMemoryRect(file, len(*file), x, 0, 30, 30)
 
 		if img.Handle == 0 {
-			fmt.Println("hImg=", img.Handle)
+			fmt.Println("Error: hImg=", img.Handle)
 			continue
 		}
 
