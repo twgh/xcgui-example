@@ -1,3 +1,4 @@
+// 编辑框
 package main
 
 import (
@@ -30,7 +31,7 @@ func main() {
 	edit_MultiLine.AddText("你好, 世界")
 
 	// 添加样式
-	style1 := edit_MultiLine.AddStyleEx("Microsoft YaHei", 12, xcc.FontStyle_Bold, xc.ABGR(0, 191, 165, 255), true)
+	style1 := edit_MultiLine.AddStyleEx("Arial", 12, xcc.FontStyle_Bold, xc.ABGR(0, 191, 165, 255), true)
 	// 添加带样式的文本
 	edit_MultiLine.AddTextEx("\nhello world", style1)
 

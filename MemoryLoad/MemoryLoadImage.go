@@ -1,3 +1,4 @@
+// 内存加载图片
 package main
 
 import (

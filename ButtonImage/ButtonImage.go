@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/twgh/xcgui/app"
-	"github.com/twgh/xcgui/bkmanager"
 	"github.com/twgh/xcgui/imagex"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
@@ -31,13 +30,8 @@ func main() {
 	w.SetTransparentType(xcc.Window_Transparent_Shadow)
 	// 设置窗口阴影
 	w.SetShadowInfo(8, 255, 10, false, 0)
-
-	// 创建背景管理器
-	bkm := bkmanager.NewBkManager()
 	// 给整个窗口添加背景色
-	bkm.AddFill(xcc.Window_State_Flag_Leave, xc.ABGR(51, 57, 60, 254))
-	// 给窗口设置背景管理器
-	w.SetBkMagager(bkm.Handle)
+	w.AddBkFill(xcc.Window_State_Flag_Leave, xc.ABGR(51, 57, 60, 254))
 
 	// 创建最小化按钮
 	btn_Min := widget.NewButton(397, 8, 30, 30, "", w.Handle)

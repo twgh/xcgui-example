@@ -1,3 +1,4 @@
+// 代码编辑框
 package main
 
 import (
@@ -21,7 +22,7 @@ func main() {
 	Editor.EnableAutoWrap(true)
 
 	// 创建字体
-	font1 := font.NewFontEX("Microsoft YaHei", 12, xcc.FontStyle_Regular)
+	font1 := font.NewFontEX("Arial", 12, xcc.FontStyle_Regular)
 	// 设置Editor的字体
 	Editor.SetFont(font1.Handle)
 	// 设置默认颜色
