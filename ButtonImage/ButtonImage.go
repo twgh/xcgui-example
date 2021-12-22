@@ -41,8 +41,8 @@ func main() {
 	btn_Close.SetTypeEx(xcc.Button_Type_Close)
 
 	// 给按钮加上三种状态下的图片
-	setBtnImg(btn_Min, &img1)
-	setBtnImg(btn_Close, &img2)
+	setBtnImg(btn_Min, img1)
+	setBtnImg(btn_Close, img2)
 
 	// 3.显示窗口
 	w.ShowWindow(xcc.SW_SHOW)
@@ -53,11 +53,11 @@ func main() {
 }
 
 // 给按钮加上三态图片
-func setBtnImg(btn *widget.Button, file *[]byte) {
+func setBtnImg(btn *widget.Button, file []byte) {
 	for i := 0; i < 3; i++ {
 		x := i * 31
 		// 图片_加载从内存, 指定区域位置及大小
-		img := imagex.NewImage_LoadMemoryRect(file, len(*file), x, 0, 30, 30)
+		img := imagex.NewImage_LoadMemoryRect(file, x, 0, 30, 30)
 
 		if img.Handle == 0 {
 			fmt.Println("Error: hImg=", img.Handle)
