@@ -28,7 +28,7 @@ func main() {
 	group1 := lv.Group_AddItemText("group1", -1)
 	group2 := lv.Group_AddItemText("group2", -1)
 	// 图片加载从内存
-	img := imagex.NewImage_LoadMemory(&img1, len(img1))
+	img := imagex.NewImage_LoadMemory(img1)
 
 	// 循环把图片加到分组里
 	var index int
