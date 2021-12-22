@@ -15,13 +15,9 @@ var qqmusic []byte
 func main() {
 	a := app.New(true)
 	// 从内存zip中加载资源文件
-	a.LoadResourceZipMem(&qqmusic, len(qqmusic), "resource.res", "")
+	a.LoadResourceZipMem(qqmusic, "resource.res", "")
 	// 从内存zip中加载布局文件
-	hWindow := a.LoadLayoutZipMem(&qqmusic, len(qqmusic), "main.xml", "", 0)
-	if hWindow == 0 {
-		panic("LoadLayoutZipMem Error")
-	}
-
+	hWindow := a.LoadLayoutZipMem(qqmusic, "main.xml", "", 0)
 	// 创建窗口对象
 	w := window.NewWindowByHandle(hWindow)
 	// 调整布局
