@@ -1,3 +1,4 @@
+// 设置按钮图标为Svg
 package main
 
 import (
@@ -14,17 +15,17 @@ func main() {
 	w := window.NewWindow(0, 0, 400, 300, "", 0, xcc.Window_Style_Default)
 
 	// 加载svg1从string
-	svg1 := imagex.NewImage_LoadSvgString(svgStr1, len(svgStr1))
+	svg1 := imagex.NewImage_LoadSvgStringW(svgStr1)
 	// 设置svg1的大小
 	xc.XSvg_SetSize(svg1.GetSvg(), 24, 24)
 
 	// 创建按钮1
-	btn1 := widget.NewButton(30, 40, 130, 30, "测试SVG图标", w.Handle)
+	btn1 := widget.NewButton(30, 40, 130, 30, "Test Svg Icon", w.Handle)
 	// 设置按钮1的icon
 	btn1.SetIcon(svg1.Handle)
 
 	// 加载svg2从string
-	svg2 := imagex.NewImage_LoadSvgString(svgStr2, len(svgStr2))
+	svg2 := imagex.NewImage_LoadSvgStringW(svgStr2)
 	// 设置svg2的大小
 	xc.XSvg_SetSize(svg2.GetSvg(), 100, 100)
 
