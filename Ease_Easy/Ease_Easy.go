@@ -1,3 +1,4 @@
+// 窗口简单缓动
 package main
 
 import (
@@ -22,10 +23,10 @@ func main() {
 		w.GetRect(&rect)
 		// 缓动
 		for i := 0; i <= 30; i++ {
-			v := ease.Bounce(float32(i)/30.0, xcc.Ease_Out)
+			v := ease.Bounce(float32(i)/30.0, xcc.Ease_Type_Out)
 			y := int(v * float32(rect.Top))
 
-			w.Move(int(rect.Left), y)
+			w.SetPosition(int(rect.Left), y)
 			w.Redraw(true)
 			time.Sleep(time.Millisecond * 10)
 		}
