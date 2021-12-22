@@ -19,7 +19,7 @@ func main() {
 	w = window.NewWindow(0, 0, 350, 200, "", 0, xcc.Window_Style_Default)
 
 	// SVG_加载从字符串
-	svg1 = svg.NewSvg_LoadString(svgStr, len(svgStr))
+	svg1 = svg.NewSvg_LoadStringW(svgStr)
 	if svg1.Handle == 0 {
 		panic("svg1.Handle = 0")
 	}
