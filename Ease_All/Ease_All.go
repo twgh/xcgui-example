@@ -1,3 +1,4 @@
+// 全部缓动类型
 package main
 
 import (
@@ -15,13 +16,13 @@ import (
 var (
 	w *window.Window
 
-	m_easeFlag   int     = xcc.Ease_Out // 缓动方式
-	m_easeType   int     = 11           // 缓动类型
-	m_pos        int     = 0            // 当前位置
-	m_time       int     = 60           // 缓动点数量
-	m_time_pos   int     = 0            // 当前点
-	m_rect       xc.RECT                // 窗口客户区坐标
-	m_windowType int     = 2            // 窗口水平或垂直缓动
+	m_easeFlag   int     = xcc.Ease_Type_Out // 缓动方式
+	m_easeType   int     = 11                // 缓动类型
+	m_pos        int     = 0                 // 当前位置
+	m_time       int     = 60                // 缓动点数量
+	m_time_pos   int     = 0                 // 当前点
+	m_rect       xc.RECT                     // 窗口客户区坐标
+	m_windowType int     = 2                 // 窗口水平或垂直缓动
 )
 
 func main() {
@@ -100,10 +101,10 @@ func main() {
 		w.GetRect(&rect)
 		y := 0
 		for i := 0; i <= 30; i++ {
-			v := ease.Bounce(float32(i)/30.0, xcc.Ease_Out)
+			v := ease.Bounce(float32(i)/30.0, xcc.Ease_Type_Out)
 			y = int(v * float32(rect.Top))
 
-			w.Move(int(rect.Left), y)
+			w.SetPosition(int(rect.Left), y)
 			w.Redraw(true)
 			time.Sleep(time.Millisecond * 10)
 		}
@@ -209,10 +210,10 @@ func OnBtnStartWindow(pbHandled *bool) int {
 
 		if m_windowType == 1 {
 			x := int(v * float32(rect.Left))
-			w.Move(x, int(rect.Top))
+			w.SetPosition(x, int(rect.Top))
 		} else {
 			y := int(v * float32(rect.Top))
-			w.Move(int(rect.Left), y)
+			w.SetPosition(int(rect.Left), y)
 		}
 		w.Redraw(true)
 		time.Sleep(time.Millisecond * 10)
@@ -350,6 +351,6 @@ func OnDrawWindow(hDraw int, pbHandled *bool) int {
 	left := int(rc.Left) + int(float32(m_time_pos)*400.0/float32(m_time))
 
 	draw.DrawLine(left, int(rcBorder_Line.Top), left, int(rcBorder_Line.Bottom))
-	draw.DrawCurve(&pts, m_time+1, 0.5)
+	draw.DrawCurve(pts, m_time+1, 0.5)
 	return 0
 }
