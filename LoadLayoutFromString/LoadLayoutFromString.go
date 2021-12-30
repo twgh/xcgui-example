@@ -10,7 +10,7 @@ import (
 
 func main() {
 	a := app.New(true)
-	hwindow := xc.XC_LoadLayoutFromStringUtf8(str, 0)
+	hwindow := xc.XC_LoadLayoutFromStringUtf8(str, 0, 0)
 	if hwindow == 0 {
 		panic("hwindow = 0")
 	}
