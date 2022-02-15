@@ -41,7 +41,12 @@ func main() {
 	Editor.SetStyleComment(iStyle_comment)
 	// 添加关键字
 	Editor.AddKeyword("if", iStyle_key1)
+	Editor.AddKeyword("else", iStyle_key1)
+	Editor.AddKeyword("switch", iStyle_key1)
+	Editor.AddKeyword("case", iStyle_key1)
+	Editor.AddKeyword("break", iStyle_key1)
 	Editor.AddKeyword("int", iStyle_key1)
+
 	Editor.AddKeyword("function", iStyle_key2)
 	Editor.AddKeyword("return", iStyle_key2)
 
@@ -57,6 +62,14 @@ func main() {
 	Editor.SetBreakpoint(1, true)
 	Editor.SetBreakpoint(2, true)
 	Editor.SetBreakpoint(3, false)
+
+	/* 	//获取设置的断点
+	   	var BreakPoints []int32
+	   	Editor.GetBreakpoints(&BreakPoints, Editor.GetBreakpointCount())
+	   	for _, v := range BreakPoints {
+	   		fmt.Println(v)
+	   	} */
+
 	// 设置当前运行行
 	Editor.SetRunRow(0)
 
@@ -67,6 +80,19 @@ function foo(a int,b int) int{
 	Tmp3("layout.xml",0);
 	XE_BNCLICK;
 	XE_PAINT;
+	if(a == 1){
+
+	}else{
+
+	}
+
+	switch(a){
+	case 0:
+		break;
+	case 1:
+		break;
+	}
+
 	return 0
 }`
 	Editor.SetText(code)
