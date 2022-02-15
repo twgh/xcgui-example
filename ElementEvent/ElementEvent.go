@@ -44,11 +44,11 @@ func main() {
 		return 0
 	})
 
-	// 注册鼠标移动事件
-	// btn.Event_MOUSEMOVE(func(nFlags int, pPt *xc.POINT, pbHandled *bool) int {
-	// 	println("Event_MOUSEMOVE", nFlags, pPt.X, pPt.Y)
-	// 	return 0
-	// })
+	//注册鼠标移动事件
+	/* 	btn.Event_MOUSEMOVE(func(nFlags int, pPt *xc.POINT, pbHandled *bool) int {
+		println("Event_MOUSEMOVE", nFlags, pPt.X, pPt.Y)
+		return 0
+	}) */
 
 	// 3.显示窗口
 	w.ShowWindow(xcc.SW_SHOW)
