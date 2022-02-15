@@ -41,6 +41,7 @@ func setBtnRound(btn *widget.Button, round int) {
 		draw := drawx.NewDrawByHandle(hDraw)
 		// 启用平滑模式
 		draw.EnableSmoothingMode(true)
+
 		// 设置三种状态下的按钮背景色
 		nState := xc.XBtn_GetStateEx(hEle)
 		var bgcolor int
@@ -51,7 +52,8 @@ func setBtnRound(btn *widget.Button, round int) {
 			bgcolor = xc.ABGR(1, 182, 252, 254)
 		case xcc.Button_State_Down:
 			bgcolor = xc.ABGR(1, 122, 192, 254)
-
+		case xcc.Button_State_Disable:
+			bgcolor = xc.ABGR(211, 215, 212, 255)
 		}
 		// 设置画刷颜色
 		draw.SetBrushColor(bgcolor)
