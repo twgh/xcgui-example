@@ -1,4 +1,4 @@
-// 选择夹: ScrollView+TabBar的使用
+// 模仿选择夹: 仅为演示ScrollView, TabBar的使用, 真正的选择夹不是以这种方式实现.
 package main
 
 import (
