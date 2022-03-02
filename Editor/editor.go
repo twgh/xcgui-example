@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	a := app.New(false)
+	a := app.New(true)
 	w := window.NewWindow(0, 0, 1000, 600, "Editor", 0, xcc.Window_Style_Default)
 
 	// 创建Editor
