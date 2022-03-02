@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/twgh/xcgui/app"
+	"github.com/twgh/xcgui/shell32"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
 	"github.com/twgh/xcgui/xc"
@@ -52,14 +53,14 @@ func onWndDropFiles(HXCGUI, hDropInfo int, pbHandled *bool) int {
 	fmt.Println("***************************************拖放文件到窗口***************************************")
 	// 获取拖放文件到窗口时鼠标的坐标.
 	var pt xc.POINT
-	xc.DragQueryPoint(hDropInfo, &pt)
+	shell32.DragQueryPoint(hDropInfo, &pt)
 	fmt.Println("鼠标坐标:", pt)
 
 	// 循环获取拖放进窗口的所有文件.
 	i := 0
 	for {
 		filePath := ""
-		length := xc.DragQueryFileW(hDropInfo, i, &filePath, 260)
+		length := shell32.DragQueryFileW(hDropInfo, i, &filePath, 260)
 		if length == 0 { // 返回值为0说明已经检索完所有拖放进来的文件了.
 			break
 		}
@@ -68,7 +69,7 @@ func onWndDropFiles(HXCGUI, hDropInfo int, pbHandled *bool) int {
 		i++ // 索引+1检索下一个文件
 	}
 
-	xc.DragFinish(hDropInfo)
+	shell32.DragFinish(hDropInfo)
 	return 0
 }
 
@@ -77,14 +78,14 @@ func onEleDropFiles(HXCGUI, hDropInfo int, pbHandled *bool) int {
 	fmt.Println("***************************************拖放文件到元素***************************************")
 	// 获取拖放文件到窗口时鼠标的坐标.
 	var pt xc.POINT
-	xc.DragQueryPoint(hDropInfo, &pt)
+	shell32.DragQueryPoint(hDropInfo, &pt)
 	fmt.Println("鼠标坐标:", pt)
 
 	// 循环获取拖放进元素的所有文件.
 	i := 0
 	for {
 		filePath := ""
-		length := xc.DragQueryFileW(hDropInfo, i, &filePath, 260)
+		length := shell32.DragQueryFileW(hDropInfo, i, &filePath, 260)
 		if length == 0 { // 返回值为0说明已经检索完所有拖放进来的文件了.
 			break
 		}
@@ -94,6 +95,6 @@ func onEleDropFiles(HXCGUI, hDropInfo int, pbHandled *bool) int {
 		i++ // 索引+1检索下一个文件
 	}
 
-	xc.DragFinish(hDropInfo)
+	shell32.DragFinish(hDropInfo)
 	return 0
 }
