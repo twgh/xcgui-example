@@ -16,13 +16,13 @@ import (
 var (
 	w *window.Window
 
-	m_easeFlag   int     = xcc.Ease_Type_Out // 缓动方式
-	m_easeType   int     = 11                // 缓动类型
-	m_pos        int     = 0                 // 当前位置
-	m_time       int     = 60                // 缓动点数量
-	m_time_pos   int     = 0                 // 当前点
-	m_rect       xc.RECT                     // 窗口客户区坐标
-	m_windowType int     = 2                 // 窗口水平或垂直缓动
+	m_easeFlag   xcc.Ease_Type_ = xcc.Ease_Type_Out // 缓动方式
+	m_easeType   int            = 11                // 缓动类型
+	m_pos        int            = 0                 // 当前位置
+	m_time       int            = 60                // 缓动点数量
+	m_time_pos   int            = 0                 // 当前点
+	m_rect       xc.RECT                            // 窗口客户区坐标
+	m_windowType int            = 2                 // 窗口水平或垂直缓动
 )
 
 func main() {
@@ -140,7 +140,7 @@ func OnButtonCheck(hEle int, bCheck bool, pbHandled *bool) int {
 	id := xc.XWidget_GetID(hEle)
 
 	if id <= 2 {
-		m_easeFlag = id
+		m_easeFlag = xcc.Ease_Type_(id)
 	} else {
 		m_easeType = id - 10
 	}
