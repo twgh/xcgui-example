@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/twgh/xcgui/app"
-	"github.com/twgh/xcgui/shell32"
+	"github.com/twgh/xcgui/wapi"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
 	"github.com/twgh/xcgui/xc"
@@ -34,7 +34,7 @@ func main() {
 	// 编辑框允许多行.
 	edit.EnableMultiLine(true)
 	// 注册元素文件拖放事件, 可注册也可不注册, 因为在窗口拖放事件里也可以处理元素的, 根据自己的需求来吧, 很灵活.
-	//edit.Event_DROPFILES1(onEleDropFiles)
+	// edit.Event_DROPFILES1(onEleDropFiles)
 
 	w.ShowWindow(xcc.SW_SHOW)
 	a.Run()
@@ -53,14 +53,14 @@ func onWndDropFiles(HXCGUI, hDropInfo int, pbHandled *bool) int {
 	fmt.Println("***************************************拖放文件到窗口***************************************")
 	// 获取拖放文件到窗口时鼠标的坐标.
 	var pt xc.POINT
-	shell32.DragQueryPoint(hDropInfo, &pt)
+	wapi.DragQueryPoint(hDropInfo, &pt)
 	fmt.Println("鼠标坐标:", pt)
 
 	// 循环获取拖放进窗口的所有文件.
 	i := 0
 	for {
 		filePath := ""
-		length := shell32.DragQueryFileW(hDropInfo, i, &filePath, 260)
+		length := wapi.DragQueryFileW(hDropInfo, i, &filePath, 260)
 		if length == 0 { // 返回值为0说明已经检索完所有拖放进来的文件了.
 			break
 		}
@@ -69,7 +69,7 @@ func onWndDropFiles(HXCGUI, hDropInfo int, pbHandled *bool) int {
 		i++ // 索引+1检索下一个文件
 	}
 
-	shell32.DragFinish(hDropInfo)
+	wapi.DragFinish(hDropInfo)
 	return 0
 }
 
@@ -78,14 +78,14 @@ func onEleDropFiles(HXCGUI, hDropInfo int, pbHandled *bool) int {
 	fmt.Println("***************************************拖放文件到元素***************************************")
 	// 获取拖放文件到窗口时鼠标的坐标.
 	var pt xc.POINT
-	shell32.DragQueryPoint(hDropInfo, &pt)
+	wapi.DragQueryPoint(hDropInfo, &pt)
 	fmt.Println("鼠标坐标:", pt)
 
 	// 循环获取拖放进元素的所有文件.
 	i := 0
 	for {
 		filePath := ""
-		length := shell32.DragQueryFileW(hDropInfo, i, &filePath, 260)
+		length := wapi.DragQueryFileW(hDropInfo, i, &filePath, 260)
 		if length == 0 { // 返回值为0说明已经检索完所有拖放进来的文件了.
 			break
 		}
@@ -95,6 +95,6 @@ func onEleDropFiles(HXCGUI, hDropInfo int, pbHandled *bool) int {
 		i++ // 索引+1检索下一个文件
 	}
 
-	shell32.DragFinish(hDropInfo)
+	wapi.DragFinish(hDropInfo)
 	return 0
 }
