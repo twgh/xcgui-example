@@ -21,7 +21,8 @@ func main() {
 	// 创建数据适配器
 	list.CreateAdapter()
 
-	// 添加列
+	// 添加列.
+	// List默认的模板最多只有3列的 ,如果想要增加更多的列, 那就得使用界面设计器了, 生成一个更多列的模板来用.
 	list.AddColumnText(147, "name1", "Column1")
 	list.AddColumnText(147, "name2", "Column2")
 	list.AddColumnText(147, "name3", "Column3")
