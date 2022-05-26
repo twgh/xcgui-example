@@ -3,6 +3,7 @@ package main
 
 import (
 	"github.com/twgh/xcgui/app"
+	"github.com/twgh/xcgui/common"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
 	"github.com/twgh/xcgui/xc"
@@ -198,7 +199,7 @@ func onMenuDrawItem(hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *bool) int {
 		xc.XDraw_SetBrushColor(hDraw, xc.ABGR(77, 77, 77, 255))
 	}
 	// 获取菜单项文本
-	text := xc.UintPtrToString(pInfo.PText)
+	text := common.UintPtrToString(pInfo.PText)
 	// 绘制菜单项文本
 	xc.XDraw_SetTextAlign(hDraw, xcc.TextAlignFlag_Vcenter|xcc.TextFormatFlag_NoWrap)
 	xc.XDraw_DrawText(hDraw, text, &rc)
