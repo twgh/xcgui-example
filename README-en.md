@@ -7,7 +7,7 @@ English | [简体中文](./README.md)
 # Get
 
 ```go
-go get github.com/twgh/xcgui-example@latest
+go get -u github.com/twgh/xcgui-example@latest
 ```
 
 # Dynamic link library download
@@ -28,5 +28,5 @@ It is best to put it in the C:\Windows\System32 directory during development, so
 
 # Simple Window
 
-[![SimpleWindow](https://i.niupic.com/images/2021/11/01/9FiK.bmp)](https://github.com/twgh/xcgui-example/tree/main/SimpleWindow)
-		[![ButtonImage](https://i.niupic.com/images/2021/11/01/9FiN.bmp)](https://github.com/twgh/xcgui-example/tree/main/ButtonImage)
+[![SimpleWindow](https://s1.ax1x.com/2022/05/24/XiEWtg.png)](https://github.com/twgh/xcgui-example/tree/main/SimpleWindow)
+[![ButtonImage](https://s1.ax1x.com/2022/05/24/XiuLAx.jpg)](https://github.com/twgh/xcgui-example/tree/main/ButtonImage)
