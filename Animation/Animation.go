@@ -16,7 +16,7 @@ var (
 	a *app.App
 	w *window.Window
 
-	top int = 35
+	top = 35
 
 	hSvg           int
 	list_svg       []int
@@ -67,7 +67,7 @@ var (
 func main() {
 	a = app.New(true)
 	// a.ShowSvgFrame(true)
-	a.SetPaintFrequency(10)
+	a.SetPaintFrequency(16)
 	// 创建窗口
 	w = window.NewWindow(0, 0, 970, 650, "炫彩界面库-动画特效-SVG特效", 0, xcc.Window_Style_Default)
 
@@ -152,12 +152,12 @@ func OnBtnClick1(pbHandled *bool) int {
 
 	// 加载svg图片
 	list_svg = append(list_svg,
-		xc.XSvg_LoadStringUtf8(svg1),
-		xc.XSvg_LoadStringUtf8(svg2),
-		xc.XSvg_LoadStringUtf8(svg3),
-		xc.XSvg_LoadStringUtf8(svg4),
-		xc.XSvg_LoadStringUtf8(svg5),
-		xc.XSvg_LoadStringUtf8(svg6),
+		xc.XSvg_LoadStringW(svg1),
+		xc.XSvg_LoadStringW(svg2),
+		xc.XSvg_LoadStringW(svg3),
+		xc.XSvg_LoadStringW(svg4),
+		xc.XSvg_LoadStringW(svg5),
+		xc.XSvg_LoadStringW(svg6),
 	)
 
 	// 创建动画组
@@ -206,7 +206,7 @@ func OnBtnClick2(pbHandled *bool) int {
 	ReleaseAnimation()
 
 	// 加载svg图片
-	list_svg = append(list_svg, xc.XSvg_LoadStringUtf8(svg1))
+	list_svg = append(list_svg, xc.XSvg_LoadStringW(svg1))
 	// 设置svg图片大小和位置
 	xc.XSvg_SetSize(list_svg[0], 100, 100)
 	xc.XSvg_SetPosition(list_svg[0], left, top)
@@ -268,7 +268,7 @@ func OnBtnClick3(pbHandled *bool) int {
 	top = 150
 
 	// 加载svg图片
-	list_svg = append(list_svg, xc.XSvg_LoadStringUtf8(svg1))
+	list_svg = append(list_svg, xc.XSvg_LoadStringW(svg1))
 	// 设置svg图片大小和位置
 	xc.XSvg_SetSize(list_svg[0], 300, 300)
 	xc.XSvg_SetPosition(list_svg[0], left, top)
@@ -301,9 +301,9 @@ func OnBtnClick4(pbHandled *bool) int {
 
 	// 加载svg图片
 	list_svg = append(list_svg,
-		xc.XSvg_LoadStringUtf8(svg1),
-		xc.XSvg_LoadStringUtf8(svg1),
-		xc.XSvg_LoadStringUtf8(svg1),
+		xc.XSvg_LoadStringW(svg1),
+		xc.XSvg_LoadStringW(svg1),
+		xc.XSvg_LoadStringW(svg1),
 	)
 
 	// 设置svg图片大小和位置
@@ -329,7 +329,7 @@ func OnBtnClick4(pbHandled *bool) int {
 	xc.XAnima_Run(hAnimation, w.Handle)
 
 	top = 100
-	hSvg = xc.XSvg_LoadStringUtf8(svg7)
+	hSvg = xc.XSvg_LoadStringW(svg7)
 	list_svg = append(list_svg, hSvg)
 	xc.XSvg_SetPosition(hSvg, left, top)
 
@@ -340,7 +340,7 @@ func OnBtnClick4(pbHandled *bool) int {
 	xc.XAnima_Run(hAnimation, w.Handle)
 
 	top += 150
-	hSvg = xc.XSvg_LoadStringUtf8(svg7)
+	hSvg = xc.XSvg_LoadStringW(svg7)
 	list_svg = append(list_svg, hSvg)
 	xc.XSvg_SetPosition(hSvg, left, top)
 
@@ -351,7 +351,7 @@ func OnBtnClick4(pbHandled *bool) int {
 	xc.XAnima_Run(hAnimation, w.Handle)
 
 	top += 150
-	hSvg = xc.XSvg_LoadStringUtf8(svg7)
+	hSvg = xc.XSvg_LoadStringW(svg7)
 	list_svg = append(list_svg, hSvg)
 	xc.XSvg_SetPosition(hSvg, left, top)
 
@@ -371,9 +371,9 @@ func OnBtnClick5(pbHandled *bool) int {
 
 	// 加载svg图片
 	list_svg = append(list_svg,
-		xc.XSvg_LoadStringUtf8(svg1),
-		xc.XSvg_LoadStringUtf8(svg2),
-		xc.XSvg_LoadStringUtf8(svg3),
+		xc.XSvg_LoadStringW(svg1),
+		xc.XSvg_LoadStringW(svg2),
+		xc.XSvg_LoadStringW(svg3),
 	)
 
 	// 设置svg图片大小和位置
