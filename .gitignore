@@ -4,7 +4,7 @@
 *.so
 *.dylib
 go.mod
-test
+
 
 # Test binary, built with `go test -c`
 *.test
@@ -14,3 +14,8 @@ test
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Folder
+.idea/
+test/
+
