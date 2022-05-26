@@ -2,36 +2,41 @@
 package main
 
 import (
-	"time"
-
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/ease"
 	"github.com/twgh/xcgui/window"
 	"github.com/twgh/xcgui/xc"
 	"github.com/twgh/xcgui/xcc"
+	"time"
+)
+
+var (
+	a *app.App
+	w *window.Window
 )
 
 func main() {
-	a := app.New(true)
-	w := window.NewWindow(0, 0, 400, 300, "", 0, xcc.Window_Style_Default)
-	// 显示窗口
+	a = app.New(true)
+	a.SetPaintFrequency(10)
+	w = window.NewWindow(0, 0, 400, 300, "", 0, xcc.Window_Style_Default)
+	// 窗口_调整布局
+	w.AdjustLayout()
 	w.ShowWindow(xcc.SW_SHOW)
 
-	a.CallUiThread(func(data int) int {
+	time.AfterFunc(time.Millisecond*3, func() {
 		// 获取窗口坐标
 		var rect xc.RECT
 		w.GetRect(&rect)
+
 		// 缓动
-		for i := 0; i <= 30; i++ {
+		for i := 1; i <= 30; i++ {
 			v := ease.Bounce(float32(i)/30.0, xcc.Ease_Type_Out)
 			y := int(v * float32(rect.Top))
 
 			w.SetPosition(int(rect.Left), y)
-			w.Redraw(true)
 			time.Sleep(time.Millisecond * 10)
 		}
-		return 0
-	}, 0)
+	})
 
 	a.Run()
 	a.Exit()
