@@ -1,4 +1,4 @@
-// 线程操作UI, 炫彩是不能直接在线程里操作UI的, 所以要使用炫彩_调用界面线程命令来实现
+// 炫彩_调用界面线程, 在主线程操作UI
 package main
 
 import (
@@ -18,8 +18,6 @@ func main() {
 
 	btn := widget.NewButton(30, 40, 70, 30, "click", w.Handle)
 	btn.Event_BnClick(func(pbHandled *bool) int {
-		// go test(0) // 如果直接这样在线程中操作UI, 那将直接崩溃
-
 		go func() {
 			// 炫彩_调用界面线程, 调用UI线程, 设置回调函数, 在回调函数里操作UI.
 			a.CallUiThread(test, 0)
@@ -36,7 +34,7 @@ func main() {
 }
 
 func test(data int) int {
-	btn := widget.NewButton(30, 80, 80, 26, "new button", w.Handle)
-	btn.Redraw(true)
+	widget.NewButton(30, 80, 80, 26, "new button", w.Handle)
+	w.Redraw(false)
 	return 0
 }
