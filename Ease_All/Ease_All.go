@@ -2,8 +2,6 @@
 package main
 
 import (
-	"time"
-
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/drawx"
 	"github.com/twgh/xcgui/ease"
@@ -11,22 +9,24 @@ import (
 	"github.com/twgh/xcgui/window"
 	"github.com/twgh/xcgui/xc"
 	"github.com/twgh/xcgui/xcc"
+	"time"
 )
 
 var (
 	w *window.Window
 
-	m_easeFlag   xcc.Ease_Type_ = xcc.Ease_Type_Out // 缓动方式
-	m_easeType   int            = 11                // 缓动类型
-	m_pos        int            = 0                 // 当前位置
-	m_time       int            = 60                // 缓动点数量
-	m_time_pos   int            = 0                 // 当前点
-	m_rect       xc.RECT                            // 窗口客户区坐标
-	m_windowType int            = 2                 // 窗口水平或垂直缓动
+	m_easeFlag   = xcc.Ease_Type_Out // 缓动方式
+	m_easeType   = 11                // 缓动类型
+	m_pos        = 0                 // 当前位置
+	m_time       = 60                // 缓动点数量
+	m_time_pos   = 0                 // 当前点
+	m_rect       xc.RECT             // 窗口客户区坐标
+	m_windowType = 2                 // 窗口水平或垂直缓动
 )
 
 func main() {
 	a := app.New(true)
+	// a.SetPaintFrequency(10)
 	w = window.NewWindow(0, 0, 700, 450, "炫彩缓动测试", 0, xcc.Window_Style_Default)
 
 	left := 30
@@ -91,25 +91,26 @@ func main() {
 	btn = widget.NewButton(550, 120, 110, 50, "Run - 缓动曲线", w.Handle)
 	btn.Event_BnClick(OnBtnStart)
 
+	// 窗口绘制事件
+	w.Event_PAINT(OnDrawWindow)
+	// 窗口调整布局
 	w.AdjustLayout()
 	w.ShowWindow(xcc.SW_SHOW)
-	w.Event_PAINT(OnDrawWindow)
 
 	// 窗口第一次出现时的缓动
-	a.CallUiThread(func(data int) int {
+	time.AfterFunc(time.Millisecond*3, func() {
+		// 获取窗口坐标
 		var rect xc.RECT
 		w.GetRect(&rect)
-		y := 0
-		for i := 0; i <= 30; i++ {
+
+		for i := 1; i <= 30; i++ {
 			v := ease.Bounce(float32(i)/30.0, xcc.Ease_Type_Out)
-			y = int(v * float32(rect.Top))
+			y := int(v * float32(rect.Top))
 
 			w.SetPosition(int(rect.Left), y)
-			w.Redraw(true)
 			time.Sleep(time.Millisecond * 10)
 		}
-		return 0
-	}, 0)
+	})
 
 	a.Run()
 	a.Exit()
@@ -145,7 +146,7 @@ func OnButtonCheck(hEle int, bCheck bool, pbHandled *bool) int {
 		m_easeType = id - 10
 	}
 
-	w.Redraw(true)
+	w.Redraw(false)
 	return 0
 }
 
@@ -215,8 +216,7 @@ func OnBtnStartWindow(pbHandled *bool) int {
 			y := int(v * float32(rect.Top))
 			w.SetPosition(int(rect.Left), y)
 		}
-		w.Redraw(true)
-		time.Sleep(time.Millisecond * 10)
+		time.Sleep(20 * time.Millisecond)
 	}
 
 	return 0
@@ -254,7 +254,7 @@ func OnBtnStart(pbHandled *bool) int {
 
 		m_pos = int(v * width)
 		m_time_pos = i
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(20 * time.Millisecond)
 
 		rc := m_rect
 		rc.Top = 170
