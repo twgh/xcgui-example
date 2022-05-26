@@ -4,18 +4,12 @@ package main
 import (
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/window"
-	"github.com/twgh/xcgui/xc"
 	"github.com/twgh/xcgui/xcc"
 )
 
 func main() {
 	a := app.New(true)
-	hwindow := xc.XC_LoadLayoutFromStringUtf8(str, 0, 0)
-	if hwindow == 0 {
-		panic("hwindow = 0")
-	}
-
-	w := window.NewWindowByHandle(hwindow)
+	w := window.NewWindowByLayoutStringW(str, 0, 0)
 	w.AdjustLayout()
 
 	w.ShowWindow(xcc.SW_SHOW)
