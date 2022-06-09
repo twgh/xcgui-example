@@ -14,9 +14,8 @@ go get -u github.com/twgh/xcgui-example@latest
 
 | NetDisc      | Link                                                         |
 | ------------ | ------------------------------------------------------------ |
-| OneDrive     | [download](https://1drv.ms/u/s!ApZP3niad5hpdGuodyU_GvugJ_g?e=yBEKmm) |
-| Google Drive | [download](https://drive.google.com/drive/folders/1MuisSsDIr1rjqTkdFIewOgb89SYdf5s6?usp=sharing) |
-| GIthub       | [download](https://github.com/twgh/FileStorage/tree/main/xcgui) |
+| LanzouYun     | [download](https://wwi.lanzoup.com/b0cqd6nkb) |
+| BaiduPan      | [download](https://pan.baidu.com/s/1rC3unQGaxnRUCMm8z8qzvA?pwd=1111) |
 
 When the program is running, you need to put "XCGUI.dll" in the program running directory.
 
