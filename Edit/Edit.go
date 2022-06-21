@@ -2,6 +2,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
@@ -34,6 +36,11 @@ func main() {
 	style1 := edit_MultiLine.AddStyleEx("Arial", 12, xcc.FontStyle_Bold, xc.ABGR(0, 191, 165, 255), true)
 	// 添加带样式的文本
 	edit_MultiLine.AddTextEx("\nhello world", style1)
+
+	// 获取编辑框文本
+	var s string
+	edit_MultiLine.GetText(&s, edit_MultiLine.GetLength()+1) // 长度必须+1
+	fmt.Printf("s: %s\n", s)
 
 	w.ShowWindow(xcc.SW_SHOW)
 	a.Run()
