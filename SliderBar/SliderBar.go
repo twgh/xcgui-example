@@ -1,4 +1,4 @@
-// 滑块条
+// 滑块条.
 package main
 
 import (
