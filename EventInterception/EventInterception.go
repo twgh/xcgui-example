@@ -12,7 +12,7 @@ import (
 
 func main() {
 	a := app.New(true)
-	w := window.NewWindow(0, 0, 430, 300, "xc", 0, xcc.Window_Style_Simple|xcc.Window_Style_Btn_Close)
+	w := window.NewWindow(0, 0, 430, 300, "xc", 0, xcc.Window_Style_Default)
 
 	// 创建一个按钮
 	btn := widget.NewButton(50, 50, 70, 30, "button", w.Handle)
