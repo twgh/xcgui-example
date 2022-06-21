@@ -1,4 +1,4 @@
-// 月历卡片元素
+// 月历卡片
 package main
 
 import (
