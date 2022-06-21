@@ -1,4 +1,4 @@
-// 简单窗口
+// 简单窗口.
 package main
 
 import (
