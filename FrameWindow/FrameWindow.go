@@ -38,6 +38,7 @@ func main() {
 
 	// 窗口_调整布局
 	w.AdjustLayout()
+
 	w.ShowWindow(xcc.SW_SHOW)
 	a.Run()
 	a.Exit()
