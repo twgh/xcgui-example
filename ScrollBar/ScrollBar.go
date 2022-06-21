@@ -15,6 +15,7 @@ func main() {
 	a := app.New(true)
 	w := window.NewWindow(0, 0, 430, 300, "ScrollBar", 0, xcc.Window_Style_Default)
 
+	// 创建滚动条
 	bar1 := widget.NewScrollBar(12, 33, 300, 20, w.Handle)
 	bar2 := widget.NewScrollBar(330, 33, 20, 240, w.Handle)
 
