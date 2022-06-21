@@ -1,4 +1,4 @@
-// 多选按钮
+// 复选按钮
 package main
 
 import (
