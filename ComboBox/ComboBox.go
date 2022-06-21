@@ -1,4 +1,4 @@
-// 组合框操作
+// 组合框
 package main
 
 import (
@@ -11,14 +11,12 @@ import (
 )
 
 func main() {
-	// 1.初始化UI库
 	a := app.New(true)
-	// 2.创建窗口
 	w := window.NewWindow(0, 0, 430, 300, "ComboBox", 0, xcc.Window_Style_Simple|xcc.Window_Style_Btn_Close)
 
 	// 创建组合框
 	cbb := widget.NewComboBox(24, 50, 100, 30, w.Handle)
-	// 创建数据适配器
+	// 创建数据适配器, 这个是必须创建的, 存储数据的
 	cbb.CreateAdapter()
 	// 组合框加入项
 	for i := 1; i <= 5; i++ {
@@ -41,10 +39,7 @@ func main() {
 		return 0
 	})
 
-	// 3.显示窗口
 	w.ShowWindow(xcc.SW_SHOW)
-	// 4.运行程序
 	a.Run()
-	// 5.释放UI库
 	a.Exit()
 }
