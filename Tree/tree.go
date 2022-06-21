@@ -1,4 +1,4 @@
-// 树
+// 树形框
 package main
 
 import (
@@ -16,7 +16,7 @@ func main() {
 
 	// 创建Tree
 	tree := widget.NewTree(12, 33, 400, 260, w.Handle)
-	// 创建数据适配器
+	// 创建数据适配器, 这个是必须的, 存储数据的
 	tree.CreateAdapter()
 
 	// 循环添加数据
