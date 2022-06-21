@@ -16,7 +16,8 @@ func main() {
 
 	// 创建ListBox
 	lb := widget.NewListBox(12, 33, 400, 450, w.Handle)
-	// 创建数据适配器
+
+	// 创建数据适配器, 这个必须创建, 存储数据的
 	lb.CreateAdapter()
 
 	for i := 0; i < 15; i++ {
