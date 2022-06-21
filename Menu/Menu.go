@@ -33,7 +33,7 @@ func main() {
 	// 1.初始化UI库
 	a = app.New(true)
 	// 2.创建窗口
-	w = window.NewWindow(0, 0, 366, 200, "xc", 0, xcc.Window_Style_Simple|xcc.Window_Style_Btn_Close)
+	w = window.NewWindow(0, 0, 366, 200, "xc", 0, xcc.Window_Style_Default)
 
 	// 创建一个按钮
 	btn = widget.NewButton(50, 50, 100, 30, "ShowMenu", w.Handle)
