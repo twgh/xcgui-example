@@ -15,10 +15,8 @@ var (
 )
 
 func main() {
-	// 1.初始化UI库
 	a := app.New(true)
-	// 2.创建窗口
-	w := window.NewWindow(0, 0, 436, 104, "xc", 0, xcc.Window_Style_Simple|xcc.Window_Style_Btn_Close)
+	w := window.NewWindow(0, 0, 436, 104, "xc", 0, xcc.Window_Style_Default)
 
 	// 创建一个进度条
 	bar = widget.NewProgressBar(24, 60, 200, 10, w.Handle)
@@ -38,11 +36,8 @@ func main() {
 	btn_Sub = widget.NewButton(318, 50, 70, 30, "-", w.Handle)
 	btn_Sub.Event_BnClick1(onBtnClick)
 
-	// 3.显示窗口
 	w.ShowWindow(xcc.SW_SHOW)
-	// 4.运行程序
 	a.Run()
-	// 5.释放UI库
 	a.Exit()
 }
 
