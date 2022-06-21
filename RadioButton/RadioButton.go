@@ -27,6 +27,7 @@ func main() {
 	Radio1.SetGroupID(1)
 	Radio2.SetGroupID(1)
 	Radio3.SetGroupID(1)
+
 	// 设置选中
 	Radio1.SetCheck(true)
 
