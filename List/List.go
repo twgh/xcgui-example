@@ -24,7 +24,7 @@ func main() {
 	list.SetItemHeightDefault(24, 24)
 
 	// 添加列
-	// 如果想要更好看的多功能的List就需要到设计器里设计[列表项模板], 比如说可以在项里添加按钮, 编辑框, 选择框, 组合框等, 可以任意DIY.
+	// 如果想要更好看的多功能的List就需要到设计器里设计[列表项模板], 比如说可以在项里添加按钮, 编辑框, 选择框, 组合框等, 可以任意DIY. 可参照例子: List2
 	list.AddColumnText(147, "name1", "Column1")
 	list.AddColumnText(147, "name2", "Column2")
 	list.AddColumnText(147, "name3", "Column3")
