@@ -1,4 +1,4 @@
-// 列表, 模板进阶操作
+// 列表, 模板进阶操作.
 package main
 
 import (
