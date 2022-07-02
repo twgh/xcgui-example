@@ -10,7 +10,7 @@ import (
 
 func main() {
 	a := app.New(true)
-	w := window.NewWindow(0, 0, 430, 300, "xc", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 430, 300, "xc", 0, xcc.Window_Style_Default)
 
 	// 创建按钮_模态窗口
 	btn := widget.NewButton(30, 50, 100, 30, "ModalWindow", w.Handle)
