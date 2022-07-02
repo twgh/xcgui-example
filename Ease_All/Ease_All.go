@@ -27,7 +27,7 @@ var (
 func main() {
 	a := app.New(true)
 	// a.SetPaintFrequency(10)
-	w = window.NewWindow(0, 0, 700, 450, "炫彩缓动测试", 0, xcc.Window_Style_Default)
+	w = window.New(0, 0, 700, 450, "炫彩缓动测试", 0, xcc.Window_Style_Default)
 
 	left := 30
 	top := 35
@@ -269,7 +269,7 @@ func OnDrawWindow(hDraw int, pbHandled *bool) int {
 
 	var rect xc.RECT
 	w.GetClientRect(&rect)
-	draw := drawx.NewDrawByHandle(hDraw)
+	draw := drawx.NewByHandle(hDraw)
 
 	draw.SetBrushColor(xc.ABGR(230, 230, 230, 255))
 	draw.FillRect(&rect)
