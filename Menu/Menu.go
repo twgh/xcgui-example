@@ -33,7 +33,7 @@ func main() {
 	// 1.初始化UI库
 	a = app.New(true)
 	// 2.创建窗口
-	w = window.NewWindow(0, 0, 366, 200, "xc", 0, xcc.Window_Style_Default)
+	w = window.New(0, 0, 366, 200, "xc", 0, xcc.Window_Style_Default)
 
 	// 创建一个按钮
 	btn = widget.NewButton(50, 50, 100, 30, "ShowMenu", w.Handle)
@@ -98,12 +98,12 @@ func onMenuSelect(nID int, pbHandled *bool) int {
 
 // 菜单弹出事件
 func onMenuPopup(HMENUX int, pbHandled *bool) int {
-	//fmt.Println("弹出菜单")
+	// fmt.Println("弹出菜单")
 	return 0
 }
 
 // 菜单退出事件
 func onMenuExit(pbHandled *bool) int {
-	//fmt.Println("菜单退出")
+	// fmt.Println("菜单退出")
 	return 0
 }
