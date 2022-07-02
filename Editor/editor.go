@@ -11,8 +11,9 @@ import (
 )
 
 func main() {
+	panic("由于代码编辑框的API正在升级, 所以[代码编辑框的部分函数]会用不了, 等待xcgui原作者更新后将会开放大量接口, 比以前更好用")
 	a := app.New(true)
-	w := window.NewWindow(0, 0, 1000, 600, "Editor", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 1000, 600, "Editor", 0, xcc.Window_Style_Default)
 
 	// 创建Editor
 	Editor := widget.NewEditor(12, 35, 975, 555, w.Handle)
@@ -22,7 +23,7 @@ func main() {
 	Editor.EnableAutoWrap(true)
 
 	// 创建字体
-	font1 := font.NewFontEX("Arial", 12, xcc.FontStyle_Regular)
+	font1 := font.NewEX("Arial", 12, xcc.FontStyle_Regular)
 	// 设置Editor的字体
 	Editor.SetFont(font1.Handle)
 	// 设置默认颜色
