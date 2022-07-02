@@ -17,7 +17,7 @@ func main() {
 	// 从内存zip中加载资源文件
 	a.LoadResourceZipMem(qqmusic, "resource.res", "")
 	// 从内存zip中加载布局文件, 创建窗口对象
-	w := window.NewWindowByLayoutZipMem(qqmusic, "main.xml", "", 0, 0)
+	w := window.NewByLayoutZipMem(qqmusic, "main.xml", "", 0, 0)
 	// 调整布局
 	w.AdjustLayout()
 	// 显示窗口
