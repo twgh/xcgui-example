@@ -12,7 +12,7 @@ import (
 
 func main() {
 	a := app.New(true)
-	w := window.NewWindow(0, 0, 400, 300, "", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 400, 300, "", 0, xcc.Window_Style_Default)
 
 	// 创建MonthCal
 	monthCal := widget.NewMonthCal(30, 40, 290, 240, w.Handle)
