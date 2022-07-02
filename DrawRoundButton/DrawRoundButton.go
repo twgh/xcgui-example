@@ -14,7 +14,7 @@ func main() {
 	// 1.初始化UI库
 	a := app.New(true)
 	// 2.创建窗口
-	w := window.NewWindow(0, 0, 430, 300, "xc", 0, xcc.Window_Style_Simple|xcc.Window_Style_Btn_Close)
+	w := window.New(0, 0, 430, 300, "xc", 0, xcc.Window_Style_Simple|xcc.Window_Style_Btn_Close)
 
 	// 创建一个按钮
 	btn := widget.NewButton(30, 50, 70, 30, "Button", w.Handle)
@@ -38,7 +38,7 @@ func setBtnRound(btn *widget.Button, round int) {
 	// 注册按钮绘制事件
 	btn.Event_PAINT1(func(hEle int, hDraw int, pbHandled *bool) int {
 		// 创建Draw对象
-		draw := drawx.NewDrawByHandle(hDraw)
+		draw := drawx.NewByHandle(hDraw)
 		// 启用平滑模式
 		draw.EnableSmoothingMode(true)
 
