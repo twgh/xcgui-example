@@ -25,7 +25,7 @@ func main() {
 	// 1.初始化UI库
 	a := app.New(true)
 	// 2.创建窗口
-	w := window.NewWindow(0, 0, 465, 300, "", 0, xcc.Window_Style_Simple|xcc.Window_Style_Title|xcc.Window_Style_Drag_Window)
+	w := window.New(0, 0, 465, 300, "", 0, xcc.Window_Style_Simple|xcc.Window_Style_Title|xcc.Window_Style_Drag_Window)
 	// 设置窗口透明类型
 	w.SetTransparentType(xcc.Window_Transparent_Shadow)
 	// 设置窗口阴影
@@ -57,7 +57,7 @@ func setBtnImg(btn *widget.Button, file []byte) {
 	for i := 0; i < 3; i++ {
 		x := i * 31
 		// 图片_加载从内存, 指定区域位置及大小
-		img := imagex.NewImage_LoadMemoryRect(file, x, 0, 30, 30)
+		img := imagex.NewByMemRect(file, x, 0, 30, 30)
 
 		if img.Handle == 0 {
 			fmt.Println("Error: hImg=", img.Handle)
