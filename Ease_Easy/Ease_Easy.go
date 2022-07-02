@@ -18,7 +18,7 @@ var (
 func main() {
 	a = app.New(true)
 	a.SetPaintFrequency(10)
-	w = window.NewWindow(0, 0, 400, 300, "", 0, xcc.Window_Style_Default)
+	w = window.New(0, 0, 400, 300, "", 0, xcc.Window_Style_Default)
 	// 窗口_调整布局
 	w.AdjustLayout()
 	w.ShowWindow(xcc.SW_SHOW)
