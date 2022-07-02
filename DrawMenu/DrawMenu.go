@@ -39,7 +39,7 @@ func main() {
 	defer a.Exit()
 
 	// 2.创建窗口
-	w = window.NewWindow(0, 0, 800, 600, "xc", 0, xcc.Window_Style_Simple|xcc.Window_Style_Btn_Close)
+	w = window.New(0, 0, 800, 600, "xc", 0, xcc.Window_Style_Simple|xcc.Window_Style_Btn_Close)
 
 	// 加载所有的svg图片
 	loadAllSvg()
