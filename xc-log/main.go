@@ -13,7 +13,7 @@ func main() {
 	// 炫彩_启用debug文件, xcgui_debug.txt
 	a.EnableDebugFile(true)
 
-	w := window.NewWindow(0, 0, 400, 300, "", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 400, 300, "", 0, xcc.Window_Style_Default)
 
 	btn := widget.NewButton(20, 35, 70, 30, "Click", w.Handle)
 	btn.Event_BnClick(func(pbHandled *bool) int {
