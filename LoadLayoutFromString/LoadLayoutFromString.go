@@ -9,7 +9,7 @@ import (
 
 func main() {
 	a := app.New(true)
-	w := window.NewWindowByLayoutStringW(str, 0, 0)
+	w := window.NewByLayoutStringW(str, 0, 0)
 	w.AdjustLayout()
 
 	w.ShowWindow(xcc.SW_SHOW)
@@ -17,7 +17,7 @@ func main() {
 	a.Exit()
 }
 
-var str = `<?xml version="1.0" encoding="UTF-8"?>
+const str = `<?xml version="1.0" encoding="UTF-8"?>
 <!--炫彩界面库-窗口布局文件-->
 <head>
 	<bindJsFile value="" />
