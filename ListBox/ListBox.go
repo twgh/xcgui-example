@@ -12,7 +12,7 @@ import (
 
 func main() {
 	a := app.New(true)
-	w := window.NewWindow(0, 0, 430, 500, "ListBox", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 430, 500, "ListBox", 0, xcc.Window_Style_Default)
 
 	// 创建ListBox
 	lb := widget.NewListBox(12, 33, 400, 450, w.Handle)
