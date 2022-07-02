@@ -4,6 +4,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
@@ -12,7 +13,7 @@ import (
 
 func main() {
 	a := app.New(true)
-	w := window.NewWindow(0, 0, 430, 300, "xc", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 430, 300, "xc", 0, xcc.Window_Style_Default)
 
 	// 创建一个按钮
 	btn := widget.NewButton(50, 50, 70, 30, "button", w.Handle)
@@ -29,17 +30,17 @@ func main() {
 }
 
 func event1(pbHandled *bool) int {
-	println("event1")
+	fmt.Println("event1")
 	return 0
 }
 
 func event2(pbHandled *bool) int {
-	println("event2")
+	fmt.Println("event2")
 	return 0
 }
 
 func event3(pbHandled *bool) int {
-	println("event3")
+	fmt.Println("event3")
 	*pbHandled = true
 	return 0
 }
