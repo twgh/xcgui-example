@@ -23,7 +23,7 @@ func main() {
 	a = app.New(true)
 	defer a.Exit()
 
-	w = window.NewWindow(0, 0, 600, 600, "拖放文件到窗口or元素", 0, xcc.Window_Style_Default)
+	w = window.New(0, 0, 600, 600, "拖放文件到窗口or元素", 0, xcc.Window_Style_Default)
 	// 窗口_启用拖放文件.
 	w.EnableDragFiles(true)
 	// 注册窗口文件拖放事件.
