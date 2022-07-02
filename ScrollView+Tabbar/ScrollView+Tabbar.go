@@ -17,7 +17,7 @@ func main() {
 	// 1.初始化UI库
 	a := app.New(true)
 	// 2.创建窗口
-	w := window.NewWindow(0, 0, 400, 270, "xc", 0, xcc.Window_Style_Simple|xcc.Window_Style_Btn_Close)
+	w := window.New(0, 0, 400, 270, "xc", 0, xcc.Window_Style_Default)
 
 	// 创建选择夹顶部Tab条
 	tab = widget.NewTabBar(10, 33, 380, 28, w.Handle)
