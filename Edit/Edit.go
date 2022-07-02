@@ -13,7 +13,7 @@ import (
 
 func main() {
 	a := app.New(true)
-	w := window.NewWindow(0, 0, 430, 300, "", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 430, 300, "", 0, xcc.Window_Style_Default)
 
 	// 1.普通编辑框
 	edit := widget.NewEdit(12, 35, 100, 30, w.Handle)
