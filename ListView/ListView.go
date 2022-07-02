@@ -17,7 +17,7 @@ var img1 []byte
 
 func main() {
 	a := app.New(true)
-	w := window.NewWindow(0, 0, 465, 400, "ListView", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 465, 400, "ListView", 0, xcc.Window_Style_Default)
 
 	// 创建ListView
 	lv := widget.NewListView(10, 32, 445, 357, w.Handle)
@@ -28,7 +28,7 @@ func main() {
 	group1 := lv.Group_AddItemText("group1", -1)
 	group2 := lv.Group_AddItemText("group2", -1)
 	// 图片加载从内存
-	img := imagex.NewImage_LoadMemory(img1)
+	img := imagex.NewByMem(img1)
 
 	// 循环把图片加到分组里
 	var index int
