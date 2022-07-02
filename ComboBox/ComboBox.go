@@ -12,7 +12,7 @@ import (
 
 func main() {
 	a := app.New(true)
-	w := window.NewWindow(0, 0, 430, 300, "ComboBox", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 430, 300, "ComboBox", 0, xcc.Window_Style_Default)
 
 	// 创建组合框
 	cbb := widget.NewComboBox(24, 50, 100, 30, w.Handle)
