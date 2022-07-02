@@ -16,12 +16,12 @@ var img1 []byte
 
 func main() {
 	a := app.New(true)
-	w := window.NewWindow(0, 0, 415, 296, "", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 415, 296, "", 0, xcc.Window_Style_Default)
 
 	// 加载图片从内存
 	hImg := xc.XImage_LoadMemory(img1)
 
-	//创建形状对象-图片
+	// 创建形状对象-图片
 	shapePic := widget.NewShapePicture(8, 30, 400, 260, w.Handle)
 	shapePic.SetImage(hImg)
 
