@@ -10,7 +10,7 @@ import (
 
 func main() {
 	a := app.New(true)
-	w := window.NewWindow(0, 0, 400, 300, "", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 400, 300, "", 0, xcc.Window_Style_Default)
 
 	dt := widget.NewDateTime(20, 50, 120, 26, w.Handle)
 	// 0为日期元素, 1为时间元素.
