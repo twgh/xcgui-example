@@ -18,7 +18,7 @@ var custColors [16]uint32 // 保存自定义颜色的数组
 
 func main() {
 	a := app.New(true)
-	w = window.NewWindow(0, 0, 430, 300, "选择颜色", 0, xcc.Window_Style_Default)
+	w = window.New(0, 0, 430, 300, "选择颜色", 0, xcc.Window_Style_Default)
 
 	widget.NewButton(20, 40, 100, 30, "选择颜色", w.Handle).Event_BnClick(onBnClick)
 
