@@ -4,7 +4,6 @@ package main
 import (
 	_ "embed"
 	"fmt"
-
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
@@ -25,7 +24,7 @@ func main() {
 	a = app.New(true)
 	// 从内存zip加载资源文件
 	a.LoadResourceZipMem(zipData, "resource.res", "")
-	w = window.NewWindow(0, 0, 302, 308, "列表, 模板进阶操作", 0, xcc.Window_Style_Default)
+	w = window.New(0, 0, 302, 308, "列表, 模板进阶操作", 0, xcc.Window_Style_Default)
 
 	// 创建List
 	ls = widget.NewList(10, 33, 282, 263, w.Handle)
@@ -74,7 +73,7 @@ func onLIST_TEMP_CREATE_END(pItem *xc.List_Item_, nFlag int, pbHandled *bool) in
 	// 只在创建新模板实例的时候, 给按钮注册事件, 这样是为了避免重复注册事件
 	if nFlag == 1 { // 0:状态改变(复用); 1:新模板实例; 2:旧模板复用
 		index := int(pItem.Index)
-		hBtn := ls.GetTemplateObject(index, 0, 2) //前两个参数是项索引和列索引, 第三个参数是项模板里按钮的itemID, 在设计器里是可以自己填的, 必须填了, 这里才能获取
+		hBtn := ls.GetTemplateObject(index, 0, 2) // 前两个参数是项索引和列索引, 第三个参数是项模板里按钮的itemID, 在设计器里是可以自己填的, 必须填了, 这里才能获取
 		fmt.Println(xc.XBtn_GetText(hBtn))
 		// 注册按钮事件
 		xc.XEle_RegEventC1(hBtn, xcc.XE_BNCLICK, onBnClick)
