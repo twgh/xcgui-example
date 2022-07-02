@@ -69,7 +69,7 @@ func main() {
 	// a.ShowSvgFrame(true)
 	a.SetPaintFrequency(16)
 	// 创建窗口
-	w = window.NewWindow(0, 0, 970, 650, "炫彩界面库-动画特效-SVG特效", 0, xcc.Window_Style_Default)
+	w = window.New(0, 0, 970, 650, "炫彩界面库-动画特效-SVG特效", 0, xcc.Window_Style_Default)
 
 	// 创建按钮, 注册按钮单击事件
 	CreateButton("1.下落 缩放 缓动").Event_BnClick(OnBtnClick1)
