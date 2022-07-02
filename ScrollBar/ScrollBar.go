@@ -13,7 +13,7 @@ import (
 
 func main() {
 	a := app.New(true)
-	w := window.NewWindow(0, 0, 430, 300, "ScrollBar", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 430, 300, "ScrollBar", 0, xcc.Window_Style_Default)
 
 	// 创建滚动条
 	bar1 := widget.NewScrollBar(12, 33, 300, 20, w.Handle)
