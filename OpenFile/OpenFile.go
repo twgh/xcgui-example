@@ -26,7 +26,7 @@ var (
 
 func main() {
 	a = app.New(true)
-	w = window.NewWindow(0, 0, 430, 300, "", 0, xcc.Window_Style_Default)
+	w = window.New(0, 0, 430, 300, "", 0, xcc.Window_Style_Default)
 
 	// 创建按钮
 	btn1 = widget.NewButton(20, 40, 100, 30, "浏览文件夹", w.Handle)
