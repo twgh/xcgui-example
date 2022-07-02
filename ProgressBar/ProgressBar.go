@@ -16,7 +16,7 @@ var (
 
 func main() {
 	a := app.New(true)
-	w := window.NewWindow(0, 0, 436, 104, "xc", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 436, 104, "xc", 0, xcc.Window_Style_Default)
 
 	// 创建一个进度条
 	bar = widget.NewProgressBar(24, 60, 200, 10, w.Handle)
