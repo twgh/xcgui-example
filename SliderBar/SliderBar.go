@@ -12,7 +12,7 @@ import (
 
 func main() {
 	a := app.New(true)
-	w := window.NewWindow(0, 0, 430, 300, "SliderBar", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 430, 300, "SliderBar", 0, xcc.Window_Style_Default)
 
 	// 创建SliderBar
 	sb := widget.NewSliderBar(12, 33, 300, 60, w.Handle)
