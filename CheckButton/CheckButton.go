@@ -13,7 +13,7 @@ import (
 
 func main() {
 	a := app.New(true)
-	w := window.NewWindow(0, 0, 430, 300, "", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 430, 300, "", 0, xcc.Window_Style_Default)
 
 	// 创建按钮
 	Check1 := widget.NewButton(10, 35, 70, 30, "Check1", w.Handle)
