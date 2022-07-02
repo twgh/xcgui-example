@@ -12,7 +12,7 @@ import (
 
 func main() {
 	a := app.New(true)
-	w := window.NewWindow(0, 0, 784, 308, "List", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 784, 308, "List", 0, xcc.Window_Style_Default)
 
 	// 创建List
 	list := widget.NewList(10, 33, 764, 263, w.Handle)
