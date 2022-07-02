@@ -13,7 +13,7 @@ func main() {
 	// 1.初始化UI库
 	a := app.New(true)
 	// 2.创建窗口
-	w := window.NewWindow(0, 0, 430, 300, "xc", 0, xcc.Window_Style_Simple|xcc.Window_Style_Btn_Close)
+	w := window.New(0, 0, 430, 300, "xc", 0, xcc.Window_Style_Simple|xcc.Window_Style_Btn_Close)
 
 	// 创建一个按钮
 	btn := widget.NewButton(50, 50, 120, 40, "button", w.Handle)
@@ -44,7 +44,7 @@ func main() {
 		return 0
 	})
 
-	//注册鼠标移动事件
+	// 注册鼠标移动事件
 	/* 	btn.Event_MOUSEMOVE(func(nFlags int, pPt *xc.POINT, pbHandled *bool) int {
 		println("Event_MOUSEMOVE", nFlags, pPt.X, pPt.Y)
 		return 0
