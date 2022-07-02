@@ -17,12 +17,12 @@ func main() {
 	a := app.New(true)
 
 	// 创建字体
-	f := font.NewFontEX("Arial", 11, xcc.FontStyle_Regular)
+	f := font.NewEX("Arial", 11, xcc.FontStyle_Regular)
 	// 设置程序默认字体
 	a.SetDefaultFont(f.Handle)
 
 	// 2.创建窗口
-	w := window.NewWindow(0, 0, 466, 300, "xcgui", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 466, 300, "xcgui", 0, xcc.Window_Style_Default)
 
 	// 创建一个按钮
 	btn := widget.NewButton(30, 50, 150, 30, "GetFontInfo", w.Handle)
