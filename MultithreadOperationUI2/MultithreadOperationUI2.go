@@ -1,4 +1,4 @@
-// 多线程操作UI, 方式2.
+// 多线程操作UI, 方式2
 package main
 
 import (
