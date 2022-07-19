@@ -6,20 +6,13 @@
 
 # 获取
 
-```go
-go get -u github.com/twgh/xcgui-example@latest
+```bash
+git clone https://github.com/twgh/xcgui-example
+cd xcgui-example && go mod tidy
+go install -ldflags="-s -w" github.com/twgh/getxcgui@latest
+getxcgui -o %windir%\system32\xcgui.dll
+cd SimpleWindow && go run .
 ```
-
-# 动态链接库下载
-
-| 网盘         | 下载地址                                                     |
-| ------------ | ------------------------------------------------------------ |
-| 百度网盘     | [下载](https://pan.baidu.com/s/1rC3unQGaxnRUCMm8z8qzvA?pwd=1111) |
-| 蓝奏云     | [下载](https://wwi.lanzoup.com/b0cqd6nkb) |
-
-程序运行时需要把`XCGUI.dll`放到程序运行目录。
-
-在开发时最好是放到C:\Windows\System32目录，这样就不需要频繁把dll放到不同程序的运行目录了。
 
 # 可视化UI设计器
 
