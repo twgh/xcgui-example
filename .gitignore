@@ -3,7 +3,6 @@
 *.exe~
 *.so
 *.dylib
-go.mod
 
 
 # Test binary, built with `go test -c`
