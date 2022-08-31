@@ -4,13 +4,17 @@ English | [简体中文](./README.md)
 
 [https://github.com/twgh/xcgui](https://github.com/twgh/xcgui) Examples
 
-# Get
+# Usage
+### (1)Download xcgui.dll to the system32 directory (if already downloaded, ignore this step)
+```bash
+go install -ldflags="-s -w" github.com/twgh/getxcgui@latest
+getxcgui -o %windir%\system32\xcgui.dll
+```
 
+### (2)Get
 ```bash
 git clone https://github.com/twgh/xcgui-example
 cd xcgui-example && go mod tidy
-go install -ldflags="-s -w" github.com/twgh/getxcgui@latest
-getxcgui -o %windir%\system32\xcgui.dll
 cd SimpleWindow && go run .
 ```
 
@@ -21,4 +25,5 @@ cd SimpleWindow && go run .
 # Simple Window
 
 [![SimpleWindow](https://s1.ax1x.com/2022/05/24/XiEWtg.png)](https://github.com/twgh/xcgui-example/tree/main/SimpleWindow)
+
 [![ButtonImage](https://s1.ax1x.com/2022/05/24/XiuLAx.jpg)](https://github.com/twgh/xcgui-example/tree/main/ButtonImage)
