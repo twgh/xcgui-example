@@ -100,14 +100,14 @@ func onBnClick(pbHandled *bool) int {
 		}
 		u.wg.Wait()
 
-		xc.XC_CallUiThreadEx(func(data int) int {
+		// 如果不需要传参数进回调函数, 也不需要返回值时可以调用xc.XC_CallUT(), 回调函数写法能简单些.
+		xc.XC_CallUT(func() {
 			ls.RefreshData() // 刷新列表项数据
 			ls.Redraw(false) // 列表重绘
 			btn.Enable(true)
 			btn.Redraw(true)
 			w.MessageBox("提示", fmt.Sprintf("全部执行完毕, 耗时: %v", time.Since(u.t)), xcc.MessageBox_Flag_Ok, xcc.Window_Style_Default)
-			return 0
-		}, 0)
+		})
 	}()
 	return 0
 }
