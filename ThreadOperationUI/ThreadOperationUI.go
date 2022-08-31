@@ -1,15 +1,16 @@
-// 炫彩_调用界面线程, 在主线程操作UI
+// 炫彩_调用界面线程, 在界面线程操作UI
 package main
 
 import (
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
 	"github.com/twgh/xcgui/xc"
 	"github.com/twgh/xcgui/xcc"
-	"strconv"
-	"time"
 )
 
 var (
@@ -62,23 +63,23 @@ func onBnClick(pbHandled *bool) int {
 func updateBtn1() {
 	fmt.Println("使用方式1: xc.XC_CallUiThreadEx")
 	for i := 0; i < 2010; i++ {
-		// 如果直接在非主线程内操作UI, 次数多了程序必将崩溃, 而且你不会知道它在什么时候崩溃.
+		// 如果直接在非界面线程内操作UI, 次数多了程序必将崩溃, 而且你不会知道它在什么时候崩溃.
 		// 使用 xc.XC_CallUiThreadEx 这样是在界面线程进行UI操作, 就不会崩溃了.
 		xc.XC_CallUiThreadEx(func(data int) int {
 			btn.SetText(strconv.Itoa(data))
 			btn.SetWidth(i / 5)
 			w.Redraw(false)
 			return 0
-		}, i)
+		}, i) // 把i传进回调函数了
 		time.Sleep(time.Millisecond * 1)
 	}
 
-	// 解禁按钮
-	xc.XC_CallUiThreadEx(func(data int) int {
+	// 解禁按钮.
+	// 如果不需要传参数进回调函数, 也不需要返回值时可以调用xc.XC_CallUT(), 回调函数写法能简单些.
+	xc.XC_CallUT(func() {
 		btn.Enable(true)
 		btn.Redraw(true)
-		return 0
-	}, 0)
+	})
 }
 
 func updateBtn2() {
@@ -89,7 +90,7 @@ func updateBtn2() {
 	}
 
 	for i := 0; i < 2010; i++ {
-		// 如果直接在非主线程内操作UI, 次数多了程序必将崩溃, 而且你不会知道它在什么时候崩溃.
+		// 如果直接在非界面线程内操作UI, 次数多了程序必将崩溃, 而且你不会知道它在什么时候崩溃.
 		// 使用 xc.XC_CallUiThreader 这样是在界面线程进行UI操作, 就不会崩溃了.
 		u.Text = strconv.Itoa(i)
 		u.Width = i / 5
@@ -97,12 +98,12 @@ func updateBtn2() {
 		time.Sleep(time.Millisecond * 1)
 	}
 
-	// 解禁按钮
-	xc.XC_CallUiThreadEx(func(data int) int {
+	// 解禁按钮.
+	// 如果不需要传参数进回调函数, 也不需要返回值时可以调用xc.XC_CallUT(), 回调函数写法能简单些.
+	xc.XC_CallUT(func() {
 		btn.Enable(true)
 		btn.Redraw(true)
-		return 0
-	}, 0)
+	})
 }
 
 type updateButton struct {
