@@ -2,6 +2,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/drawx"
 	"github.com/twgh/xcgui/ease"
@@ -9,7 +11,6 @@ import (
 	"github.com/twgh/xcgui/window"
 	"github.com/twgh/xcgui/xc"
 	"github.com/twgh/xcgui/xcc"
-	"time"
 )
 
 var (
@@ -93,8 +94,7 @@ func main() {
 
 	// 窗口绘制事件
 	w.Event_PAINT(OnDrawWindow)
-	// 窗口调整布局
-	w.AdjustLayout()
+
 	w.ShowWindow(xcc.SW_SHOW)
 
 	// 窗口第一次出现时的缓动
