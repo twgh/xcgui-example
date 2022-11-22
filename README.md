@@ -11,7 +11,7 @@ go install -ldflags="-s -w" github.com/twgh/getxcgui@latest
 getxcgui -o %windir%\system32\xcgui.dll
 ```
 
-### (2)获取
+### (2)获取和运行
 ```bash
 git clone https://github.com/twgh/xcgui-example
 cd xcgui-example && go mod tidy
