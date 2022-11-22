@@ -11,7 +11,10 @@ go install -ldflags="-s -w" github.com/twgh/getxcgui@latest
 getxcgui -o %windir%\system32\xcgui.dll
 ```
 
+> 请确保 `%GOPATH%\bin` 在环境变量中, 否则要像这样调用: `%GOPATH%\bin\getxcgui`
+
 ### (2)获取和运行
+
 ```bash
 git clone https://github.com/twgh/xcgui-example
 cd xcgui-example && go mod tidy
