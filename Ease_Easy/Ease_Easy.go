@@ -2,12 +2,13 @@
 package main
 
 import (
+	"time"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/ease"
 	"github.com/twgh/xcgui/window"
 	"github.com/twgh/xcgui/xc"
 	"github.com/twgh/xcgui/xcc"
-	"time"
 )
 
 var (
@@ -19,8 +20,6 @@ func main() {
 	a = app.New(true)
 	a.SetPaintFrequency(10)
 	w = window.New(0, 0, 400, 300, "", 0, xcc.Window_Style_Default)
-	// 窗口_调整布局
-	w.AdjustLayout()
 	w.ShowWindow(xcc.SW_SHOW)
 
 	time.AfterFunc(time.Millisecond*3, func() {
