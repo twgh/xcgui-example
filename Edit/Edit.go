@@ -40,7 +40,10 @@ func main() {
 	// 获取编辑框文本
 	var s string
 	edit_MultiLine.GetText(&s, edit_MultiLine.GetLength()+1) // 长度必须+1
-	fmt.Printf("s: %s\n", s)
+	fmt.Printf("s: %s\n\n", s)
+
+	// 或者使用封装好的方法 GetTextEx()
+	fmt.Println(edit_MultiLine.GetTextEx())
 
 	w.ShowWindow(xcc.SW_SHOW)
 	a.Run()
