@@ -3,15 +3,16 @@ package main
 
 import (
 	"fmt"
+	"strings"
+	"syscall"
+	"unsafe"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/common"
 	"github.com/twgh/xcgui/wapi"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
 	"github.com/twgh/xcgui/xcc"
-	"strings"
-	"syscall"
-	"unsafe"
 )
 
 var (
@@ -120,6 +121,7 @@ func ExampleGetOpenFileNameW() {
 func ExampleGetOpenFileNameW_2() {
 	// 多个过滤器, 打开多个文件.
 	c := "\x00"
+	// []string 里面的数据是两个一组, 必须成对, 符合规则
 	lpstrFilter := strings.Join([]string{"Text Files(*txt)", "*.txt", "All Files(*.*)", "*.*"}, c) + c + c
 
 	lpstrFile := make([]uint16, 512)
@@ -159,6 +161,7 @@ func ExampleGetOpenFileNameW_2() {
 func ExampleGetSaveFileNameW() {
 	// 多个过滤器, 保存文件.
 	c := "\x00"
+	// []string 里面的数据是两个一组, 必须成对, 符合规则
 	lpstrFilter := strings.Join([]string{"Text Files(*txt)", "*.txt", "All Files(*.*)", "*.*"}, c) + c + c
 
 	lpstrFile := make([]uint16, 260)
