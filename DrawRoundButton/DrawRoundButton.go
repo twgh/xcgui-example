@@ -1,4 +1,5 @@
 // 绘制圆角按钮
+// 自己绘制要记一些api, 还是建议使用设计器来实现
 package main
 
 import (
