@@ -35,7 +35,7 @@ func main() {
 	// 注册组合框被选择事件
 	cbb.Event_ComboBox_Select_End(func(iItem int, pbHandled *bool) int {
 		edit.SetText(cbb.GetItemText(iItem, 0))
-		edit.Redraw(true)
+		edit.Redraw(false)
 		return 0
 	})
 
