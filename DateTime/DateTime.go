@@ -1,4 +1,6 @@
 // 日期时间框
+// 要美化的话, 就得自绘, 看这个: http://www.xcgui.com/doc-ui/page_draw__month_cal.html
+// 我以后有空会翻译过来
 package main
 
 import (
