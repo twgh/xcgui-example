@@ -3,9 +3,9 @@ package main
 
 import (
 	"github.com/twgh/xcgui/app"
+	"github.com/twgh/xcgui/imagex"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
-	"github.com/twgh/xcgui/xc"
 	"github.com/twgh/xcgui/xcc"
 )
 
@@ -18,11 +18,11 @@ func main() {
 	// 设置窗口边框大小
 	w.SetBorderSize(0, 30, 0, 0)
 	// 设置窗口图标
-	w.SetIcon(xc.XImage_LoadSvgStringW(svgIcon))
+	a.SetWindowIcon(imagex.NewBySvgStringW(svgIcon).Handle)
 	// 设置窗口透明类型
 	w.SetTransparentType(xcc.Window_Transparent_Shadow)
 	// 设置窗口阴影
-	w.SetShadowInfo(8, 254, 10, false, 0)
+	w.SetShadowInfo(8, 255, 10, false, 0)
 
 	// 创建按钮
 	btn := widget.NewButton(165, 135, 100, 30, "Button", w.Handle)
