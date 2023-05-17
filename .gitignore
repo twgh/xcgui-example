@@ -4,6 +4,7 @@
 *.so
 *.dylib
 go.work
+go.sum
 
 
 # Test binary, built with `go test -c`
