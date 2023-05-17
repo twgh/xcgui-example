@@ -64,9 +64,9 @@ func one() {
 func two() {
 	w.Event_KEYDOWN1(func(hWindow, wParam, lParam int, pbHandled *bool) int {
 		switch wParam {
-		case int(xcc.VK_F5):
+		case xcc.VK_F5:
 			fmt.Println("Event_KEYDOWN1 F5键被按下")
-		case int(xcc.VK_F6):
+		case xcc.VK_F6:
 			fmt.Println("Event_KEYDOWN1 F6键被按下")
 		}
 		return 0
