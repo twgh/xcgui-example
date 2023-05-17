@@ -1,49 +1,174 @@
-// 列表
+// 列表: 添加行, 删除选中行, 清空行, 排序
 package main
 
 import (
 	"fmt"
-
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
+	"github.com/twgh/xcgui/xc"
 	"github.com/twgh/xcgui/xcc"
 )
 
+var (
+	a    *app.App
+	w    *window.Window
+	list *widget.List
+
+	btn_add   *widget.Button
+	btn_del   *widget.Button
+	btn_clear *widget.Button
+)
+
 func main() {
-	a := app.New(true)
-	w := window.New(0, 0, 784, 308, "List", 0, xcc.Window_Style_Default)
+	a = app.New(true)
+	w = window.New(0, 0, 784, 400, "List", 0, xcc.Window_Style_Default)
 
 	// 创建List
-	list := widget.NewList(10, 33, 764, 263, w.Handle)
+	createList()
+	// List添加行
+	listAddItem()
+
+	startX := 10
+	btn_add = widget.NewButton(startX, 35, 100, 30, "添加20行", w.Handle)
+	btn_add.Event_BnClick1(onBnClick)
+
+	startX += 100 + 3
+	btn_del = widget.NewButton(startX, 35, 100, 30, "删除选中行", w.Handle)
+	btn_del.Event_BnClick1(onBnClick)
+
+	startX += 100 + 3
+	btn_clear = widget.NewButton(startX, 35, 100, 30, "删除所有行", w.Handle)
+	btn_clear.Event_BnClick1(onBnClick)
+
+	w.Show(true)
+	a.Run()
+	a.Exit()
+}
+
+// 按钮单击事件
+func onBnClick(hEle int, pbHandled *bool) int {
+	xc.XEle_Enable(hEle, false) // 操作前禁用按钮
+
+	switch hEle {
+	case btn_add.Handle:
+		listAddItem()
+	case btn_del.Handle:
+		listDelSelectItem()
+	case btn_clear.Handle:
+		list.DeleteItemAll()
+		list.Redraw(true)
+	}
+
+	xc.XEle_Enable(hEle, true) // 操作后解禁按钮
+	return 0
+}
+
+// 创建List
+func createList() {
+	// 创建List
+	list = widget.NewList(10, 70, 764, 315, w.Handle)
 	// 创建表头数据适配器
 	list.CreateAdapterHeader()
 	// 创建数据适配器: 5列
 	list.CreateAdapter(5)
-	// 列表_置项默认高度
-	list.SetItemHeightDefault(24, 24)
+	// 列表_置项默认高度和选中时高度
+	list.SetItemHeightDefault(24, 26)
 
 	// 添加列
 	// 如果想要更好看的多功能的List就需要到设计器里设计[列表项模板], 比如说可以在项里添加按钮, 编辑框, 选择框, 组合框等, 可以任意DIY. 可参照例子: List2
-	list.AddColumnText(147, "name1", "Column1")
+	list.AddColumnText(50, "name1", "序号")
 	list.AddColumnText(147, "name2", "Column2")
 	list.AddColumnText(147, "name3", "Column3")
 	list.AddColumnText(147, "name4", "Column4")
 	list.AddColumnText(147, "name5", "Column5")
 
+	// 设置序号列可排序, 单击表头时排序
+	list.SetSort(0, 0, true)
+	// 这里我使用了置属性的方法是为了不新建多个变量, 因为考虑到组件可能会很多, 当然你也可以用变量来控制.
+	// 这个置属性你可以理解为就是给元素绑定的map中赋值, 注意要先set才能get, 不然崩溃.
+	// 也是为了演示Set/GetProperty, 这个东西很有用, 比如说你的列表每1行都有隐藏的值, 就可以存在这里, 而不用自己新建一个map或slice, 不过你自己新建的话会更灵活些, 看需求了.
+	list.SetProperty("sortType", "1") // 1是正序, 0是倒序.
+	list.SetProperty("sortFlag", "0") // 只是我设定的标记
+
+	// 列表头项被单击事件
+	list.Event_LIST_HEADER_CLICK(func(iItem int, pbHandled *bool) int {
+		// 为了记录排序类型
+		if iItem == 0 {
+			// 下面这个sortFlag只是我设定的1个标记, 意义是让第1次单击表头排序时不设置sortType的值, 因为第1次默认就是正序
+			if list.GetProperty("sortFlag") != "1" {
+				list.SetProperty("sortFlag", "1")
+			} else {
+				if list.GetProperty("sortType") == "1" {
+					list.SetProperty("sortType", "0")
+					fmt.Println("列表当前排序: 倒序")
+				} else {
+					list.SetProperty("sortType", "1")
+					fmt.Println("列表当前排序: 正序")
+				}
+			}
+		}
+		return 0
+	})
+}
+
+// List添加20行
+func listAddItem() {
 	// 循环添加数据
 	for i := 0; i < 20; i++ {
+		num := list.GetCount_AD() + 1
+
 		// 添加行
-		index := list.AddItemText(fmt.Sprintf("Column1-item%d", i))
-		fmt.Printf("index: %v\n", index)
+		var index int
+		if list.GetProperty("sortType") == "1" { // 正序
+			index = list.AddItemTextEx("name2", fmt.Sprintf("item%d-Column2", num))
+		} else { // 倒序
+			index = list.InsertItemTextEx(0, "name2", fmt.Sprintf("item%d-Column2", num))
+		}
+		fmt.Printf("添加行索引: %d\n", index)
+
 		// 置行数据
-		list.SetItemText(index, 1, fmt.Sprintf("Column2-item%d", i))
-		list.SetItemText(index, 2, fmt.Sprintf("Column3-item%d", i))
-		list.SetItemText(index, 3, fmt.Sprintf("Column4-item%d", i))
-		list.SetItemText(index, 4, fmt.Sprintf("Column5-item%d", i))
+		// 序号列设置int型的数据才能按数字大小排序
+		list.SetItemInt(index, 0, num)
+		list.SetItemText(index, 2, fmt.Sprintf("item%d-Column3", num))
+		list.SetItemText(index, 3, fmt.Sprintf("item%d-Column4", num))
+		list.SetItemText(index, 4, fmt.Sprintf("item%d-Column5", num))
 	}
 
-	w.ShowWindow(xcc.SW_SHOW)
-	a.Run()
-	a.Exit()
+	list.Redraw(true)
+}
+
+// List删除选中行
+func listDelSelectItem() {
+	count := list.GetSelectItemCount()
+	if count == 0 {
+		w.MessageBox("提示", "你没有选中列表任何行!", xcc.MessageBox_Flag_Ok|xcc.MessageBox_Flag_Icon_Info, xcc.Window_Style_Modal)
+		return
+	}
+
+	var indexArr []int32
+	// 取选中行索引数组
+	list.GetSelectAll(&indexArr, count)
+	// 根据选中行索引数组倒着删, 正着删的话你每删1行下面的行索引就变了
+	for i := count - 1; i > -1; i-- {
+		list.DeleteItem(int(indexArr[i]))
+		fmt.Printf("删除行索引: %d\n", indexArr[i])
+	}
+
+	// 重排剩余行序号
+	count = list.GetCount_AD()
+	if list.GetProperty("sortType") == "1" { // 正序
+		for i := 0; i < count; i++ {
+			list.SetItemInt(i, 0, i+1)
+		}
+	} else { // 倒序
+		for i, num := 0, count; i < count; i, num = i+1, num-1 {
+			list.SetItemInt(i, 0, num)
+		}
+	}
+
+	// 刷新列表项数据
+	list.RefreshData()
+	// 列表重绘
+	list.Redraw(true)
 }
