@@ -7,7 +7,7 @@ English | [简体中文](./README.md)
 # Usage
 ### (1)Download xcgui.dll to the system32 directory (if already downloaded, ignore this step)
 ```bash
-go install -ldflags="-s -w" github.com/twgh/getxcgui@latest
+go install  github.com/twgh/getxcgui@latest
 getxcgui -o %windir%\system32\xcgui.dll
 ```
 
