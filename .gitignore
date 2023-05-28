@@ -5,6 +5,7 @@
 *.dylib
 go.work
 go.sum
+go.work.sum
 
 
 # Test binary, built with `go test -c`
@@ -19,4 +20,3 @@ go.sum
 # Folder
 .idea/
 test/
-
