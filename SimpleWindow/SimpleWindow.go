@@ -12,6 +12,7 @@ import (
 func main() {
 	// 1.初始化UI库
 	a := app.New(true)
+	a.EnableAutoDPI(true) // 启用自动DPI
 	// 2.创建窗口
 	w := window.New(0, 0, 430, 300, "xcgui window", 0, xcc.Window_Style_Default|xcc.Window_Style_Drag_Window)
 
@@ -23,6 +24,8 @@ func main() {
 	w.SetTransparentType(xcc.Window_Transparent_Shadow)
 	// 设置窗口阴影
 	w.SetShadowInfo(8, 255, 10, false, 0)
+	// 窗口_置透明度
+	w.SetTransparentAlpha(255)
 
 	// 创建按钮
 	btn := widget.NewButton(165, 135, 100, 30, "Button", w.Handle)
