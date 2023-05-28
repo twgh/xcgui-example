@@ -1,4 +1,4 @@
-// 列表: 添加行, 删除选中行, 清空行, 排序
+// 列表: 添加行, 删除选中行, 清空行, 排序, 表头表项文本居中
 package main
 
 import (
@@ -22,6 +22,7 @@ var (
 
 func main() {
 	a = app.New(true)
+	a.EnableAutoDPI(true)
 	w = window.New(0, 0, 784, 400, "List", 0, xcc.Window_Style_Default)
 
 	// 创建List
@@ -74,6 +75,8 @@ func createList() {
 	list.CreateAdapter(5)
 	// 列表_置项默认高度和选中时高度
 	list.SetItemHeightDefault(24, 26)
+	// 表头和表项居中
+	listTextAlign()
 
 	// 添加列
 	// 如果想要更好看的多功能的List就需要到设计器里设计[列表项模板], 比如说可以在项里添加按钮, 编辑框, 选择框, 组合框等, 可以任意DIY. 可参照例子: List2
@@ -105,6 +108,32 @@ func createList() {
 				} else {
 					list.SetProperty("sortType", "1")
 					fmt.Println("列表当前排序: 正序")
+				}
+			}
+		}
+		return 0
+	})
+}
+
+// 表头和表项居中, 纯代码实现需要记一些api, 需要有清晰的思维, 还是用设计器来的简单, 真要写大程序不可能离开设计器的
+func listTextAlign() {
+	list.Event_LIST_HEADER_TEMP_CREATE_END(func(pItem *xc.List_Header_Item_, pbHandled *bool) int {
+		for i := 0; i < list.GetColumnCount(); i++ {
+			hEle := list.GetHeaderTemplateObject(i, 1)
+			if a.IsHXCGUI(hEle, xcc.XC_SHAPE_TEXT) { // 是形状文本
+				xc.XShapeText_SetTextAlign(hEle, xcc.TextAlignFlag_Center|xcc.TextAlignFlag_Vcenter)
+			}
+		}
+		return 0
+	})
+
+	list.Event_LIST_TEMP_CREATE_END(func(pItem *xc.List_Item_, nFlag int, pbHandled *bool) int {
+		// nFlag  0:状态改变(复用); 1:新模板实例; 2:旧模板复用
+		if nFlag == 1 {
+			for i := 0; i < list.GetColumnCount(); i++ {
+				hEle := list.GetTemplateObject(int(pItem.Index), i, 1)
+				if a.IsHXCGUI(hEle, xcc.XC_SHAPE_TEXT) { // 是形状文本
+					xc.XShapeText_SetTextAlign(hEle, xcc.TextAlignFlag_Center|xcc.TextAlignFlag_Vcenter)
 				}
 			}
 		}
