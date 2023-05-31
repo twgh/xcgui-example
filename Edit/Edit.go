@@ -28,12 +28,11 @@ func main() {
 	edit_pwd.SetPasswordCharacter('#')
 
 	// 3.多行编辑框
-	edit_MultiLine := widget.NewEdit(12, 115, 300, 100, w.Handle)
+	edit_MultiLine := widget.NewEdit(12, 115, 300, 70, w.Handle)
 	edit_MultiLine.EnableMultiLine(true)
 	edit_MultiLine.AddText("你好, 世界")
-
 	// 添加样式
-	style1 := edit_MultiLine.AddStyleEx("Arial", 12, xcc.FontStyle_Bold, xc.ABGR(0, 191, 165, 255), true)
+	style1 := edit_MultiLine.AddStyleEx("Arial", 14, xcc.FontStyle_Bold, xc.ABGR(0, 191, 165, 255), true)
 	// 添加带样式的文本
 	edit_MultiLine.AddTextEx("\nhello world", style1)
 
@@ -45,7 +44,24 @@ func main() {
 	// 或者使用封装好的方法 GetTextEx()
 	fmt.Println(edit_MultiLine.GetTextEx())
 
-	w.ShowWindow(xcc.SW_SHOW)
+	// 4.只能输入数字的编辑框
+	edit4 := widget.NewEdit(12, 195, 100, 30, w.Handle)
+	edit4.Event_CHAR(func(wParam int, lParam int, pbHandled *bool) int {
+		fmt.Println(wParam)
+		if wParam < 58 && wParam > 47 { // 0-9
+			return 0
+		}
+
+		switch wParam { // 删除,复制,撤销,剪切,全选. 有其它需要的自己添加.
+		case 8, 3, 26, 24, 1:
+			return 0
+		}
+
+		*pbHandled = true // 其它的都拦截
+		return 0
+	})
+
+	w.Show(true)
 	a.Run()
 	a.Exit()
 }
