@@ -1,8 +1,7 @@
-// 多线程操作UI, 方式2
+// 多协程操作UI, 方式2
 package main
 
 import (
-	_ "embed"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -66,7 +65,7 @@ type updateList struct {
 	t   time.Time // 记录耗时
 }
 
-// 在这里面写操作UI的代码
+// 在这里面写操作UI的代码, 是在ui线程操作ui
 func (l *updateList) UiThreadCallBack(data int) int { // data传进来的是List的句柄
 	xc.XList_SetItemText(data, l.Item, l.Col, l.Text)
 	return 0
@@ -78,30 +77,32 @@ func onBnClick(pbHandled *bool) int {
 		return 0
 	}
 	btn.Enable(false)
-	btn.Redraw(true)
+	btn.Redraw(false)
 
 	go func() {
 		u := new(updateList)
 		u.t = time.Now() // 记录开始的时间
 
-		// 多线程操作列表框数据
+		// 多协程操作列表框数据
 		for i := 0; i < 2022; i++ {
 			u.wg.Add(1)
 
 			go func() {
-				u.rwm.RLock() // 将rw锁定为读取状态，禁止其他线程写入
+				u.rwm.RLock() // 将rw锁定为读取状态，禁止其他协程写入
 				u.Item = rand.Intn(ls.GetCount_AD())
 				u.Col = rand.Intn(ls.GetColumnCount())
 				u.Text = strconv.Itoa(rand.Intn(1000) + 1000)
-				xc.XC_CallUiThreader(u, ls.Handle) // 这样是在界面线程进行UI操作, 就不会崩溃了
-				u.rwm.RUnlock()                    // 解锁
+
+				a.CallUiThreader(u, ls.Handle) // 这样是在UI线程进行UI操作, 就不会崩溃了
+				u.rwm.RUnlock()                // 解锁
+
 				u.wg.Done()
 			}()
 		}
 		u.wg.Wait()
 
-		// 如果不需要传参数进回调函数, 也不需要返回值时可以调用xc.XC_CallUT(), 回调函数写法能简单些.
-		xc.XC_CallUT(func() {
+		// 如果不需要传参数进回调函数, 也不需要返回值时可以调用CallUT(), 回调函数写法能简单些.
+		a.CallUT(func() {
 			ls.RefreshData() // 刷新列表项数据
 			ls.Redraw(false) // 列表重绘
 			btn.Enable(true)
