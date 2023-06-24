@@ -1,4 +1,4 @@
-// 多线程操作UI, 方式1
+// 多协程操作UI, 方式1
 package main
 
 import (
@@ -11,7 +11,6 @@ import (
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
-	"github.com/twgh/xcgui/xc"
 	"github.com/twgh/xcgui/xcc"
 )
 
@@ -65,30 +64,32 @@ func onBnClick(pbHandled *bool) int {
 		return 0
 	}
 	btn.Enable(false)
-	btn.Redraw(true)
+	btn.Redraw(false)
 
 	go func() {
 		t = time.Now() // 记录开始的时间
 
-		// 多线程操作列表框数据
+		// 多协程操作列表框数据
 		for i := 0; i < 2022; i++ {
 			wg.Add(1)
 
-			// go setText(0) // 像这样直接另起线程操作UI次数多了程序必将崩溃, 你可以测试一下
+			// go setText(0) // 像这样直接另起协程操作UI次数多了程序必将崩溃, 你可以测试一下
 
 			go func() {
-				xc.XC_CallUiThreadEx(setText, 0) // 这样是在界面线程进行UI操作, 就不会崩溃了
-				wg.Done()
+				a.CallUiThreadEx(setText, 0) // 这样是在界面线程进行UI操作, 就不会崩溃了
 			}()
+
+			wg.Done()
 		}
 		wg.Wait()
 
-		// 如果不需要传参数进回调函数, 也不需要返回值时可以调用xc.XC_CallUT(), 回调函数写法能简单些.
-		xc.XC_CallUT(func() {
+		// 如果不需要传参数进回调函数, 也不需要返回值时可以调用CallUT(), 回调函数写法能简单些.
+		a.CallUT(func() {
 			ls.RefreshData() // 刷新列表项数据
 			ls.Redraw(false) // 列表重绘
+
 			btn.Enable(true)
-			btn.Redraw(true)
+			btn.Redraw(false)
 			w.MessageBox("提示", fmt.Sprintf("全部执行完毕, 耗时: %v", time.Since(t)), xcc.MessageBox_Flag_Ok, xcc.Window_Style_Default)
 		})
 	}()
