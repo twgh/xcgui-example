@@ -54,6 +54,9 @@ func main() {
 			fmt.Println(item)
 		}
 
+		var a, b int32
+		lv.GetSelectItem(&a, &b)
+		fmt.Println("GetSelectItem:", a, b)
 		return 0
 	})
 
