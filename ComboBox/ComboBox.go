@@ -12,6 +12,8 @@ import (
 
 func main() {
 	a := app.New(true)
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
 	w := window.New(0, 0, 430, 300, "ComboBox", 0, xcc.Window_Style_Default)
 
 	// 创建组合框
@@ -33,7 +35,7 @@ func main() {
 	edit.SetText("hello")
 
 	// 注册组合框被选择事件
-	cbb.Event_ComboBox_Select_End(func(iItem int, pbHandled *bool) int {
+	cbb.Event_ComboBox_Select_End(func(iItem int32, pbHandled *bool) int {
 		edit.SetText(cbb.GetItemText(iItem, 0))
 		edit.Redraw(false)
 		return 0
