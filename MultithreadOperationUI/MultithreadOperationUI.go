@@ -1,4 +1,5 @@
 // 多协程操作UI, 方式1
+// 必须在UI线程操作UI, 否则随机发生崩溃.
 package main
 
 import (
@@ -26,10 +27,11 @@ var (
 )
 
 func main() {
-	// 置随机数种子
 	rand.Seed(time.Now().UnixNano())
 
 	a = app.New(true)
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
 	w = window.New(0, 0, 550, 300, "MultithreadOperationUI", 0, xcc.Window_Style_Default)
 	// 创建按钮
 	btn = widget.NewButton(15, 33, 70, 24, "click", w.Handle)
@@ -75,8 +77,11 @@ func onBnClick(pbHandled *bool) int {
 
 			// go setText(0) // 像这样直接另起协程操作UI次数多了程序必将崩溃, 你可以测试一下
 
+			// 必须在UI线程操作UI, 否则随机发生崩溃, 何为UI线程?
+			// 一个是在事件回调函数内, 例如: onBnClick. 这些回调函数都是在UI线程内执行的, 也就是消息循环内.
+			// 另一个就是 炫彩_调用界面线程 相关函数: a.CallUiThreadEx(), a.CallUT(), a.CallUiThreader().
 			go func() {
-				a.CallUiThreadEx(setText, 0) // 这样是在界面线程进行UI操作, 就不会崩溃了
+				a.CallUiThreadEx(setText, 0) // 这样是在UI线程进行UI操作, 就不会崩溃了
 			}()
 
 			wg.Done()
@@ -85,7 +90,7 @@ func onBnClick(pbHandled *bool) int {
 
 		// 如果不需要传参数进回调函数, 也不需要返回值时可以调用CallUT(), 回调函数写法能简单些.
 		a.CallUT(func() {
-			ls.RefreshData() // 刷新列表项数据
+			ls.RefreshData() // 刷新列表项数据, 不刷新的话修改的数据不会立即显示的
 			ls.Redraw(false) // 列表重绘
 
 			btn.Enable(true)
