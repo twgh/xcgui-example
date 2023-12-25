@@ -16,22 +16,22 @@ import (
 var (
 	w *window.Window
 
-	m_easeFlag   = xcc.Ease_Type_Out // 缓动方式
-	m_easeType   = 11                // 缓动类型
-	m_pos        = 0                 // 当前位置
-	m_time       = 60                // 缓动点数量
-	m_time_pos   = 0                 // 当前点
-	m_rect       xc.RECT             // 窗口客户区坐标
-	m_windowType = 2                 // 窗口水平或垂直缓动
+	m_easeFlag           = xcc.Ease_Type_Out // 缓动方式
+	m_easeType   int32   = 11                // 缓动类型
+	m_pos                = 0                 // 当前位置
+	m_time               = 60                // 缓动点数量
+	m_time_pos           = 0                 // 当前点
+	m_rect       xc.RECT                     // 窗口客户区坐标
+	m_windowType = 2                         // 窗口水平或垂直缓动
 )
 
 func main() {
 	a := app.New(true)
-	// a.SetPaintFrequency(10)
-	w = window.New(0, 0, 700, 450, "炫彩缓动测试", 0, xcc.Window_Style_Default)
+	a.SetPaintFrequency(10)
+	w = window.New(0, 0, 700, 450, "炫彩缓动测试", 0, xcc.Window_Style_Default|xcc.Window_Style_Drag_Window)
 
-	left := 30
-	top := 35
+	var left int32 = 30
+	var top int32 = 35
 	CreateButton(2, 11, left, top, 100, "Linear")
 	left += 105
 	CreateButton(2, 12, left, top, 100, "Quadratic")
@@ -105,9 +105,9 @@ func main() {
 
 		for i := 1; i <= 30; i++ {
 			v := ease.Bounce(float32(i)/30.0, xcc.Ease_Type_Out)
-			y := int(v * float32(rect.Top))
+			y := int32(v * float32(rect.Top))
 
-			w.SetPosition(int(rect.Left), y)
+			w.SetPosition(rect.Left, y)
 			time.Sleep(time.Millisecond * 10)
 		}
 	})
@@ -117,7 +117,7 @@ func main() {
 }
 
 // 创建按钮
-func CreateButton(nGroup, id, x, y, cx int, title string) {
+func CreateButton(nGroup, id, x, y, cx int32, title string) {
 	btn := widget.NewButton(x, y, cx, 22, title, w.Handle)
 	// 设置为单选按钮
 	btn.SetTypeEx(xcc.Button_Type_Radio)
@@ -210,15 +210,14 @@ func OnBtnStartWindow(pbHandled *bool) int {
 		}
 
 		if m_windowType == 1 {
-			x := int(v * float32(rect.Left))
-			w.SetPosition(x, int(rect.Top))
+			x := int32(v * float32(rect.Left))
+			w.SetPosition(x, rect.Top)
 		} else {
-			y := int(v * float32(rect.Top))
-			w.SetPosition(int(rect.Left), y)
+			y := int32(v * float32(rect.Top))
+			w.SetPosition(rect.Left, y)
 		}
 		time.Sleep(20 * time.Millisecond)
 	}
-
 	return 0
 }
 
