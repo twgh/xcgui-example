@@ -25,6 +25,8 @@ var (
 
 func main() {
 	a = app.New(true)
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
 	w = window.New(0, 0, 600, 400, "选择夹切换页面", 0, xcc.Window_Style_Default)
 
 	// 我是喜欢创建一个水平布局元素, tab按钮都放在里面
@@ -57,7 +59,7 @@ func main() {
 	layoutPage2.Show(false)
 	layoutPage3.Show(false)
 
-	// 给按钮绑定页面
+	// 给按钮绑定页面, 绑定后切换页面的原理就是: 你点哪个按钮就显示哪个页面
 	tabBtn1.SetBindEle(layoutPage1.Handle)
 	tabBtn2.SetBindEle(layoutPage2.Handle)
 	tabBtn3.SetBindEle(layoutPage3.Handle)
