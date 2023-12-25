@@ -61,13 +61,13 @@ func onBnClick(pbHandled *bool) int {
 
 // 第一种方式
 func updateBtn1() {
-	fmt.Println("使用方式1: xc.XC_CallUiThreadEx")
-	for i := 0; i < 2010; i++ {
+	fmt.Println("使用方式1: CallUiThreadEx")
+	for i := 0; i < 2010; i += 10 {
 		// 如果直接在非界面线程内操作UI, 次数多了程序必将崩溃, 而且你不会知道它在什么时候崩溃.
-		// 使用 xc.XC_CallUiThreadEx 这样是在界面线程进行UI操作, 就不会崩溃了.
-		xc.XC_CallUiThreadEx(func(data int) int {
+		// 使用 a.CallUiThreadEx() 这样是在界面线程进行UI操作, 就不会崩溃了.
+		a.CallUiThreadEx(func(data int) int {
 			btn.SetText(strconv.Itoa(data))
-			btn.SetWidth(i / 5)
+			btn.SetWidth(data / 5)
 			w.Redraw(false)
 			return 0
 		}, i) // 把i传进回调函数了
@@ -75,37 +75,14 @@ func updateBtn1() {
 	}
 
 	// 解禁按钮.
-	// 如果不需要传参数进回调函数, 也不需要返回值时可以调用xc.XC_CallUT(), 回调函数写法能简单些.
-	xc.XC_CallUT(func() {
+	// 如果不需要传参数进回调函数, 也不需要返回值时可以调用 a.CallUT(), 回调函数写法能简单些.
+	a.CallUT(func() {
 		btn.Enable(true)
 		btn.Redraw(true)
 	})
 }
 
-func updateBtn2() {
-	fmt.Println("使用方式2: xc.XC_CallUiThreader")
-	u := updateButton{
-		HEle:         btn.Handle,
-		RedrawWindow: false,
-	}
-
-	for i := 0; i < 2010; i++ {
-		// 如果直接在非界面线程内操作UI, 次数多了程序必将崩溃, 而且你不会知道它在什么时候崩溃.
-		// 使用 xc.XC_CallUiThreader 这样是在界面线程进行UI操作, 就不会崩溃了.
-		u.Text = strconv.Itoa(i)
-		u.Width = i / 5
-		xc.XC_CallUiThreader(u, 0)
-		time.Sleep(time.Millisecond * 1)
-	}
-
-	// 解禁按钮.
-	// 如果不需要传参数进回调函数, 也不需要返回值时可以调用xc.XC_CallUT(), 回调函数写法能简单些.
-	xc.XC_CallUT(func() {
-		btn.Enable(true)
-		btn.Redraw(true)
-	})
-}
-
+// 第2种方式, 这种方式明显可以传更多的参数, 完成更复杂的操作
 type updateButton struct {
 	HEle         int
 	Text         string
@@ -118,6 +95,30 @@ func (u updateButton) UiThreadCallBack(data int) int {
 	xc.XEle_SetWidth(u.HEle, u.Width)
 	w.Redraw(u.RedrawWindow)
 	return 0
+}
+
+func updateBtn2() {
+	fmt.Println("使用方式2: CallUiThreader")
+	u := updateButton{
+		HEle:         btn.Handle,
+		RedrawWindow: false,
+	}
+
+	for i := 0; i < 2010; i += 10 {
+		// 如果直接在非界面线程内操作UI, 次数多了程序必将崩溃, 而且你不会知道它在什么时候崩溃.
+		// 使用 CallUiThreader 这样是在界面线程进行UI操作, 就不会崩溃了.
+		u.Text = strconv.Itoa(i)
+		u.Width = i / 5
+		a.CallUiThreader(u, 0)
+		time.Sleep(time.Millisecond * 1)
+	}
+
+	// 解禁按钮.
+	// 如果不需要传参数进回调函数, 也不需要返回值时可以调用xc.XC_CallUT(), 回调函数写法能简单些.
+	a.CallUT(func() {
+		btn.Enable(true)
+		btn.Redraw(true)
+	})
 }
 
 // 单选按钮被选择
