@@ -3,13 +3,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/twgh/xcgui/xc"
 	"unsafe"
 
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/wapi"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
-	"github.com/twgh/xcgui/xc"
 	"github.com/twgh/xcgui/xcc"
 )
 
@@ -18,6 +18,8 @@ var custColors [16]uint32 // 保存自定义颜色的数组
 
 func main() {
 	a := app.New(true)
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
 	w = window.New(0, 0, 430, 300, "选择颜色", 0, xcc.Window_Style_Default)
 
 	widget.NewButton(20, 40, 100, 30, "选择颜色", w.Handle).Event_BnClick(onBnClick)
@@ -27,6 +29,7 @@ func main() {
 }
 
 func onBnClick(pbHandled *bool) int {
+	// 可直接调用: wutil.ChooseColor(w.Handle)
 	ExampleChooseColorW()
 	return 0
 }
@@ -46,10 +49,17 @@ func ExampleChooseColorW() {
 	cc.LStructSize = uint32(unsafe.Sizeof(cc))
 	ret := wapi.ChooseColorW(&cc)
 	fmt.Println(ret)
-	fmt.Println(cc.RgbResult) // rgb颜色
-	fmt.Println(custColors)   // 如果你添加了自定义颜色, 会保存在这个数组里面, 然后只要这个数组还在, 再次打开选择颜色界面时, 之前添加的自定义颜色还会存在
+	if !ret {
+		return
+	}
 
-	// 设置窗口标题颜色
-	w.SetTitleColor(xc.ABGR2(int(cc.RgbResult), 255))
+	rgb := cc.RgbResult
+	abgr := xc.RGB2ABGR(int(rgb), 255)
+	fmt.Println("rgb颜色:", rgb)
+	fmt.Println("abgr颜色:", abgr)
+	fmt.Println(custColors) // 如果你添加了自定义颜色, 会保存在这个数组里面, 然后只要这个数组还在, 再次打开选择颜色界面时, 之前添加的自定义颜色还会存在
+
+	// 设置窗口背景颜色
+	w.AddBkFill(xcc.Window_State_Flag_Leave, abgr)
 	w.Redraw(true)
 }
