@@ -18,6 +18,8 @@ var (
 
 func main() {
 	a = app.New(true)
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
 
 	loadWindow1()
 
@@ -42,11 +44,11 @@ func loadWindow2() {
 func onBnClick(hEle int, pbHandled *bool) int {
 	switch hEle {
 	case btn1.Handle:
-		*pbHandled = true
+		*pbHandled = true // 把单击事件拦截了, 载入新窗口时这是必要的
 		w1.CloseWindow()
 		loadWindow2()
 	case btn2.Handle:
-		*pbHandled = true
+		*pbHandled = true // 把单击事件拦截了, 载入新窗口时这是必要的
 		w2.CloseWindow()
 		loadWindow1()
 	}
