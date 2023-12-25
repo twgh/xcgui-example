@@ -25,6 +25,8 @@ var (
 func main() {
 	// 1.初始化UI库
 	a := app.New(true)
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
 	// 2.创建窗口
 	w := window.New(0, 0, 465, 300, "", 0, xcc.Window_Style_Simple|xcc.Window_Style_Title|xcc.Window_Style_Drag_Window)
 	// 设置窗口透明类型
@@ -35,15 +37,15 @@ func main() {
 	w.AddBkFill(xcc.Window_State_Flag_Leave, xc.ABGR(51, 57, 60, 254))
 
 	// 创建最小化按钮
-	btn_Min := widget.NewButton(397, 8, 30, 30, "", w.Handle)
-	btn_Min.SetTypeEx(xcc.Button_Type_Min)
+	btnMin := widget.NewButton(397, 8, 30, 30, "", w.Handle)
+	btnMin.SetTypeEx(xcc.Button_Type_Min)
 	// 创建结束按钮
-	btn_Close := widget.NewButton(427, 8, 30, 30, "", w.Handle)
-	btn_Close.SetTypeEx(xcc.Button_Type_Close)
+	btnClose := widget.NewButton(427, 8, 30, 30, "", w.Handle)
+	btnClose.SetTypeEx(xcc.Button_Type_Close)
 
 	// 给按钮加上三种状态下的图片
-	setBtnImg(btn_Min, img1)
-	setBtnImg(btn_Close, img2)
+	setBtnImg(btnMin, img1)
+	setBtnImg(btnClose, img2)
 
 	// 3.显示窗口
 	w.ShowWindow(xcc.SW_SHOW)
@@ -56,7 +58,7 @@ func main() {
 // 给按钮加上三态图片
 func setBtnImg(btn *widget.Button, file []byte) {
 	for i := 0; i < 3; i++ {
-		x := i * 31
+		x := int32(i * 31)
 		// 图片_加载从内存, 指定区域位置及大小
 		img := imagex.NewByMemRect(file, x, 0, 30, 30)
 
