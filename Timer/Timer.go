@@ -18,6 +18,8 @@ var (
 
 func main() {
 	a = app.New(true)
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
 	w = window.New(0, 0, 500, 130, "定时器", 0, xcc.Window_Style_Default)
 
 	text = widget.NewShapeText(50, 50, 400, 50, time.Now().Format("2006-01-02 15:04:05"), w.Handle)
