@@ -16,7 +16,7 @@ var (
 	a *app.App
 	w *window.Window
 
-	top = 35
+	top int32 = 35
 
 	hSvg           int
 	list_svg       []int
@@ -66,8 +66,10 @@ var (
 
 func main() {
 	a = app.New(true)
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
 	// a.ShowSvgFrame(true)
-	a.SetPaintFrequency(16)
+	a.SetPaintFrequency(10)
 	// 创建窗口
 	w = window.New(0, 0, 970, 650, "炫彩界面库-动画特效-SVG特效", 0, xcc.Window_Style_Default)
 
@@ -146,7 +148,7 @@ func OnWndDrawWindow(hDraw int, pbHandled *bool) int {
 }
 
 func OnBtnClick1(pbHandled *bool) int {
-	left := 130
+	var left int32 = 130
 	top = 22
 	ReleaseAnimation()
 
@@ -201,7 +203,7 @@ func OnBtnClick1(pbHandled *bool) int {
 }
 
 func OnBtnClick2(pbHandled *bool) int {
-	left := 450
+	var left int32 = 450
 	top = 22
 	ReleaseAnimation()
 
@@ -264,7 +266,7 @@ func OnBtnClick2(pbHandled *bool) int {
 
 func OnBtnClick3(pbHandled *bool) int {
 	ReleaseAnimation()
-	left := 300
+	var left int32 = 300
 	top = 150
 
 	// 加载svg图片
@@ -296,7 +298,7 @@ func OnBtnClick3(pbHandled *bool) int {
 
 func OnBtnClick4(pbHandled *bool) int {
 	ReleaseAnimation()
-	left := 200
+	var left int32 = 200
 	top = 30
 
 	// 加载svg图片
@@ -309,7 +311,7 @@ func OnBtnClick4(pbHandled *bool) int {
 	// 设置svg图片大小和位置
 	for k, v := range list_svg {
 		xc.XSvg_SetSize(v, 100, 100)
-		xc.XSvg_SetPosition(v, left+k*100, top)
+		xc.XSvg_SetPosition(v, left+int32(k)*100, top)
 	}
 
 	// 创建动画序列
@@ -366,7 +368,7 @@ func OnBtnClick4(pbHandled *bool) int {
 
 func OnBtnClick5(pbHandled *bool) int {
 	ReleaseAnimation()
-	left := 150
+	var left int32 = 150
 	top = 30
 
 	// 加载svg图片
@@ -379,7 +381,7 @@ func OnBtnClick5(pbHandled *bool) int {
 	// 设置svg图片大小和位置
 	for k, v := range list_svg {
 		xc.XSvg_SetSize(v, 100, 100)
-		xc.XSvg_SetPosition(v, left, top+k*100)
+		xc.XSvg_SetPosition(v, left, top+int32(k)*100)
 	}
 	top = 22
 
@@ -431,7 +433,7 @@ func OnBtnClick5(pbHandled *bool) int {
 
 func OnBtnClick6(pbHandled *bool) int {
 	ReleaseAnimation()
-	left := 140
+	var left int32 = 140
 	top = 100
 
 	// 创建形状文本
@@ -485,7 +487,7 @@ func OnBtnClick6(pbHandled *bool) int {
 
 func OnBtnClick7(pbHandled *bool) int {
 	ReleaseAnimation()
-	left := 125
+	var left int32 = 125
 	top = 50
 
 	group1 := ani.NewAnimaGroup(0)
@@ -616,7 +618,7 @@ func OnMouseLeave8(hLayout, hEleStay int, pbHandled *bool) int {
 
 func OnBtnClick9(pbHandled *bool) int {
 	ReleaseAnimation()
-	left := 150
+	var left int32 = 150
 	top = 50
 
 	imgMap := map[int][]byte{
@@ -727,7 +729,7 @@ func OnMouseLeave9(hEle2, hEleStay int, pbHandled *bool) int {
 
 func OnBtnClick10(pbHandled *bool) int {
 	ReleaseAnimation()
-	left := 150
+	var left int32 = 150
 	top = 50
 
 	imgMap := map[int][]byte{
@@ -830,7 +832,7 @@ func OnMouseLeave10(hEle, hEleStay int, pbHandled *bool) int {
 
 func OnBtnClick11(pbHandled *bool) int {
 	ReleaseAnimation()
-	left := 160
+	var left int32 = 160
 	top = 80
 
 	// 两个球型交替移动
@@ -869,7 +871,7 @@ func OnBtnClick11(pbHandled *bool) int {
 	for i := 0; i < 10; i++ {
 		hSvg = xc.XSvg_LoadStringW(svg13)
 		list_svg = append(list_svg, hSvg)
-		xc.XSvg_SetPosition(hSvg, left+i*50, top)
+		xc.XSvg_SetPosition(hSvg, left+int32(i)*50, top)
 
 		hAnimation = xc.XAnima_Create(hSvg, 0)
 		xc.XAnimaGroup_AddItem(hGroup, hAnimation)
@@ -887,7 +889,7 @@ func OnBtnClick11(pbHandled *bool) int {
 	for i := 0; i < 10; i++ {
 		hSvg = xc.XSvg_LoadStringW(svg13)
 		list_svg = append(list_svg, hSvg)
-		xc.XSvg_SetPosition(hSvg, left+i*50, top)
+		xc.XSvg_SetPosition(hSvg, left+int32(i)*50, top)
 
 		hAnimation = xc.XAnima_Create(hSvg, 0)
 		xc.XAnimaGroup_AddItem(hGroup, hAnimation)
@@ -902,7 +904,7 @@ func OnBtnClick11(pbHandled *bool) int {
 	for i := 0; i < 10; i++ {
 		hSvg = xc.XSvg_LoadStringW(svg13)
 		list_svg = append(list_svg, hSvg)
-		x := left + i*35
+		x := left + int32(i)*35
 		xc.XSvg_SetPosition(hSvg, x, top)
 
 		hAnimation = xc.XAnima_Create(hSvg, 0)
@@ -917,7 +919,7 @@ func OnBtnClick11(pbHandled *bool) int {
 	for i := 0; i < 10; i++ {
 		hSvg = xc.XSvg_LoadStringW(svg13)
 		list_svg = append(list_svg, hSvg)
-		x := left + i*35
+		x := left + int32(i)*35
 		xc.XSvg_SetPosition(hSvg, x, top)
 
 		hAnimation = xc.XAnima_Create(hSvg, 0)
@@ -934,7 +936,7 @@ func OnBtnClick11(pbHandled *bool) int {
 	for i := 0; i < 10; i++ {
 		hSvg = xc.XSvg_LoadStringW(svg13)
 		list_svg = append(list_svg, hSvg)
-		x := left + i*35
+		x := left + int32(i)*35
 		xc.XSvg_SetPosition(hSvg, x, top)
 
 		hAnimation = xc.XAnima_Create(hSvg, 0)
@@ -952,7 +954,7 @@ func OnBtnClick11(pbHandled *bool) int {
 	for i := 0; i < 10; i++ {
 		hSvg = xc.XSvg_LoadStringW(svg14)
 		list_svg = append(list_svg, hSvg)
-		xc.XSvg_SetPosition(hSvg, 100-i*25, top)
+		xc.XSvg_SetPosition(hSvg, 100-int32(i)*25, top)
 		xc.XSvg_SetAlpha(hSvg, 0)
 
 		hAnimation = xc.XAnima_Create(hSvg, 0)
@@ -981,7 +983,7 @@ func OnBtnClick11(pbHandled *bool) int {
 
 func OnBtnClick12(pbHandled *bool) int {
 	ReleaseAnimation()
-	left := 120
+	var left int32 = 120
 	top = 100
 
 	hSvg = xc.XSvg_LoadStringW(svg7)
@@ -1023,7 +1025,7 @@ func OnBtnClick12(pbHandled *bool) int {
 
 func OnBtnClick13(pbHandled *bool) int {
 	ReleaseAnimation()
-	left := 120
+	var left int32 = 120
 	top = 80
 
 	// 自身 摇摆 往返
@@ -1095,7 +1097,7 @@ func OnBtnClick13(pbHandled *bool) int {
 
 func OnBtnClick14(pbHandled *bool) int {
 	ReleaseAnimation()
-	left := 130
+	var left int32 = 130
 	top = 50
 
 	// 加载svg, 设置大小和填充颜色
@@ -1137,10 +1139,10 @@ func OnBtnClick14(pbHandled *bool) int {
 
 func OnBtnClick15(pbHandled *bool) int {
 	ReleaseAnimation()
-	left := 150
+	var left int32 = 150
 	top = 200
-	height := 0
-	width := 0
+	var height int32 = 0
+	var width int32 = 0
 
 	// 砍东西效果
 
@@ -1206,7 +1208,7 @@ func OnBtnClick15(pbHandled *bool) int {
 
 func OnBtnClick16(pbHandled *bool) int {
 	ReleaseAnimation()
-	left := 150
+	var left int32 = 150
 	top = 50
 
 	hSvg = xc.XSvg_LoadStringW(svg7)
@@ -1252,7 +1254,7 @@ func OnBtnClick16(pbHandled *bool) int {
 	xc.XAnima_Run(hAnimation, w.Handle)
 
 	hFontx := xc.XFont_CreateEx("微软雅黑", 36, xcc.FontStyle_Bold)
-	hShapeText := xc.XShapeText_Create(500, 100, 200, 50, "炫彩界面库", w.Handle)
+	hShapeText := xc.XShapeText_Create(500, 100, 300, 50, "炫彩界面库", w.Handle)
 	list_xcgui = append(list_xcgui, hShapeText)
 	xc.XShapeText_SetFont(hShapeText, hFontx)
 	xc.XShapeText_SetTextColor(hShapeText, xc.ABGR(255, 0, 0, 255))
@@ -1275,7 +1277,7 @@ func OnBtnClick16(pbHandled *bool) int {
 
 func OnBtnClick17(pbHandled *bool) int {
 	ReleaseAnimation()
-	left := 150
+	var left int32 = 150
 	top = 50
 
 	hSvg = xc.XSvg_LoadStringW(svg5)
@@ -1391,7 +1393,7 @@ func OnBtnClick17(pbHandled *bool) int {
 
 func OnBtnClick18(pbHandled *bool) int {
 	ReleaseAnimation()
-	left := 150
+	var left int32 = 150
 	top = 50
 
 	for i := 0; i < 5; i++ {
