@@ -30,9 +30,9 @@ func main() {
 		// 缓动
 		for i := 1; i <= 30; i++ {
 			v := ease.Bounce(float32(i)/30.0, xcc.Ease_Type_Out)
-			y := int(v * float32(rect.Top))
+			y := int32(v * float32(rect.Top))
 
-			w.SetPosition(int(rect.Left), y)
+			w.SetPosition(rect.Left, y)
 			time.Sleep(time.Millisecond * 10)
 		}
 	})
