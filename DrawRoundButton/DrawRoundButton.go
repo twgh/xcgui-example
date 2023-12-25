@@ -14,13 +14,15 @@ import (
 func main() {
 	// 1.初始化UI库
 	a := app.New(true)
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
 	// 2.创建窗口
-	w := window.New(0, 0, 430, 300, "xc", 0, xcc.Window_Style_Simple|xcc.Window_Style_Btn_Close)
+	w := window.New(0, 0, 430, 300, "绘制圆角按钮", 0, xcc.Window_Style_Default)
 
 	// 创建一个按钮
-	btn := widget.NewButton(30, 50, 70, 30, "Button", w.Handle)
+	btn := widget.NewButton((w.GetWidth()-100)/2, 100, 100, 30, "圆角按钮", w.Handle)
 	// 设置按钮字体颜色, 白色
-	btn.SetTextColor(xc.ABGR(255, 255, 255, 254))
+	btn.SetTextColor(xc.ABGR(255, 255, 255, 255))
 	// 设置按钮圆角
 	setBtnRound(btn, 14)
 
@@ -43,16 +45,14 @@ func setBtnRound(btn *widget.Button, round int) {
 		// 启用平滑模式
 		draw.EnableSmoothingMode(true)
 
-		// 设置三种状态下的按钮背景色
+		// 设置不同状态下的按钮背景色
 		nState := xc.XBtn_GetStateEx(hEle)
-		var bgcolor int
+		bgcolor := xc.ABGR(1, 162, 232, 255) // 默认
 		switch nState {
-		case xcc.Button_State_Leave:
-			bgcolor = xc.ABGR(1, 162, 232, 254)
 		case xcc.Button_State_Stay:
-			bgcolor = xc.ABGR(1, 182, 252, 254)
+			bgcolor = xc.ABGR(1, 182, 252, 255)
 		case xcc.Button_State_Down:
-			bgcolor = xc.ABGR(1, 122, 192, 254)
+			bgcolor = xc.ABGR(1, 122, 192, 255)
 		case xcc.Button_State_Disable:
 			bgcolor = xc.ABGR(211, 215, 212, 255)
 		}
@@ -60,9 +60,8 @@ func setBtnRound(btn *widget.Button, round int) {
 		draw.SetBrushColor(bgcolor)
 
 		// 绘制填充圆角矩形
-		rc := xc.RECT{}
-		rc.Right = int32(xc.XEle_GetWidth(hEle))
-		rc.Bottom = int32(xc.XEle_GetHeight(hEle))
+		var rc xc.RECT
+		xc.XEle_GetClientRect(hEle, &rc)
 		draw.FillRoundRect(&rc, round, round)
 		return 0
 	})
