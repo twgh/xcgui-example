@@ -16,7 +16,9 @@ var (
 
 func main() {
 	a := app.New(true)
-	w = window.New(0, 0, 350, 200, "", 0, xcc.Window_Style_Default)
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
+	w = window.New(0, 0, 350, 200, "svg绘制", 0, xcc.Window_Style_Default)
 
 	// SVG_加载从字符串
 	svg1 = svg.NewByStringW(svgStr)
