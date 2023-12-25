@@ -1,10 +1,11 @@
-// 自己美化菜单
+// 自己美化菜单.
 // 这属于是自绘, 如果直接用自带的菜单会简单许多.
 package main
 
 import (
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/common"
+	"github.com/twgh/xcgui/wapi"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
 	"github.com/twgh/xcgui/xc"
@@ -37,19 +38,14 @@ const (
 func main() {
 	// 1.初始化UI库
 	a = app.New(true)
-	defer a.Exit()
-
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
 	// 2.创建窗口
-	w = window.New(0, 0, 800, 600, "xc", 0, xcc.Window_Style_Simple|xcc.Window_Style_Btn_Close)
+	w = window.New(0, 0, 500, 350, "DrawMenu", 0, xcc.Window_Style_Default)
+	w.SetBorderSize(1, 30, 1, 1)
 
 	// 加载所有的svg图片
 	loadAllSvg()
-	// 程序结束时释放图片
-	defer func() {
-		for _, v := range svgMap {
-			xc.XImage_Release(v)
-		}
-	}()
 
 	// 创建一个按钮
 	btn = widget.NewButton(50, 50, 100, 30, "ShowMenu", w.Handle)
@@ -57,16 +53,17 @@ func main() {
 	btn.Event_BnClick(onBnClick)
 
 	// 注册菜单背景绘制事件
-	btn.Event_MENU_DRAW_BACKGROUND(onMenuDrawBackground)
+	w.Event_MENU_DRAW_BACKGROUND(onMenuDrawBackground)
 	// 注册菜单项绘制事件
-	btn.Event_MENU_DRAWITEM(onMenuDrawItem)
+	w.Event_MENU_DRAWITEM(onMenuDrawItem)
 	// 注册菜单被选择事件
-	btn.Event_MENU_SELECT(onMenuSelect)
+	w.Event_MENU_SELECT(onMenuSelect)
 
 	// 3.显示窗口
 	w.ShowWindow(xcc.SW_SHOW)
 	// 4.运行程序
 	a.Run()
+	a.Exit()
 }
 
 // 加载所有的svg图片
@@ -115,19 +112,19 @@ func onBnClick(pbHandled *bool) int {
 	menu.AddItemIcon(menuid_subitem2, "subitem2", menuid_item1, svgMap[menuid_subitem2], xcc.Menu_Item_Flag_Normal)
 
 	// 获取按钮坐标
-	var r xc.RECT
-	btn.GetRect(&r)
+	var rc xc.RECT
+	btn.GetWndClientRectDPI(&rc)
 	// 转换到屏幕坐标
-	pt := xc.POINT{X: r.Left, Y: r.Bottom}
-	xc.ClientToScreen(w.Handle, &pt)
+	pt := wapi.POINT{X: rc.Left, Y: rc.Bottom}
+	wapi.ClientToScreen(w.GetHWND(), &pt)
 	// 弹出菜单
-	menu.Popup(w.Handle, int(pt.X), int(pt.Y), btn.Handle, xcc.Menu_Popup_Position_Left_Top)
+	menu.Popup(w.GetHWND(), pt.X, pt.Y, 0, xcc.Menu_Popup_Position_Left_Top)
 	return 0
 }
 
 // 菜单背景绘制事件
 func onMenuDrawBackground(hDraw int, pInfo *xc.Menu_DrawBackground_, pbHandled *bool) int {
-	*pbHandled = true
+	*pbHandled = true // 作用是拦截菜单原本的绘制
 	var rc xc.RECT
 	xc.XWnd_GetClientRect(pInfo.HWindow, &rc)
 
@@ -138,13 +135,12 @@ func onMenuDrawBackground(hDraw int, pInfo *xc.Menu_DrawBackground_, pbHandled *
 	// 绘制菜单边框
 	xc.XDraw_SetBrushColor(hDraw, xc.ABGR(218, 220, 224, 255))
 	xc.XDraw_DrawRect(hDraw, &rc)
-
 	return 0
 }
 
 // 菜单项绘制事件
 func onMenuDrawItem(hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *bool) int {
-	*pbHandled = true
+	*pbHandled = true // 作用是拦截菜单原本的绘制
 
 	// 绘制分割栏
 	if pInfo.NState&xcc.Menu_Item_Flag_Separator > 0 {
@@ -190,7 +186,7 @@ func onMenuDrawItem(hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *bool) int {
 	// 取菜单左侧区域宽度
 	leftWidth := xc.XMenu_GetLeftWidth(pInfo.HMenu)
 	rc := pInfo.RcItem
-	rc.Left = int32(leftWidth + 5)
+	rc.Left = leftWidth + 5
 
 	if pInfo.NState&xcc.Menu_Item_Flag_Disable > 0 {
 		// 设置被禁用的菜单项文本颜色
@@ -211,7 +207,7 @@ func onMenuDrawItem(hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *bool) int {
 		iconHeight := xc.XImage_GetWidth(pInfo.HIcon)
 		height := pInfo.RcItem.Bottom - pInfo.RcItem.Top
 		if height >= 2 && iconWidth >= 2 && iconHeight >= 2 {
-			top := (int(height) - iconHeight) / 2
+			top := (height - iconHeight) / 2
 			left := (leftWidth - iconWidth) / 2
 			if top < 0 {
 				top = 0
@@ -219,15 +215,14 @@ func onMenuDrawItem(hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *bool) int {
 			if left < 0 {
 				left = 0
 			}
-			xc.XDraw_Image(hDraw, pInfo.HIcon, left, int(pInfo.RcItem.Top)+top)
+			xc.XDraw_Image(hDraw, pInfo.HIcon, left, pInfo.RcItem.Top+top)
 		}
 	}
-
 	return 0
 }
 
 // 菜单被选择事件
-func onMenuSelect(nID int, pbHandled *bool) int {
+func onMenuSelect(nID int32, pbHandled *bool) int {
 	if nID == menuid_item_select {
 		item_selected = !item_selected
 	}
