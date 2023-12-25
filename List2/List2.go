@@ -69,7 +69,7 @@ func main() {
 }
 
 // 项模板创建完成事件. 在此事件中获取按钮并注册事件
-func onLIST_TEMP_CREATE_END(pItem *xc.List_Item_, nFlag int, pbHandled *bool) int {
+func onLIST_TEMP_CREATE_END(pItem *xc.List_Item_, nFlag int32, pbHandled *bool) int {
 	// 只在创建新模板实例的时候, 给按钮注册事件, 这样是为了避免重复注册事件
 	if nFlag == 1 { // 0:状态改变(复用); 1:新模板实例; 2:旧模板复用
 		index := int(pItem.Index)
