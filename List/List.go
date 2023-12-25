@@ -30,7 +30,7 @@ func main() {
 	// List添加行
 	listAddItem()
 
-	startX := 10
+	var startX int32 = 10
 	btn_add = widget.NewButton(startX, 35, 100, 30, "添加20行", w.Handle)
 	btn_add.Event_BnClick1(onBnClick)
 
@@ -95,7 +95,7 @@ func createList() {
 	list.SetProperty("sortFlag", "0") // 只是我设定的标记
 
 	// 列表头项被单击事件
-	list.Event_LIST_HEADER_CLICK(func(iItem int, pbHandled *bool) int {
+	list.Event_LIST_HEADER_CLICK(func(iItem int32, pbHandled *bool) int {
 		// 为了记录排序类型
 		if iItem == 0 {
 			// 下面这个sortFlag只是我设定的1个标记, 意义是让第1次单击表头排序时不设置sortType的值, 因为第1次默认就是正序
@@ -127,7 +127,7 @@ func listTextAlign() {
 		return 0
 	})
 
-	list.Event_LIST_TEMP_CREATE_END(func(pItem *xc.List_Item_, nFlag int, pbHandled *bool) int {
+	list.Event_LIST_TEMP_CREATE_END(func(pItem *xc.List_Item_, nFlag int32, pbHandled *bool) int {
 		// nFlag  0:状态改变(复用); 1:新模板实例; 2:旧模板复用
 		if nFlag == 1 {
 			for i := 0; i < list.GetColumnCount(); i++ {
