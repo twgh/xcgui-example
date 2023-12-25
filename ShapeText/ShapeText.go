@@ -11,7 +11,9 @@ import (
 
 func main() {
 	a := app.New(true)
-	w := window.New(0, 0, 500, 200, "", 0, xcc.Window_Style_Default)
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
+	w := window.New(0, 0, 500, 500, "ShapeText", 0, xcc.Window_Style_Default)
 
 	st := widget.NewShapeText(15, 35, 100, 30, "测试字体大小", w.Handle)
 	// 自动根据内容改变大小
@@ -20,9 +22,12 @@ func main() {
 
 	// 设置字体大小
 	st.SetFont(font.New(50).Handle)
-
 	// 设置个新字体， 粗体
 	// st.SetFont(font.NewEX("幼圆", 50, xcc.FontStyle_Bold).Handle)
+
+	shapeText := widget.NewShapeText(15, 235, 150, 30, "测试文字自动换行测试文字自动换行测试文字自动换行测试文字自动换行测试文字自动换行测试文字自动换行测试文字自动换行测试文字自动换行", w.Handle)
+	shapeText.SetTextAlign(xcc.TextAlignFlag_Left | xcc.TextAlignFlag_Top) // 置文本对齐方式
+	shapeText.LayoutItem_SetHeight(xcc.Layout_Size_Auto, -1)               // 高度自动
 
 	w.Show(true)
 	a.Run()
