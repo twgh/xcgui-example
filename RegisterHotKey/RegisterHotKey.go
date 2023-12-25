@@ -47,8 +47,8 @@ func one() {
 		fmt.Println("注册热键F4失败")
 	}
 
-	w.Event_WINDPROC1(func(hWindow int, message uint, wParam, lParam int, pbHandled *bool) int {
-		if message == uint(xcc.WM_HOTKEY) {
+	w.Event_WINDPROC1(func(hWindow int, message uint32, wParam, lParam uint, pbHandled *bool) int {
+		if message == uint32(xcc.WM_HOTKEY) {
 			switch wParam {
 			case ID_F3:
 				fmt.Println("Event_WINDPROC1 F3键被按下")
@@ -62,7 +62,7 @@ func one() {
 
 // 只在窗口内生效, 窗口内热键
 func two() {
-	w.Event_KEYDOWN1(func(hWindow, wParam, lParam int, pbHandled *bool) int {
+	w.Event_KEYDOWN1(func(hWindow int, wParam, lParam uint, pbHandled *bool) int {
 		switch wParam {
 		case xcc.VK_F5:
 			fmt.Println("Event_KEYDOWN1 F5键被按下")

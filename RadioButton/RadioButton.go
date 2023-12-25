@@ -13,7 +13,9 @@ import (
 
 func main() {
 	a := app.New(true)
-	w := window.New(0, 0, 430, 300, "", 0, xcc.Window_Style_Default)
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
+	w := window.New(0, 0, 430, 300, "单选按钮", 0, xcc.Window_Style_Default)
 
 	// 创建按钮
 	Radio1 := widget.NewButton(10, 35, 70, 30, "Radio1", w.Handle)
