@@ -15,6 +15,8 @@ import (
 func main() {
 	// 1.初始化UI库
 	a := app.New(true)
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
 
 	// 创建字体
 	f := font.NewEX("Arial", 11, xcc.FontStyle_Regular)
