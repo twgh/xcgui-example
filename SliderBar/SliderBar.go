@@ -12,6 +12,8 @@ import (
 
 func main() {
 	a := app.New(true)
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
 	w := window.New(0, 0, 430, 300, "SliderBar", 0, xcc.Window_Style_Default)
 
 	// 创建SliderBar
@@ -27,7 +29,7 @@ func main() {
 	sb.EnableBkTransparent(true)
 
 	// 注册滑块位置改变事件
-	sb.Event_SLIDERBAR_CHANGE(func(pos int, pbHandled *bool) int {
+	sb.Event_SLIDERBAR_CHANGE(func(pos int32, pbHandled *bool) int {
 		fmt.Println(pos)
 		return 0
 	})
