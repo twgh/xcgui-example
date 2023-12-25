@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/twgh/xcgui/wapi/wutil"
 
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/wapi"
@@ -13,15 +14,15 @@ import (
 )
 
 var (
-	a *app.App
-	w *window.Window
-
+	a    *app.App
+	w    *window.Window
 	edit *widget.Edit
 )
 
 func main() {
 	a = app.New(true)
-	defer a.Exit()
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
 
 	w = window.New(0, 0, 600, 600, "拖放文件到窗口or元素", 0, xcc.Window_Style_Default|xcc.Window_Style_Drag_Window)
 	// 创建编辑框.
@@ -40,44 +41,27 @@ func main() {
 
 	w.ShowWindow(xcc.SW_SHOW)
 	a.Run()
+	a.Exit()
 }
 
 // 事件_元素文件拖放.
-func onEleDropFiles(hEle, hDropInfo int, pbHandled *bool) int {
+func onEleDropFiles(hEle int, hDropInfo uintptr, pbHandled *bool) int {
 	fmt.Println("***************************************拖放文件到元素***************************************")
 	// 获取拖放文件到窗口时鼠标的坐标.
 	var pt xc.POINT
 	wapi.DragQueryPoint(hDropInfo, &pt)
 	fmt.Println("鼠标坐标:", pt)
 
-	files := GetDropFiles(hDropInfo)
+	files := wutil.GetDropFiles(hDropInfo)
 	for _, v := range files {
 		edit.AddText(v + "\n")
 		fmt.Println("文件路径:", v)
 	}
-
 	return 0
 }
 
-// GetDropFiles 获取拖放文件.
-func GetDropFiles(hDropInfo int) []string {
-	var filePath string
-	files := make([]string, 0)
-	i := 0
-	for {
-		length := wapi.DragQueryFileW(hDropInfo, i, &filePath, 260)
-		if length == 0 { // 返回值为0说明已经检索完所有拖放进来的文件了.
-			break
-		}
-		files = append(files, filePath)
-		i++ // 索引+1检索下一个文件
-	}
-	wapi.DragFinish(hDropInfo)
-	return files
-}
-
 // 事件_窗口文件拖放.
-func onWndDropFiles(HXCGUI, hDropInfo int, pbHandled *bool) int {
+func onWndDropFiles(HXCGUI int, hDropInfo uintptr, pbHandled *bool) int {
 	// win7在窗口拖放事件这里利用 [窗口_取鼠标停留元素] 可以实现对元素的拖放事件进行处理, 所以即使不注册元素拖放事件也行, 自己灵活使用..
 	hEle := w.GetStayEle() // win10 好像获取不到, 那就还是去注册元素拖放事件, 不注册窗口拖放事件
 	fmt.Println("鼠标停留元素句柄:", hEle)
@@ -91,10 +75,9 @@ func onWndDropFiles(HXCGUI, hDropInfo int, pbHandled *bool) int {
 	wapi.DragQueryPoint(hDropInfo, &pt)
 	fmt.Println("鼠标坐标:", pt)
 
-	files := GetDropFiles(hDropInfo)
+	files := wutil.GetDropFiles(hDropInfo)
 	for _, v := range files {
 		fmt.Println("文件路径:", v)
 	}
-
 	return 0
 }
