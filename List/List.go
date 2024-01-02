@@ -22,6 +22,7 @@ var (
 
 func main() {
 	a = app.New(true)
+	a.EnableDPI(true)
 	a.EnableAutoDPI(true)
 	w = window.New(0, 0, 784, 400, "List", 0, xcc.Window_Style_Default)
 
@@ -75,6 +76,8 @@ func createList() {
 	list.CreateAdapter(5)
 	// 列表_置项默认高度和选中时高度
 	list.SetItemHeightDefault(24, 26)
+	// 列表_绘制项分割线
+	// list.SetDrawItemBkFlags(xcc.List_DrawItemBk_Flag_Line | xcc.List_DrawItemBk_Flag_LineV | xcc.List_DrawItemBk_Flag_Leave | xcc.List_DrawItemBk_Flag_Stay | xcc.List_DrawItemBk_Flag_Select)
 	// 表头和表项居中
 	listTextAlign()
 
@@ -89,8 +92,8 @@ func createList() {
 	// 设置序号列可排序, 单击表头时排序
 	list.SetSort(0, 0, true)
 	// 这里我使用了置属性的方法是为了不新建多个变量, 因为考虑到组件可能会很多, 当然你也可以用变量来控制.
-	// 这个置属性你可以理解为就是给元素绑定的map中赋值, 注意要先set才能get, 不然崩溃.
-	// 也是为了演示Set/GetProperty, 这个东西很有用, 比如说你的列表每1行都有隐藏的值, 就可以存在这里, 而不用自己新建一个map或slice, 不过你自己新建的话会更灵活些, 看需求了.
+	// 这个置属性你可以理解为就是给元素绑定的map中赋值. 并不是在操作元素的属性.
+	// 也是为了演示Set/GetProperty, 这个东西很有用, 比如说你的列表每1行都有隐藏的值, 就可以存在这里, 而不用自己新建一个map或slice, 看你需求了.
 	list.SetProperty("sortType", "1") // 1是正序, 0是倒序.
 	list.SetProperty("sortFlag", "0") // 只是我设定的标记
 
