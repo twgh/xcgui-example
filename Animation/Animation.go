@@ -3,6 +3,7 @@ package main
 
 import (
 	_ "embed"
+	"github.com/twgh/xcgui/font"
 
 	"github.com/twgh/xcgui/ani"
 	"github.com/twgh/xcgui/app"
@@ -16,16 +17,15 @@ var (
 	a *app.App
 	w *window.Window
 
-	top int32 = 35
-
-	hSvg           int
 	list_svg       []int
 	list_animation []int
 	list_xcgui     []int
 
-	hLayout1 int
-	hLayout2 int
-	hLayout3 int
+	m_hLayout1 int
+	m_hLayout2 int
+	m_hLayout3 int
+
+	m_hSvg int
 )
 
 var (
@@ -68,48 +68,59 @@ func main() {
 	a = app.New(true)
 	a.EnableDPI(true)
 	a.EnableAutoDPI(true)
-	// a.ShowSvgFrame(true)
 	a.SetPaintFrequency(10)
+	// a.ShowLayoutFrame(true).ShowSvgFrame(true)
 	// 创建窗口
-	w = window.New(0, 0, 970, 650, "炫彩界面库-动画特效-SVG特效", 0, xcc.Window_Style_Default)
+	w = window.New(0, 0, 1020, 650, "炫彩界面库-动画特效-SVG特效", 0, xcc.Window_Style_Default)
 
 	// 创建按钮, 注册按钮单击事件
-	CreateButton("1.下落 缩放 缓动").Event_BnClick(OnBtnClick1)
-	CreateButton("2.下落 呼吸SVG").Event_BnClick(OnBtnClick2)
-	CreateButton("3.呼吸SVG").Event_BnClick(OnBtnClick3)
-	CreateButton("4.不透明度SVG").Event_BnClick(OnBtnClick4)
-	CreateButton("5.移动SVG").Event_BnClick(OnBtnClick5)
-	CreateButton("6.形状文本").Event_BnClick(OnBtnClick6)
-	CreateButton("7.按钮").Event_BnClick(OnBtnClick7)
-	CreateButton("8.布局焦点展开").Event_BnClick(OnBtnClick8)
-	CreateButton("9.图片切换").Event_BnClick(OnBtnClick9)
-	CreateButton("10.图片切换2").Event_BnClick(OnBtnClick10)
-	CreateButton("11.进度 等待").Event_BnClick(OnBtnClick11)
-	CreateButton("12.旋转 移动").Event_BnClick(OnBtnClick12)
-	CreateButton("13.旋转 摇摆").Event_BnClick(OnBtnClick13)
-	CreateButton("14.旋转 移动 缩放").Event_BnClick(OnBtnClick14)
-	CreateButton("15.旋转 开合效果").Event_BnClick(OnBtnClick15)
-	CreateButton("16.颜色渐变").Event_BnClick(OnBtnClick16)
-	CreateButton("17.缩放 位置").Event_BnClick(OnBtnClick17)
-	CreateButton("18.按钮 宽度").Event_BnClick(OnBtnClick18)
+	var top int32 = 35
+	var left int32 = 10
+	CreateButtonRadio(left, &top, "1.下落 缩放 缓动").Event_BnClick(OnBtnClick1)
+	CreateButtonRadio(left, &top, "2.下落 呼吸SVG").Event_BnClick(OnBtnClick2)
+	CreateButtonRadio(left, &top, "3.呼吸SVG").Event_BnClick(OnBtnClick3)
+	CreateButtonRadio(left, &top, "4.不透明度SVG").Event_BnClick(OnBtnClick4)
+	CreateButtonRadio(left, &top, "5.移动SVG").Event_BnClick(OnBtnClick5)
+	CreateButtonRadio(left, &top, "6.形状文本").Event_BnClick(OnBtnClick6)
+	CreateButtonRadio(left, &top, "7.按钮").Event_BnClick(OnBtnClick7)
+	CreateButtonRadio(left, &top, "8.布局焦点展开").Event_BnClick(OnBtnClick8)
+	CreateButtonRadio(left, &top, "9.图片切换").Event_BnClick(OnBtnClick9)
+	CreateButtonRadio(left, &top, "10.图片切换2").Event_BnClick(OnBtnClick10)
+	CreateButtonRadio(left, &top, "11.进度 等待").Event_BnClick(OnBtnClick11)
+	CreateButtonRadio(left, &top, "12.旋转 移动").Event_BnClick(OnBtnClick12)
+	CreateButtonRadio(left, &top, "13.旋转 摇摆").Event_BnClick(OnBtnClick13)
+	CreateButtonRadio(left, &top, "14.旋转 移动 缩放").Event_BnClick(OnBtnClick14)
+	CreateButtonRadio(left, &top, "15.旋转 开合效果").Event_BnClick(OnBtnClick15)
+	CreateButtonRadio(left, &top, "16.颜色渐变").Event_BnClick(OnBtnClick16)
+	CreateButtonRadio(left, &top, "17.缩放 位置").Event_BnClick(OnBtnClick17)
+	CreateButtonRadio(left, &top, "18.按钮 宽度").Event_BnClick(OnBtnClick18)
 
 	w.Event_PAINT(OnWndDrawWindow)
-
 	w.ShowWindow(xcc.SW_SHOW)
 	a.Run()
+	ReleaseAnimation()
 	a.Exit()
 }
 
-// 创建按钮
-func CreateButton(name string) *widget.Button {
-	btn := widget.NewButton(10, top, 110, 30, name, w.Handle)
+// 创建单选按钮
+func CreateButtonRadio(left int32, top *int32, name string) *widget.Button {
+	btn := widget.NewButton(left, *top, 110, 30, name, w.Handle)
 	btn.SetTextAlign(xcc.TextAlignFlag_Left | xcc.TextAlignFlag_Vcenter)
 	btn.SetTypeEx(xcc.Button_Type_Radio)
 	btn.SetGroupID(1)
-	top += 31
+	*top += 29
 	return btn
 }
 
+// 创建按钮
+func CreateButton(left, top, width, height int32, name string) *widget.Button {
+	btn := widget.NewButton(left, top, width, height, name, w.Handle)
+	btn.SetTextAlign(xcc.TextAlignFlag_Left | xcc.TextAlignFlag_Vcenter)
+	btn.SetPadding(10, 0, 0, 0)
+	return btn
+}
+
+// 释放资源
 func ReleaseAnimation() {
 	for _, v := range list_animation {
 		xc.XAnima_Release(v, true)
@@ -120,10 +131,14 @@ func ReleaseAnimation() {
 	}
 
 	for _, v := range list_xcgui {
-		if xc.XC_IsHELE(v) {
+		t := xc.XObj_GetTypeBase(v)
+		switch t {
+		case xcc.XC_ELE:
 			xc.XEle_Destroy(v)
-		} else if xc.XC_IsShape(v) {
+		case xcc.XC_SHAPE:
 			xc.XShape_Destroy(v)
+		case xcc.XC_SVG:
+			xc.XSvg_Release(v)
 		}
 	}
 
@@ -132,25 +147,26 @@ func ReleaseAnimation() {
 	list_xcgui = list_xcgui[:0]
 }
 
+// 窗口绘制消息.
 func OnWndDrawWindow(hDraw int, pbHandled *bool) int {
 	*pbHandled = true
 	w.DrawWindow(hDraw)
 
-	if hSvg != 0 {
-		xc.XDraw_DrawSvgSrc(hDraw, hSvg)
+	if m_hSvg != 0 {
+		xc.XDraw_DrawSvgSrc(hDraw, m_hSvg)
 	}
 
 	for _, v := range list_svg {
 		xc.XDraw_DrawSvgSrc(hDraw, v)
 	}
-
 	return 0
 }
 
+// 1.下落 缩放 缓动
 func OnBtnClick1(pbHandled *bool) int {
-	var left int32 = 130
-	top = 22
 	ReleaseAnimation()
+	var left int32 = 130
+	var top int32 = 22
 
 	// 加载svg图片
 	list_svg = append(list_svg,
@@ -167,20 +183,20 @@ func OnBtnClick1(pbHandled *bool) int {
 	list_animation = append(list_animation, hGroup)
 	xc.XAnima_Run(hGroup, w.Handle)
 
-	for k, v := range list_svg {
+	for i, hSvg := range list_svg {
 		// 设置svg图片大小和位置
-		xc.XSvg_SetSize(v, 100, 100)
-		xc.XSvg_SetPosition(v, left, top)
+		xc.XSvg_SetSize(hSvg, 100, 100)
+		xc.XSvg_SetPosition(hSvg, left, top)
 
 		// 创建动画序列
-		hAnimation := xc.XAnima_Create(v, 0)
+		hAnimation := xc.XAnima_Create(hSvg, 0)
 		// 将动画序列添加到动画组中
 		xc.XAnimaGroup_AddItem(hGroup, hAnimation)
 
 		xc.XAnima_Move(hAnimation, 500, float32(left), 22, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, false)
 		xc.XAnima_Delay(hAnimation, 500)
 
-		xc.XAnima_Delay(hAnimation, 100*float32(k))
+		xc.XAnima_Delay(hAnimation, 100*float32(i))
 		xc.XAnima_Alpha(hAnimation, 500, 0, 1, 0, false)
 
 		xc.XAnima_Delay(hAnimation, 500)
@@ -191,21 +207,22 @@ func OnBtnClick1(pbHandled *bool) int {
 		xc.XAnima_Move(hAnimation, 2000, float32(left), 500, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, false)
 		xc.XAnima_Delay(hAnimation, 1000)
 		left += 130
+		{
+			hAnimation = xc.XAnima_Create(hSvg, 0)
+			xc.XAnima_Delay(hAnimation, 6000+float32(i)*200)
+			xc.XAnima_Scale(hAnimation, 1200, 2, 2, 1, xcc.Ease_Flag_Cubic|xcc.Ease_Flag_In, true)
 
-		hAnimation = xc.XAnima_Create(v, 0)
-		xc.XAnima_Delay(hAnimation, 6000+float32(k)*200)
-		xc.XAnima_Scale(hAnimation, 1200, 2, 2, 1, xcc.Ease_Flag_Cubic|xcc.Ease_Flag_In, true)
-
-		xc.XAnimaGroup_AddItem(hGroup, hAnimation)
+			xc.XAnimaGroup_AddItem(hGroup, hAnimation)
+		}
 	}
-
 	return 0
 }
 
+// 2.下落 呼吸SVG
 func OnBtnClick2(pbHandled *bool) int {
-	var left int32 = 450
-	top = 22
 	ReleaseAnimation()
+	var left int32 = 450
+	var top int32 = 22
 
 	// 加载svg图片
 	list_svg = append(list_svg, xc.XSvg_LoadStringW(svg1))
@@ -221,20 +238,21 @@ func OnBtnClick2(pbHandled *bool) int {
 	// 下落
 	ani1 := ani.NewAnima(list_svg[0], 0)
 	group.AddItem(ani1.Handle)
-	ani1.Move(2000, float32(left), 500, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, false)
-
-	// 停留
-	ani1.Delay(2000)
-
-	// 返回顶部
-	ani1.Move(500, float32(left), 22, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, false)
+	{
+		ani1.Move(2000, float32(left), 500, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, false)
+		// 停留
+		ani1.Delay(2000)
+		// 返回顶部
+		ani1.Move(500, float32(left), 22, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, false)
+	}
 
 	// 缩放
 	ani2 := ani.NewAnima(list_svg[0], 1)
 	group.AddItem(ani2.Handle)
-
-	ani2.Delay(2000)
-	ani2.Scale(1000, 2, 2, 0, xcc.Ease_Flag_Cubic|xcc.Ease_Flag_In, true)
+	{
+		ani2.Delay(2000)
+		ani2.Scale(1000, 2, 2, 0, xcc.Ease_Flag_Cubic|xcc.Ease_Flag_In, true)
+	}
 
 	/* 以下是纯函数方式实现
 		// 创建动画组
@@ -260,14 +278,14 @@ func OnBtnClick2(pbHandled *bool) int {
 	   	xc.XAnima_Delay(hAnimation, 2000)
 	   	xc.XAnima_Scale(hAnimation, 1000, 2, 2, 0, xcc.Ease_Flag_Cubic|xcc.Ease_Flag_In, true)
 	*/
-
 	return 0
 }
 
+// 3.呼吸SVG
 func OnBtnClick3(pbHandled *bool) int {
 	ReleaseAnimation()
 	var left int32 = 300
-	top = 150
+	var top int32 = 150
 
 	// 加载svg图片
 	list_svg = append(list_svg, xc.XSvg_LoadStringW(svg1))
@@ -292,14 +310,14 @@ func OnBtnClick3(pbHandled *bool) int {
 	   	xc.XAnima_Scale(hAnimation, 1500, 2, 2, 0, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In, true)
 	   	xc.XAnima_Run(hAnimation, w.Handle)
 	*/
-
 	return 0
 }
 
+// 4.不透明度SVG
 func OnBtnClick4(pbHandled *bool) int {
 	ReleaseAnimation()
 	var left int32 = 200
-	top = 30
+	var top int32 = 30
 
 	// 加载svg图片
 	list_svg = append(list_svg,
@@ -309,9 +327,9 @@ func OnBtnClick4(pbHandled *bool) int {
 	)
 
 	// 设置svg图片大小和位置
-	for k, v := range list_svg {
-		xc.XSvg_SetSize(v, 100, 100)
-		xc.XSvg_SetPosition(v, left+int32(k)*100, top)
+	for i, hSvg := range list_svg {
+		xc.XSvg_SetSize(hSvg, 100, 100)
+		xc.XSvg_SetPosition(hSvg, left+int32(i)*100, top)
 	}
 
 	// 创建动画序列
@@ -330,46 +348,50 @@ func OnBtnClick4(pbHandled *bool) int {
 	xc.XAnima_Alpha(hAnimation, 3000, 0, 0, 0, true)
 	xc.XAnima_Run(hAnimation, w.Handle)
 
-	top = 100
-	hSvg = xc.XSvg_LoadStringW(svg7)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
+	{
+		top = 100
+		m_hSvg = xc.XSvg_LoadStringW(svg7)
+		list_svg = append(list_svg, m_hSvg)
+		xc.XSvg_SetPosition(m_hSvg, left, top)
 
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
+		hAnimation = xc.XAnima_Create(m_hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
 
-	xc.XAnima_Alpha(hAnimation, 3000, 0, 1, 0, true)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		xc.XAnima_Alpha(hAnimation, 3000, 0, 1, 0, true)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
+	{
+		top += 150
+		m_hSvg = xc.XSvg_LoadStringW(svg7)
+		list_svg = append(list_svg, m_hSvg)
+		xc.XSvg_SetPosition(m_hSvg, left, top)
 
-	top += 150
-	hSvg = xc.XSvg_LoadStringW(svg7)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
+		hAnimation = xc.XAnima_Create(m_hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
 
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
+		xc.XAnima_AlphaEx(hAnimation, 3000, 255, 50, 1, 0, true)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
+	{
+		top += 150
+		m_hSvg = xc.XSvg_LoadStringW(svg7)
+		list_svg = append(list_svg, m_hSvg)
+		xc.XSvg_SetPosition(m_hSvg, left, top)
 
-	xc.XAnima_AlphaEx(hAnimation, 3000, 255, 50, 1, 0, true)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation = xc.XAnima_Create(m_hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
 
-	top += 150
-	hSvg = xc.XSvg_LoadStringW(svg7)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-
-	xc.XAnima_AlphaEx(hAnimation, 3000, 255, 50, 1, 0, true)
-	xc.XAnima_Run(hAnimation, w.Handle)
-
+		xc.XAnima_AlphaEx(hAnimation, 3000, 50, 255, 1, 0, true)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
 	return 0
 }
 
+// 5.移动SVG
 func OnBtnClick5(pbHandled *bool) int {
 	ReleaseAnimation()
 	var left int32 = 150
-	top = 30
+	var top int32 = 30
 
 	// 加载svg图片
 	list_svg = append(list_svg,
@@ -379,9 +401,9 @@ func OnBtnClick5(pbHandled *bool) int {
 	)
 
 	// 设置svg图片大小和位置
-	for k, v := range list_svg {
-		xc.XSvg_SetSize(v, 100, 100)
-		xc.XSvg_SetPosition(v, left, top+int32(k)*100)
+	for i, hSvg := range list_svg {
+		xc.XSvg_SetSize(hSvg, 100, 100)
+		xc.XSvg_SetPosition(hSvg, left, top+int32(i)*100)
 	}
 	top = 22
 
@@ -427,14 +449,14 @@ func OnBtnClick5(pbHandled *bool) int {
 	xc.XAnima_Run(hAnimation, w.Handle)
 	xc.XAnima_Move(hAnimation, 2000, 750, float32(top), 1, 0, false)
 	*/
-
 	return 0
 }
 
+// 6.形状文本
 func OnBtnClick6(pbHandled *bool) int {
 	ReleaseAnimation()
 	var left int32 = 140
-	top = 100
+	var top int32 = 100
 
 	// 创建形状文本
 	hShapeText1 := xc.XShapeText_Create(left, top, 100, 30, "循环滚动", w.Handle)
@@ -463,7 +485,7 @@ func OnBtnClick6(pbHandled *bool) int {
 	ani3 := ani.NewAnima(hShapeText3, 1)
 	list_animation = append(list_animation, ani3.Handle)
 	ani3.Run(w.Handle)
-	ani3.Move(1500, 750, float32(top+100), 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, true)
+	ani3.Move(1500, 750, float32(top+100), 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, false)
 
 	/* 	以下是纯函数方式实现
 	hAnimation := xc.XAnima_Create(hShapeText1, 0)
@@ -481,30 +503,32 @@ func OnBtnClick6(pbHandled *bool) int {
 	xc.XAnima_Run(hAnimation, w.Handle)
 	xc.XAnima_Move(hAnimation, 1500, 750, float32(top+100), 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, false)
 	*/
-
 	return 0
 }
 
+// 7.按钮
 func OnBtnClick7(pbHandled *bool) int {
 	ReleaseAnimation()
 	var left int32 = 125
-	top = 50
+	var top int32 = 50
 
-	group1 := ani.NewAnimaGroup(0)
-	list_animation = append(list_animation, group1.Handle)
-	group1.Run(w.Handle)
-	for i := 0; i < 13; i++ {
-		hButton := xc.XBtn_Create(left, top, 60, 30, "透明度", w.Handle)
-		list_xcgui = append(list_xcgui, hButton)
+	{
+		group1 := ani.NewAnimaGroup(0)
+		list_animation = append(list_animation, group1.Handle)
+		group1.Run(w.Handle)
+		for i := 0; i < 13; i++ {
+			hButton := xc.XBtn_Create(left, top, 60, 30, "透明度", w.Handle)
+			list_xcgui = append(list_xcgui, hButton)
 
-		hAnimation := xc.XAnima_Create(hButton, 0)
-		group1.AddItem(hAnimation)
+			hAnimation := xc.XAnima_Create(hButton, 0)
+			group1.AddItem(hAnimation)
 
-		xc.XAnima_Delay(hAnimation, 500)
+			xc.XAnima_Delay(hAnimation, 500)
 
-		xc.XAnima_Delay(hAnimation, 100*float32(i))
-		xc.XAnima_AlphaEx(hAnimation, 1200, 255, 20, 1, 0, true)
-		left += 61
+			xc.XAnima_Delay(hAnimation, 100*float32(i))
+			xc.XAnima_AlphaEx(hAnimation, 1200, 255, 20, 1, 0, true)
+			left += 61
+		}
 	}
 
 	left = 125
@@ -516,62 +540,66 @@ func OnBtnClick7(pbHandled *bool) int {
 		hButton := xc.XBtn_Create(left, top, 80, 30, "循环滚动", w.Handle)
 		list_xcgui = append(list_xcgui, hButton)
 
-		hAnimation := xc.XAnima_Create(hButton, 0)
-		group2.AddItem(hAnimation)
+		{
+			hAnimation := xc.XAnima_Create(hButton, 0)
+			group2.AddItem(hAnimation)
 
-		xc.XAnima_Move(hAnimation, 500, float32(left), float32(top), 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, false)
-		xc.XAnima_Delay(hAnimation, 500)
+			xc.XAnima_Move(hAnimation, 500, float32(left), float32(top), 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, false)
+			xc.XAnima_Delay(hAnimation, 500)
 
-		xc.XAnima_Delay(hAnimation, 100*float32(i))
-		xc.XAnima_AlphaEx(hAnimation, 500, 255, 0, 1, 0, false)
+			xc.XAnima_Delay(hAnimation, 100*float32(i))
+			xc.XAnima_AlphaEx(hAnimation, 500, 255, 0, 1, 0, false)
 
-		xc.XAnima_Delay(hAnimation, 500)
+			xc.XAnima_Delay(hAnimation, 500)
 
-		xc.XAnima_AlphaEx(hAnimation, 500, 0, 255, 1, 0, false)
-		xc.XAnima_Delay(hAnimation, 1000)
+			xc.XAnima_AlphaEx(hAnimation, 500, 0, 255, 1, 0, false)
+			xc.XAnima_Delay(hAnimation, 1000)
 
-		xc.XAnima_Move(hAnimation, 2000, float32(left), 500, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, false)
-		xc.XAnima_Delay(hAnimation, 1000)
-
-		hAnimation = xc.XAnima_Create(hButton, 1)
-		xc.XAnimaGroup_AddItem(group2.Handle, hAnimation)
-		xc.XAnima_Delay(hAnimation, 6000+float32(i)*200)
-		xc.XAnima_Scale(hAnimation, 1200, 1.5, 2, 1, xcc.Ease_Flag_Cubic|xcc.Ease_Flag_In, true)
-
+			xc.XAnima_Move(hAnimation, 2000, float32(left), 500, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, false)
+			xc.XAnima_Delay(hAnimation, 1000)
+		}
+		{
+			hAnimation := xc.XAnima_Create(hButton, 1)
+			xc.XAnimaGroup_AddItem(group2.Handle, hAnimation)
+			xc.XAnima_Delay(hAnimation, 6000+float32(i)*200)
+			xc.XAnima_Scale(hAnimation, 1200, 1.5, 2, 1, xcc.Ease_Flag_Cubic|xcc.Ease_Flag_In, true)
+		}
 		left += 110
 	}
-
 	return 0
 }
 
+// 8.布局焦点展开
 func OnBtnClick8(pbHandled *bool) int {
 	ReleaseAnimation()
+
 	hLayout := xc.XLayout_Create(140, 100, 750, 100, w.Handle)
 	xc.XLayoutBox_SetSpace(hLayout, 20)
+	list_xcgui = append(list_xcgui, hLayout)
 
 	for i := 0; i < 3; i++ {
 		hLayout_ := xc.XLayout_Create(0, 0, 100, 100, hLayout)
 		xc.XEle_SetPadding(hLayout_, 10, 0, 10, 0)
 
 		hShapeText := xc.XShapeText_Create(0, 0, 100, 100, "炫彩界面库-www.xcgui.com-鼠标移动到上面查看", hLayout_)
-		xc.XShapeText_SetTextColor(hShapeText, xc.ABGR(255, 255, 255, 255))
+		xc.XShapeText_SetTextColor(hShapeText, xc.ARGB(255, 255, 255, 255))
 		xc.XWidget_LayoutItem_SetWidth(hShapeText, xcc.Layout_Size_Fill, 0)
 
 		list_xcgui = append(list_xcgui, hLayout_)
 		xc.XEle_EnableMouseThrough(hLayout_, false)
 		xc.XWidget_LayoutItem_SetWidth(hLayout_, xcc.Layout_Size_Weight, 100)
 
-		xc.XBkM_SetBkInfo(xc.XEle_GetBkManager(hLayout_), "{99:1.9.9;98:16(0);5:2(15)20(1)21(3)26(1)22(-7839744)23(255)9(5,5,5,5);}")
+		xc.XBkM_SetInfo(xc.XEle_GetBkManager(hLayout_), "{99:1.9.9;98:16(0);5:2(15)20(1)21(3)26(1)22(-7839744)23(255)9(5,5,5,5);}")
 		xc.XEle_RegEventC1(hLayout_, xcc.XE_MOUSESTAY, OnMouseStay8)
 		xc.XEle_RegEventC1(hLayout_, xcc.XE_MOUSELEAVE, OnMouseLeave8)
 
 		switch i {
 		case 0:
-			hLayout1 = hLayout_
+			m_hLayout1 = hLayout_
 		case 1:
-			hLayout2 = hLayout_
+			m_hLayout2 = hLayout_
 		case 2:
-			hLayout3 = hLayout_
+			m_hLayout3 = hLayout_
 		}
 	}
 
@@ -582,23 +610,22 @@ func OnBtnClick8(pbHandled *bool) int {
 
 // 鼠标进入事件8
 func OnMouseStay8(hLayout int, pbHandled *bool) int {
-	if hLayout1 != hLayout {
-		xc.XEle_SetAlpha(hLayout1, 200)
+	if m_hLayout1 != hLayout {
+		xc.XEle_SetAlpha(m_hLayout1, 200)
 	}
 
-	if hLayout2 != hLayout {
-		xc.XEle_SetAlpha(hLayout2, 200)
+	if m_hLayout2 != hLayout {
+		xc.XEle_SetAlpha(m_hLayout2, 200)
 	}
 
-	if hLayout3 != hLayout {
-		xc.XEle_SetAlpha(hLayout3, 200)
+	if m_hLayout3 != hLayout {
+		xc.XEle_SetAlpha(m_hLayout3, 200)
 	}
 
 	hAnimation := xc.XAnima_Create(hLayout, 1)
 	list_animation = append(list_animation, hAnimation)
-	xc.XAnima_Run(hAnimation, w.Handle)
 	xc.XAnima_LayoutWidth(hAnimation, 300, xcc.Layout_Size_Weight, 200, 1, 0, false)
-
+	xc.XAnima_Run(hAnimation, w.Handle)
 	return 0
 }
 
@@ -606,20 +633,20 @@ func OnMouseStay8(hLayout int, pbHandled *bool) int {
 func OnMouseLeave8(hLayout, hEleStay int, pbHandled *bool) int {
 	hAnimation := xc.XAnima_Create(hLayout, 1)
 	list_animation = append(list_animation, hAnimation)
-	xc.XAnima_Run(hAnimation, w.Handle)
 	xc.XAnima_LayoutWidth(hAnimation, 300, xcc.Layout_Size_Weight, 100, 1, 0, false)
+	xc.XAnima_Run(hAnimation, w.Handle)
 
-	xc.XEle_SetAlpha(hLayout1, 255)
-	xc.XEle_SetAlpha(hLayout2, 255)
-	xc.XEle_SetAlpha(hLayout3, 255)
-
+	xc.XEle_SetAlpha(m_hLayout1, 255)
+	xc.XEle_SetAlpha(m_hLayout2, 255)
+	xc.XEle_SetAlpha(m_hLayout3, 255)
 	return 0
 }
 
+// 9.图片切换 - 两个基础元素透明度切换
 func OnBtnClick9(pbHandled *bool) int {
 	ReleaseAnimation()
 	var left int32 = 150
-	top = 50
+	var top int32 = 50
 
 	imgMap := map[int][]byte{
 		1: img1,
@@ -634,31 +661,30 @@ func OnBtnClick9(pbHandled *bool) int {
 		hImage := xc.XImage_LoadMemory(imgMap[i*2+1])
 		xc.XImage_SetDrawType(hImage, xcc.Image_Draw_Type_Fixed_Ratio)
 
-		hEle := xc.XEle_Create(left, top, 212, 271, w.Handle)
+		hEle := xc.XEle_Create(left, top, 211, 270, w.Handle)
 		xc.XEle_AddBkImage(hEle, xcc.Element_State_Flag_Leave, hImage)
 		list_xcgui = append(list_xcgui, hEle)
 
 		hImage2 := xc.XImage_LoadMemory(imgMap[i*2+2])
 		xc.XImage_SetDrawType(hImage2, xcc.Image_Draw_Type_Fixed_Ratio)
 
-		hEle2 := xc.XEle_Create(left, top, 212, 271, w.Handle)
+		hEle2 := xc.XEle_Create(left, top, 211, 270, w.Handle)
 		xc.XEle_AddBkImage(hEle2, xcc.Element_State_Flag_Leave, hImage2)
 		list_xcgui = append(list_xcgui, hEle2)
-
-		hText := xc.XShapeText_Create(left, top+280, 200, 30, "炫彩界面库-图片切换\r\n$66.66", w.Handle)
-		xc.XShapeText_SetTextColor(hText, xc.ABGR(80, 80, 80, 255))
-		list_xcgui = append(list_xcgui, hText)
 
 		xc.XEle_SetUserData(hEle, hEle2)
 		xc.XEle_SetUserData(hEle2, hEle)
 		xc.XWidget_Show(hEle2, false)
 
+		hText := xc.XShapeText_Create(left, top+280, 200, 40, "炫彩界面库-图片切换\r\n$66.66", w.Handle)
+		xc.XShapeText_SetTextColor(hText, xc.ARGB(80, 80, 80, 255))
+		list_xcgui = append(list_xcgui, hText)
+
 		xc.XEle_RegEventC1(hEle, xcc.XE_MOUSESTAY, OnMouseStay9)
 		xc.XEle_RegEventC1(hEle2, xcc.XE_MOUSELEAVE, OnMouseLeave9)
 
-		left += 212 + 10
+		left += 211 + 10
 	}
-
 	w.Redraw(false)
 	return 0
 }
@@ -667,13 +693,11 @@ func OnBtnClick9(pbHandled *bool) int {
 func OnMouseStay9(hEle int, pbHandled *bool) int {
 	hEle2 := xc.XEle_GetUserData(hEle)
 	// 释放当前对象关联的动画
-	for i := 0; i < len(list_animation); i++ {
-		if len(list_animation)-2 == i {
-			hObjectUI := xc.XAnima_GetObjectUI(list_animation[i])
-			if hEle == hObjectUI || hEle2 == hObjectUI {
-				xc.XAnima_Release(list_animation[i], false)
-				list_animation = append(list_animation[:i], list_animation[i+1:]...)
-			}
+	for i := len(list_animation) - 1; i >= 0; i-- {
+		hObjectUI := xc.XAnima_GetObjectUI(list_animation[i])
+		if hEle == hObjectUI || hEle2 == hObjectUI {
+			xc.XAnima_Release(list_animation[i], false)
+			list_animation = append(list_animation[:i], list_animation[i+1:]...)
 		}
 	}
 
@@ -691,7 +715,6 @@ func OnMouseStay9(hEle int, pbHandled *bool) int {
 	xc.XAnima_Run(hAnimation, hEle2)
 	xc.XAnima_Delay(hAnimation, 500)
 	xc.XAnima_AlphaEx(hAnimation, 1000, 0, 255, 1, 0, false)
-
 	return 0
 }
 
@@ -699,13 +722,11 @@ func OnMouseStay9(hEle int, pbHandled *bool) int {
 func OnMouseLeave9(hEle2, hEleStay int, pbHandled *bool) int {
 	hEle := xc.XEle_GetUserData(hEle2)
 	// 释放当前对象关联的动画
-	for i := 0; i < len(list_animation); i++ {
-		if len(list_animation)-2 == i {
-			hObjectUI := xc.XAnima_GetObjectUI(list_animation[i])
-			if hEle == hObjectUI || hEle2 == hObjectUI {
-				xc.XAnima_Release(list_animation[i], false)
-				list_animation = append(list_animation[:i], list_animation[i+1:]...)
-			}
+	for i := len(list_animation) - 1; i >= 0; i-- {
+		hObjectUI := xc.XAnima_GetObjectUI(list_animation[i])
+		if hEle == hObjectUI || hEle2 == hObjectUI {
+			xc.XAnima_Release(list_animation[i], false)
+			list_animation = append(list_animation[:i], list_animation[i+1:]...)
 		}
 	}
 
@@ -723,14 +744,14 @@ func OnMouseLeave9(hEle2, hEleStay int, pbHandled *bool) int {
 	xc.XAnima_Run(hAnimation, hEle)
 	xc.XAnima_Delay(hAnimation, 500)
 	xc.XAnima_AlphaEx(hAnimation, 1000, 0, 255, 1, 0, false)
-
 	return 0
 }
 
+// 10.图片切换2 - 滚动切换
 func OnBtnClick10(pbHandled *bool) int {
 	ReleaseAnimation()
 	var left int32 = 150
-	top = 50
+	var top int32 = 50
 
 	imgMap := map[int][]byte{
 		1: img1,
@@ -742,7 +763,7 @@ func OnBtnClick10(pbHandled *bool) int {
 	}
 
 	for i := 0; i < 3; i++ {
-		hEle := xc.XEle_Create(left, top, 212, 271, w.Handle)
+		hEle := xc.XEle_Create(left, top, 211, 270, w.Handle)
 		xc.XEle_EnableDrawBorder(hEle, false)
 		list_xcgui = append(list_xcgui, hEle)
 
@@ -752,22 +773,21 @@ func OnBtnClick10(pbHandled *bool) int {
 		hImage2 := xc.XImage_LoadMemory(imgMap[i*2+2])
 		xc.XImage_SetDrawType(hImage2, xcc.Image_Draw_Type_Fixed_Ratio)
 
-		hShapePic := xc.XShapePic_Create(0, 0, 212, 271, hEle)
+		hShapePic := xc.XShapePic_Create(0, 0, 211, 270, hEle)
 		xc.XShapePic_SetImage(hShapePic, hImage)
 
-		hShapePic2 := xc.XShapePic_Create(212+10, 0, 212, 271, hEle)
+		hShapePic2 := xc.XShapePic_Create(211+10, 0, 211, 270, hEle)
 		xc.XShapePic_SetImage(hShapePic2, hImage2)
 
-		hText := xc.XShapeText_Create(left, top+280, 200, 30, "炫彩界面库-图片切换\r\n$66.66", w.Handle)
-		xc.XShapeText_SetTextColor(hText, xc.ABGR(80, 80, 80, 255))
+		hText := xc.XShapeText_Create(left, top+280, 200, 40, "炫彩界面库-图片切换2\r\n$66.66", w.Handle)
+		xc.XShapeText_SetTextColor(hText, xc.ARGB(80, 80, 80, 255))
 		list_xcgui = append(list_xcgui, hText)
 
 		xc.XEle_RegEventC1(hEle, xcc.XE_MOUSESTAY, OnMouseStay10)
 		xc.XEle_RegEventC1(hEle, xcc.XE_MOUSELEAVE, OnMouseLeave10)
 
-		left += 212 + 10
+		left += 211 + 10
 	}
-
 	w.Redraw(false)
 	return 0
 }
@@ -775,12 +795,11 @@ func OnBtnClick10(pbHandled *bool) int {
 // 鼠标进入事件10
 func OnMouseStay10(hEle int, pbHandled *bool) int {
 	// 释放当前对象关联的动画
-	for i := 0; i < len(list_animation); i++ {
-		if len(list_animation)-2 == i {
-			if hEle == xc.XAnima_GetObjectUI(list_animation[i]) {
-				xc.XAnima_Release(list_animation[i], false)
-				list_animation = append(list_animation[:i], list_animation[i+1:]...)
-			}
+	for i := len(list_animation) - 1; i >= 0; i-- {
+		hObjectUI := xc.XAnima_GetObjectUI(list_animation[i])
+		if hEle == hObjectUI {
+			xc.XAnima_Release(list_animation[i], false)
+			list_animation = append(list_animation[:i], list_animation[i+1:]...)
 		}
 	}
 
@@ -789,7 +808,7 @@ func OnMouseStay10(hEle int, pbHandled *bool) int {
 	hAnimation := xc.XAnima_Create(hPic, 1)
 	list_animation = append(list_animation, hAnimation)
 	xc.XAnima_Run(hAnimation, hEle)
-	xc.XAnima_Move(hAnimation, 500, -(212 + 10), 0, 1, xcc.Ease_Flag_Cubic|xcc.Ease_Flag_In, false)
+	xc.XAnima_Move(hAnimation, 500, -(211 + 10), 0, 1, xcc.Ease_Flag_Cubic|xcc.Ease_Flag_In, false)
 
 	hPic = xc.XEle_GetChildByIndex(hEle, 1)
 
@@ -797,19 +816,17 @@ func OnMouseStay10(hEle int, pbHandled *bool) int {
 	list_animation = append(list_animation, hAnimation)
 	xc.XAnima_Run(hAnimation, hEle)
 	xc.XAnima_Move(hAnimation, 500, 0, 0, 1, xcc.Ease_Flag_Cubic|xcc.Ease_Flag_In, false)
-
 	return 0
 }
 
 // 鼠标离开事件10
 func OnMouseLeave10(hEle, hEleStay int, pbHandled *bool) int {
 	// 释放当前对象关联的动画
-	for i := 0; i < len(list_animation); i++ {
-		if len(list_animation)-2 == i {
-			if hEle == xc.XAnima_GetObjectUI(list_animation[i]) {
-				xc.XAnima_Release(list_animation[i], false)
-				list_animation = append(list_animation[:i], list_animation[i+1:]...)
-			}
+	for i := len(list_animation) - 1; i >= 0; i-- {
+		hObjectUI := xc.XAnima_GetObjectUI(list_animation[i])
+		if hEle == hObjectUI {
+			xc.XAnima_Release(list_animation[i], false)
+			list_animation = append(list_animation[:i], list_animation[i+1:]...)
 		}
 	}
 
@@ -825,286 +842,320 @@ func OnMouseLeave10(hEle, hEleStay int, pbHandled *bool) int {
 	hAnimation = xc.XAnima_Create(hPic, 1)
 	list_animation = append(list_animation, hAnimation)
 	xc.XAnima_Run(hAnimation, hEle)
-	xc.XAnima_Move(hAnimation, 500, 212+10, 0, 1, xcc.Ease_Flag_Cubic|xcc.Ease_Flag_In, false)
-
+	xc.XAnima_Move(hAnimation, 500, 211+10, 0, 1, xcc.Ease_Flag_Cubic|xcc.Ease_Flag_In, false)
 	return 0
 }
 
+// 11.进度 等待
 func OnBtnClick11(pbHandled *bool) int {
 	ReleaseAnimation()
 	var left int32 = 160
-	top = 80
+	var top int32 = 80
+	var hSvg, hGroup, hAnimation int
 
 	// 两个球型交替移动
-	hSvg = xc.XSvg_LoadStringW(svg11)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
+	{
+		hSvg := xc.XSvg_LoadStringW(svg11)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
 
-	hGroup := xc.XAnimaGroup_Create(0)
-	list_animation = append(list_animation, hGroup)
-	xc.XAnima_Run(hGroup, w.Handle)
+		hGroup := xc.XAnimaGroup_Create(0)
+		list_animation = append(list_animation, hGroup)
+		xc.XAnima_Run(hGroup, w.Handle)
 
-	hAnimation := xc.XAnima_Create(hSvg, 1)
-	xc.XAnimaGroup_AddItem(hGroup, hAnimation)
-	xc.XAnima_Move(hAnimation, 1000, float32(left)+50, float32(top), 1, xcc.Ease_Flag_Sine|xcc.Ease_Flag_InOut, false)
-	xc.XAnima_Move(hAnimation, 1000, float32(left), float32(top), 1, xcc.Ease_Flag_Sine|xcc.Ease_Flag_InOut, false)
+		hAnimation := xc.XAnima_Create(hSvg, 1)
+		xc.XAnimaGroup_AddItem(hGroup, hAnimation)
+		xc.XAnima_Move(hAnimation, 1000, float32(left)+50, float32(top), 1, xcc.Ease_Flag_Sine|xcc.Ease_Flag_InOut, false)
+		xc.XAnima_Move(hAnimation, 1000, float32(left), float32(top), 1, xcc.Ease_Flag_Sine|xcc.Ease_Flag_InOut, false)
 
-	hSvg = xc.XSvg_LoadStringW(svg12)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left+50, top)
+		hSvg = xc.XSvg_LoadStringW(svg12)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left+50, top)
 
-	hGroup = xc.XAnimaGroup_Create(0)
-	list_animation = append(list_animation, hGroup)
-	xc.XAnima_Run(hGroup, w.Handle)
+		hGroup = xc.XAnimaGroup_Create(0)
+		list_animation = append(list_animation, hGroup)
+		xc.XAnima_Run(hGroup, w.Handle)
 
-	hAnimation = xc.XAnima_Create(hSvg, 1)
-	xc.XAnimaGroup_AddItem(hGroup, hAnimation)
-	xc.XAnima_Move(hAnimation, 1000, float32(left), float32(top), 1, xcc.Ease_Flag_Sine|xcc.Ease_Flag_InOut, false)
-	xc.XAnima_Move(hAnimation, 1000, float32(left)+50, float32(top), 1, xcc.Ease_Flag_Sine|xcc.Ease_Flag_InOut, false)
+		hAnimation = xc.XAnima_Create(hSvg, 1)
+		xc.XAnimaGroup_AddItem(hGroup, hAnimation)
+		xc.XAnima_Move(hAnimation, 1000, float32(left), float32(top), 1, xcc.Ease_Flag_Sine|xcc.Ease_Flag_InOut, false)
+		xc.XAnima_Move(hAnimation, 1000, float32(left)+50, float32(top), 1, xcc.Ease_Flag_Sine|xcc.Ease_Flag_InOut, false)
+	}
 
 	// 一排小球 缩放
-	left = 350
-	hGroup = xc.XAnimaGroup_Create(0)
-	list_animation = append(list_animation, hGroup)
-	xc.XAnima_Run(hGroup, w.Handle)
+	{
+		left = 350
+		hGroup = xc.XAnimaGroup_Create(0)
+		list_animation = append(list_animation, hGroup)
+		xc.XAnima_Run(hGroup, w.Handle)
 
-	for i := 0; i < 10; i++ {
-		hSvg = xc.XSvg_LoadStringW(svg13)
-		list_svg = append(list_svg, hSvg)
-		xc.XSvg_SetPosition(hSvg, left+int32(i)*50, top)
+		for i := 0; i < 10; i++ {
+			hSvg = xc.XSvg_LoadStringW(svg13)
+			list_svg = append(list_svg, hSvg)
+			xc.XSvg_SetPosition(hSvg, left+int32(i)*50, top)
 
-		hAnimation = xc.XAnima_Create(hSvg, 0)
-		xc.XAnimaGroup_AddItem(hGroup, hAnimation)
+			hAnimation = xc.XAnima_Create(hSvg, 0)
+			xc.XAnimaGroup_AddItem(hGroup, hAnimation)
 
-		xc.XAnima_Delay(hAnimation, float32(i)*200)
-		xc.XAnima_Scale(hAnimation, 1000, 2, 2, 1, 0, true)
+			xc.XAnima_Delay(hAnimation, float32(i)*200)
+			xc.XAnima_Scale(hAnimation, 1000, 2, 2, 1, 0, true)
+		}
 	}
 
 	// 一排小球 垂直缩放
-	top = 150
-	hGroup = xc.XAnimaGroup_Create(0)
-	list_animation = append(list_animation, hGroup)
-	xc.XAnima_Run(hGroup, w.Handle)
+	{
+		top = 150
+		hGroup = xc.XAnimaGroup_Create(0)
+		list_animation = append(list_animation, hGroup)
+		xc.XAnima_Run(hGroup, w.Handle)
 
-	for i := 0; i < 10; i++ {
-		hSvg = xc.XSvg_LoadStringW(svg13)
-		list_svg = append(list_svg, hSvg)
-		xc.XSvg_SetPosition(hSvg, left+int32(i)*50, top)
+		for i := 0; i < 10; i++ {
+			hSvg = xc.XSvg_LoadStringW(svg13)
+			list_svg = append(list_svg, hSvg)
+			xc.XSvg_SetPosition(hSvg, left+int32(i)*50, top)
 
-		hAnimation = xc.XAnima_Create(hSvg, 0)
-		xc.XAnimaGroup_AddItem(hGroup, hAnimation)
+			hAnimation = xc.XAnima_Create(hSvg, 0)
+			xc.XAnimaGroup_AddItem(hGroup, hAnimation)
 
-		xc.XAnima_Delay(hAnimation, float32(i)*200)
-		xc.XAnima_Scale(hAnimation, 1000, 1, 2, 1, 0, true)
+			xc.XAnima_Delay(hAnimation, float32(i)*200)
+			xc.XAnima_Scale(hAnimation, 1000, 1, 2, 1, 0, true)
+		}
 	}
 
 	// 一排小球 上下波浪
-	left = 150
-	top = 200
-	for i := 0; i < 10; i++ {
-		hSvg = xc.XSvg_LoadStringW(svg13)
-		list_svg = append(list_svg, hSvg)
-		x := left + int32(i)*35
-		xc.XSvg_SetPosition(hSvg, x, top)
+	{
+		left = 150
+		top = 200
+		for i := 0; i < 10; i++ {
+			hSvg = xc.XSvg_LoadStringW(svg13)
+			list_svg = append(list_svg, hSvg)
+			x := left + int32(i)*35
+			xc.XSvg_SetPosition(hSvg, x, top)
 
-		hAnimation = xc.XAnima_Create(hSvg, 0)
-		list_animation = append(list_animation, hAnimation)
-		xc.XAnima_Run(hAnimation, w.Handle)
+			hAnimation = xc.XAnima_Create(hSvg, 0)
+			list_animation = append(list_animation, hAnimation)
+			xc.XAnima_Run(hAnimation, w.Handle)
 
-		xc.XAnimaItem_EnableCompleteRelease(xc.XAnima_Delay(hAnimation, float32(i)*100), true)
-		xc.XAnima_Move(hAnimation, 1200, float32(x), float32(top)+100, 1, 0, true)
+			xc.XAnimaItem_EnableCompleteRelease(xc.XAnima_Delay(hAnimation, float32(i)*100), true)
+			xc.XAnima_Move(hAnimation, 1200, float32(x), float32(top)+100, 1, 0, true)
+		}
 	}
 
-	left = 550
-	for i := 0; i < 10; i++ {
-		hSvg = xc.XSvg_LoadStringW(svg13)
-		list_svg = append(list_svg, hSvg)
-		x := left + int32(i)*35
-		xc.XSvg_SetPosition(hSvg, x, top)
+	// 一排小球上下波浪
+	{
+		left = 550
+		for i := 0; i < 10; i++ {
+			hSvg = xc.XSvg_LoadStringW(svg13)
+			list_svg = append(list_svg, hSvg)
+			x := left + int32(i)*35
+			xc.XSvg_SetPosition(hSvg, x, top)
 
-		hAnimation = xc.XAnima_Create(hSvg, 0)
-		list_animation = append(list_animation, hAnimation)
-		xc.XAnima_Run(hAnimation, w.Handle)
+			hAnimation = xc.XAnima_Create(hSvg, 0)
+			list_animation = append(list_animation, hAnimation)
+			xc.XAnima_Run(hAnimation, w.Handle)
 
-		xc.XAnimaItem_EnableCompleteRelease(xc.XAnima_Delay(hAnimation, float32(i)*150), true)
-		xc.XAnima_Move(hAnimation, 1000, float32(x), float32(top)+50, 1, xcc.Ease_Flag_Sine|xcc.Ease_Flag_InOut, true)
+			xc.XAnimaItem_EnableCompleteRelease(xc.XAnima_Delay(hAnimation, float32(i)*150), true)
+			xc.XAnima_Move(hAnimation, 1000, float32(x), float32(top)+50, 1, xcc.Ease_Flag_Sine|xcc.Ease_Flag_InOut, true)
+		}
 	}
 
 	// 一排小球 跳动
-	left = 150
-	top = 350
-	for i := 0; i < 10; i++ {
-		hSvg = xc.XSvg_LoadStringW(svg13)
-		list_svg = append(list_svg, hSvg)
-		x := left + int32(i)*35
-		xc.XSvg_SetPosition(hSvg, x, top)
+	{
+		left = 150
+		top = 350
+		for i := 0; i < 10; i++ {
+			hSvg = xc.XSvg_LoadStringW(svg13)
+			list_svg = append(list_svg, hSvg)
+			x := left + int32(i)*35
+			xc.XSvg_SetPosition(hSvg, x, top)
 
-		hAnimation = xc.XAnima_Create(hSvg, 0)
-		list_animation = append(list_animation, hAnimation)
-		xc.XAnima_Run(hAnimation, w.Handle)
+			hAnimation = xc.XAnima_Create(hSvg, 0)
+			list_animation = append(list_animation, hAnimation)
+			xc.XAnima_Run(hAnimation, w.Handle)
 
-		xc.XAnimaItem_EnableCompleteRelease(xc.XAnima_Delay(hAnimation, float32(i)*200), true)
-		xc.XAnima_Move(hAnimation, 500, float32(x), float32(top)+50, 1, xcc.Ease_Flag_Quint|xcc.Ease_Flag_Out, true)
-		xc.XAnima_Delay(hAnimation, 1700)
+			xc.XAnimaItem_EnableCompleteRelease(xc.XAnima_Delay(hAnimation, float32(i)*200), true)
+			xc.XAnima_Move(hAnimation, 500, float32(x), float32(top)+50, 1, xcc.Ease_Flag_Quint|xcc.Ease_Flag_Out, true)
+			xc.XAnima_Delay(hAnimation, 1700)
+		}
 	}
 
 	// 一排小球 移动
-	left = 220
-	top = 600
-	for i := 0; i < 10; i++ {
-		hSvg = xc.XSvg_LoadStringW(svg14)
-		list_svg = append(list_svg, hSvg)
-		xc.XSvg_SetPosition(hSvg, 100-int32(i)*25, top)
-		xc.XSvg_SetAlpha(hSvg, 0)
+	{
+		left = 220
+		top = 600
+		for i := 5; i >= 0; i-- {
+			hSvg = xc.XSvg_LoadStringW(svg14)
+			list_svg = append(list_svg, hSvg)
+			xc.XSvg_SetPosition(hSvg, 100-int32(i)*25, top)
+			xc.XSvg_SetAlpha(hSvg, 0)
 
-		hAnimation = xc.XAnima_Create(hSvg, 0)
-		list_animation = append(list_animation, hAnimation)
-		xc.XAnima_Run(hAnimation, w.Handle)
+			{
+				hAnimation = xc.XAnima_Create(hSvg, 0)
+				xc.XAnima_Run(hAnimation, w.Handle)
+				list_animation = append(list_animation, hAnimation)
 
-		xc.XAnimaItem_EnableCompleteRelease(xc.XAnima_Delay(hAnimation, float32(i)*100), true)
-		xc.XAnima_Move(hAnimation, 2000, 550-(float32(i)+1)*25, float32(top), 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, false)
-		xc.XAnima_Move(hAnimation, 2000, 900-(float32(i)+1)*25, float32(top), 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In, false)
-		xc.XAnima_Move(hAnimation, 0, 100-float32(i)*25, float32(top), 1, 0, false)
-		xc.XAnima_Delay(hAnimation, 500)
+				xc.XAnimaItem_EnableCompleteRelease(xc.XAnima_Delay(hAnimation, float32(i)*100), true)
+				xc.XAnima_Move(hAnimation, 2000, 550-float32(i)*25, float32(top), 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, false)
+				xc.XAnima_Move(hAnimation, 2000, 900-float32(i)*25, float32(top), 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In, false)
+				xc.XAnima_Move(hAnimation, 0, 100-float32(i)*25, float32(top), 1, 0, false)
+				xc.XAnima_Delay(hAnimation, 500)
+			}
+			{
+				hAnimation = xc.XAnima_Create(hSvg, 0)
+				xc.XAnima_Run(hAnimation, w.Handle)
+				list_animation = append(list_animation, hAnimation)
 
-		hAnimation = xc.XAnima_Create(hSvg, 0)
-		list_animation = append(list_animation, hAnimation)
-		xc.XAnima_Run(hAnimation, w.Handle)
-
-		xc.XAnimaItem_EnableCompleteRelease(xc.XAnima_Delay(hAnimation, float32(i)*100), true)
-		xc.XAnima_AlphaEx(hAnimation, 2000, 0, 255, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, false)
-		xc.XAnima_AlphaEx(hAnimation, 2000, 255, 0, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In, false)
-		xc.XAnima_Delay(hAnimation, 500)
+				xc.XAnimaItem_EnableCompleteRelease(xc.XAnima_Delay(hAnimation, float32(i)*100), true)
+				xc.XAnima_AlphaEx(hAnimation, 2000, 0, 255, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, false)
+				xc.XAnima_AlphaEx(hAnimation, 2000, 255, 0, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In, false)
+				xc.XAnima_Delay(hAnimation, 500)
+			}
+		}
 	}
-
 	w.Redraw(false)
 	return 0
 }
 
+// 12.旋转 移动
 func OnBtnClick12(pbHandled *bool) int {
 	ReleaseAnimation()
 	var left int32 = 120
-	top = 100
+	var top int32 = 100
+	var hSvg, hAnimation int
 
-	hSvg = xc.XSvg_LoadStringW(svg7)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	xc.XSvg_SetRotateAngle(hSvg, 0)
+	// 移动 360度旋转
+	{
+		hSvg := xc.XSvg_LoadStringW(svg7)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		xc.XSvg_SetRotateAngle(hSvg, 0)
 
-	hAnimation := xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	xc.XAnima_Rotate(hAnimation, 1700, 360, 1, 0, false)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation := xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		xc.XAnima_Rotate(hAnimation, 1700, 360, 1, 0, false)
+		xc.XAnima_Run(hAnimation, w.Handle)
 
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	xc.XAnima_Move(hAnimation, 3000, float32(left)+500, float32(top), 1, 0, true)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		xc.XAnima_Move(hAnimation, 3000, float32(left)+500, float32(top), 1, 0, true)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
 
 	// 移动 往返旋转
-	top = 350
-	hSvg = xc.XSvg_LoadStringW(svg7)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	xc.XSvg_SetRotateAngle(hSvg, -45)
-	xc.XSvg_SetUserFillColor(hSvg, xc.ABGR(255, 0, 0, 255), true)
+	{
+		top = 350
+		hSvg = xc.XSvg_LoadStringW(svg7)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		xc.XSvg_SetRotateAngle(hSvg, -45)
+		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 0, 0, 255), true)
 
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	xc.XAnima_Rotate(hAnimation, 1500, 45, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In, false)
-	xc.XAnima_Rotate(hAnimation, 1500, -45, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In, false)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		xc.XAnima_Rotate(hAnimation, 1500, 45, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In, false)
+		xc.XAnima_Rotate(hAnimation, 1500, -45, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In, false)
+		xc.XAnima_Run(hAnimation, w.Handle)
 
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	xc.XAnima_Move(hAnimation, 3000, float32(left)+500, float32(top), 1, 0, true)
-	xc.XAnima_Run(hAnimation, w.Handle)
-
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		xc.XAnima_Move(hAnimation, 3000, float32(left)+500, float32(top), 1, 0, true)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
 	return 0
 }
 
+// 13.旋转 摇摆
 func OnBtnClick13(pbHandled *bool) int {
 	ReleaseAnimation()
-	var left int32 = 120
-	top = 80
+	var left int32 = 130
+	var top int32 = 80
+	var hSvg, hAnimation, hRotate int
 
 	// 自身 摇摆 往返
-	hSvg = xc.XSvg_LoadStringW(svg7)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	xc.XSvg_SetRotateAngle(hSvg, -45)
+	{
+		hSvg := xc.XSvg_LoadStringW(svg7)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		xc.XSvg_SetRotateAngle(hSvg, -45)
 
-	hAnimation := xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	xc.XAnima_Rotate(hAnimation, 1000, 45, 1, 0, true)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation := xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		xc.XAnima_Rotate(hAnimation, 1000, 45, 1, 0, true)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
 
 	// 自身 旋转
-	left = 500
-	hSvg = xc.XSvg_LoadStringW(svg7)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
+	{
+		left = 500
+		hSvg = xc.XSvg_LoadStringW(svg7)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
 
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	xc.XAnima_Rotate(hAnimation, 1000, 360, 1, xcc.Ease_Flag_Expo|xcc.Ease_Flag_In, false)
-	xc.XAnima_Rotate(hAnimation, 0, 0, 1, xcc.Ease_Flag_Linear, false)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		xc.XAnima_Rotate(hAnimation, 1000, 360, 1, xcc.Ease_Flag_Expo|xcc.Ease_Flag_In, false)
+		xc.XAnima_Rotate(hAnimation, 0, 0, 1, xcc.Ease_Flag_Linear, false)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
 
 	// 两个叠加 悬挂摆动
-	left = 300
-	top = 250
-	hSvg = xc.XSvg_LoadStringW(svg7)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	xc.XSvg_SetRotateAngle(hSvg, 45)
+	{
+		left = 300
+		top = 250
+		hSvg = xc.XSvg_LoadStringW(svg7)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		xc.XSvg_SetRotateAngle(hSvg, 45)
 
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	hRotate := xc.XAnima_Rotate(hAnimation, 3000, 100, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_InOut, true)
-	xc.XAnimaRotate_SetCenter(hRotate, float32(left)+10, float32(top)+50, false)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		hRotate := xc.XAnima_Rotate(hAnimation, 3000, 100, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_InOut, true)
+		xc.XAnimaRotate_SetCenter(hRotate, float32(left)+10, float32(top)+50, false)
+		xc.XAnima_Run(hAnimation, w.Handle)
 
-	hSvg = xc.XSvg_LoadStringW(svg7)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	xc.XSvg_SetRotateAngle(hSvg, 45)
-	xc.XSvg_SetUserFillColor(hSvg, xc.ABGR(255, 0, 0, 255), true)
+		hSvg = xc.XSvg_LoadStringW(svg7)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		xc.XSvg_SetRotateAngle(hSvg, 45)
+		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 0, 0, 255), true)
 
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	hRotate = xc.XAnima_Rotate(hAnimation, 3000, 100, 1, xcc.Ease_Flag_Cubic|xcc.Ease_Flag_InOut, true)
-	xc.XAnimaRotate_SetCenter(hRotate, float32(left)+10, float32(top)+50, false)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		hRotate = xc.XAnima_Rotate(hAnimation, 3000, 100, 1, xcc.Ease_Flag_Cubic|xcc.Ease_Flag_InOut, true)
+		xc.XAnimaRotate_SetCenter(hRotate, float32(left)+10, float32(top)+50, false)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
 
 	// 砍东西效果
-	left = 500
-	top = 400
-	hSvg = xc.XSvg_LoadStringW(svg7)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	xc.XSvg_SetRotateAngle(hSvg, -45)
-	xc.XSvg_SetUserFillColor(hSvg, xc.ABGR(255, 0, 0, 255), true)
+	{
+		left = 500
+		top = 400
+		hSvg = xc.XSvg_LoadStringW(svg7)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		xc.XSvg_SetRotateAngle(hSvg, -45)
+		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 0, 0, 255), true)
 
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	hRotate = xc.XAnima_Rotate(hAnimation, 1500, 0, 1, xcc.Ease_Flag_Expo|xcc.Ease_Flag_In, true)
-	xc.XAnimaRotate_SetCenter(hRotate, float32(left), float32(top), false)
-	xc.XAnima_Run(hAnimation, w.Handle)
-
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		hRotate = xc.XAnima_Rotate(hAnimation, 1500, 0, 1, xcc.Ease_Flag_Expo|xcc.Ease_Flag_In, true)
+		xc.XAnimaRotate_SetCenter(hRotate, float32(left), float32(top), false)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
 	return 0
 }
 
+// 14.旋转 移动 缩放
 func OnBtnClick14(pbHandled *bool) int {
 	ReleaseAnimation()
 	var left int32 = 130
-	top = 50
+	var top int32 = 50
 
 	// 加载svg, 设置大小和填充颜色
-	hSvg = xc.XSvg_LoadStringW(svg7)
+	hSvg := xc.XSvg_LoadStringW(svg7)
 	list_svg = append(list_svg, hSvg)
 	xc.XSvg_SetSize(hSvg, 50, 50)
-	xc.XSvg_SetUserFillColor(hSvg, xc.ABGR(255, 0, 0, 255), true)
+	xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 0, 0, 255), true)
 
 	// 移动 360度旋转
 	xc.XSvg_SetPosition(hSvg, left, top)
@@ -1133,319 +1184,348 @@ func OnBtnClick14(pbHandled *bool) int {
 	xc.XAnima_Delay(hAnimation, 1000)
 	xc.XAnima_Move(hAnimation, 1000, float32(left), float32(top), 1, 0, false)
 	xc.XAnima_Run(hGroup, w.Handle)
-
 	return 0
 }
 
+// 15.旋转 开合效果
 func OnBtnClick15(pbHandled *bool) int {
 	ReleaseAnimation()
 	var left int32 = 150
-	top = 200
-	var height int32 = 0
-	var width int32 = 0
+	var top int32 = 200
+	var height, width int32
+	var hSvg, hAnimation, hRotate int
 
 	// 砍东西效果
+	{
+		hSvg := xc.XSvg_LoadStringW(svg7)
+		list_svg = append(list_svg, hSvg)
+		height = xc.XSvg_GetHeight(hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		xc.XSvg_SetRotateAngle(hSvg, -45)
 
-	hSvg = xc.XSvg_LoadStringW(svg7)
-	list_svg = append(list_svg, hSvg)
-	height = xc.XSvg_GetHeight(hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	xc.XSvg_SetRotateAngle(hSvg, -45)
-
-	hAnimation := xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	hRotate := xc.XAnima_Rotate(hAnimation, 2000, 0, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, true)
-	xc.XAnimaRotate_SetCenter(hRotate, float32(left), float32(top+height/2.0), false)
-	xc.XAnima_Run(hAnimation, w.Handle)
-
-	// 砍东西效果
-	top = 300
-	hSvg = xc.XSvg_LoadStringW(svg7)
-	list_svg = append(list_svg, hSvg)
-	height = xc.XSvg_GetHeight(hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	xc.XSvg_SetRotateAngle(hSvg, 45)
-
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	hRotate = xc.XAnima_Rotate(hAnimation, 2000, 0, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, true)
-	xc.XAnimaRotate_SetCenter(hRotate, float32(left), float32(top+height/2.0), false)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation := xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		hRotate := xc.XAnima_Rotate(hAnimation, 2000, 0, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, true)
+		xc.XAnimaRotate_SetCenter(hRotate, float32(left), float32(top+height/2.0), false)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
 
 	// 砍东西效果
-	left = 500
-	top = 200
-	hSvg = xc.XSvg_LoadStringW(svg7)
-	list_svg = append(list_svg, hSvg)
-	width = xc.XSvg_GetWidth(hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	xc.XSvg_SetRotateAngle(hSvg, 45)
-	xc.XSvg_SetUserFillColor(hSvg, xc.ABGR(255, 0, 0, 255), true)
+	{
+		top = 300
+		hSvg = xc.XSvg_LoadStringW(svg7)
+		list_svg = append(list_svg, hSvg)
+		height = xc.XSvg_GetHeight(hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		xc.XSvg_SetRotateAngle(hSvg, 45)
 
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	hRotate = xc.XAnima_Rotate(hAnimation, 2000, 0, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, true)
-	xc.XAnimaRotate_SetCenter(hRotate, float32(left+width), float32(top+height/2.0), false)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		hRotate = xc.XAnima_Rotate(hAnimation, 2000, 0, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, true)
+		xc.XAnimaRotate_SetCenter(hRotate, float32(left), float32(top+height/2.0), false)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
 
 	// 砍东西效果
-	top = 300
-	hSvg = xc.XSvg_LoadStringW(svg7)
-	list_svg = append(list_svg, hSvg)
-	width = xc.XSvg_GetWidth(hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	xc.XSvg_SetRotateAngle(hSvg, -45)
-	xc.XSvg_SetUserFillColor(hSvg, xc.ABGR(255, 0, 0, 255), true)
+	{
+		left = 500
+		top = 200
+		hSvg = xc.XSvg_LoadStringW(svg7)
+		list_svg = append(list_svg, hSvg)
+		width = xc.XSvg_GetWidth(hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		xc.XSvg_SetRotateAngle(hSvg, 45)
+		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 0, 0, 255), true)
 
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	hRotate = xc.XAnima_Rotate(hAnimation, 2000, 0, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, true)
-	xc.XAnimaRotate_SetCenter(hRotate, float32(left+width), float32(top+height/2.0), false)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		hRotate = xc.XAnima_Rotate(hAnimation, 2000, 0, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, true)
+		xc.XAnimaRotate_SetCenter(hRotate, float32(left+width), float32(top+height/2.0), false)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
 
+	// 砍东西效果
+	{
+		top = 300
+		hSvg = xc.XSvg_LoadStringW(svg7)
+		list_svg = append(list_svg, hSvg)
+		width = xc.XSvg_GetWidth(hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		xc.XSvg_SetRotateAngle(hSvg, -45)
+		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 0, 0, 255), true)
+
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		hRotate = xc.XAnima_Rotate(hAnimation, 2000, 0, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, true)
+		xc.XAnimaRotate_SetCenter(hRotate, float32(left+width), float32(top+height/2.0), false)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
 	return 0
 }
 
+// 16.颜色渐变
 func OnBtnClick16(pbHandled *bool) int {
 	ReleaseAnimation()
 	var left int32 = 150
-	top = 50
+	var top int32 = 50
+	var hSvg, hAnimation int
 
-	hSvg = xc.XSvg_LoadStringW(svg7)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	xc.XSvg_SetUserFillColor(hSvg, xc.ABGR(255, 0, 0, 255), true)
+	{
+		hSvg = xc.XSvg_LoadStringW(svg7)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 0, 0, 255), true)
 
-	hAnimation := xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	xc.XAnima_Color(hAnimation, 1500, xc.ABGR(0, 0, 255, 255), 1, 0, true)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		xc.XAnima_Color(hAnimation, 1500, xc.ARGB(0, 0, 255, 255), 1, 0, true)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
+	{
+		top = 225
+		hSvg = xc.XSvg_LoadStringW(svg7)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(0, 255, 0, 255), true)
 
-	top = 225
-	hSvg = xc.XSvg_LoadStringW(svg7)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	xc.XSvg_SetUserFillColor(hSvg, xc.ABGR(0, 255, 0, 255), true)
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		xc.XAnima_Color(hAnimation, 1500, xc.ARGB(255, 0, 0, 255), 1, 0, true)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
+	{
+		top = 400
+		hSvg = xc.XSvg_LoadStringW(svg7)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 255, 0, 255), true)
 
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	xc.XAnima_Color(hAnimation, 1500, xc.ABGR(255, 0, 0, 255), 1, 0, true)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		xc.XAnima_Color(hAnimation, 1500, xc.ARGB(0, 0, 255, 255), 1, 0, true)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
+	{
+		hSvg = xc.XSvg_LoadString(svg15)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, 500, 300)
+		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 255, 0, 255), true)
 
-	top = 400
-	hSvg = xc.XSvg_LoadStringW(svg7)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	xc.XSvg_SetUserFillColor(hSvg, xc.ABGR(255, 255, 0, 255), true)
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		xc.XAnima_Color(hAnimation, 1500, xc.ARGB(0, 255, 255, 255), 1, 0, true)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
+	{
+		hFontx := xc.XFont_CreateEx("微软雅黑", 36, xcc.FontStyle_Bold)
+		hShapeText := xc.XShapeText_Create(500, 100, 400, 50, "炫彩界面库", w.Handle)
+		xc.XWidget_LayoutItem_SetWidth(hShapeText, xcc.Layout_Size_Auto, -1) // 自动宽度
+		list_xcgui = append(list_xcgui, hShapeText)
+		xc.XShapeText_SetFont(hShapeText, hFontx)
+		xc.XShapeText_SetTextColor(hShapeText, xc.ARGB(255, 0, 0, 255))
 
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	xc.XAnima_Color(hAnimation, 1500, xc.ABGR(0, 0, 255, 255), 1, 0, true)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation = xc.XAnima_Create(hShapeText, 0)
+		list_animation = append(list_animation, hAnimation)
+		xc.XAnima_Color(hAnimation, 1500, xc.ARGB(0, 0, 255, 255), 1, 0, true)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
+	{
+		hShapeText := xc.XShapeText_Create(500, 200, 100, 20, "炫彩界面库", w.Handle)
+		xc.XWidget_LayoutItem_SetWidth(hShapeText, xcc.Layout_Size_Auto, -1) // 自动宽度
+		list_xcgui = append(list_xcgui, hShapeText)
 
-	hSvg = xc.XSvg_LoadString(svg15)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, 500, 300)
-	xc.XSvg_SetUserFillColor(hSvg, xc.ABGR(255, 255, 0, 255), true)
-
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	xc.XAnima_Color(hAnimation, 1500, xc.ABGR(0, 255, 255, 255), 1, 0, true)
-	xc.XAnima_Run(hAnimation, w.Handle)
-
-	hFontx := xc.XFont_CreateEx("微软雅黑", 36, xcc.FontStyle_Bold)
-	hShapeText := xc.XShapeText_Create(500, 100, 300, 50, "炫彩界面库", w.Handle)
-	list_xcgui = append(list_xcgui, hShapeText)
-	xc.XShapeText_SetFont(hShapeText, hFontx)
-	xc.XShapeText_SetTextColor(hShapeText, xc.ABGR(255, 0, 0, 255))
-
-	hAnimation = xc.XAnima_Create(hShapeText, 0)
-	list_animation = append(list_animation, hAnimation)
-	xc.XAnima_Color(hAnimation, 1500, xc.ABGR(0, 0, 255, 255), 1, 0, true)
-	xc.XAnima_Run(hAnimation, w.Handle)
-
-	hShapeText = xc.XShapeText_Create(500, 200, 100, 20, "炫彩界面库", w.Handle)
-	list_xcgui = append(list_xcgui, hShapeText)
-
-	hAnimation = xc.XAnima_Create(hShapeText, 0)
-	list_animation = append(list_animation, hAnimation)
-	xc.XAnima_Color(hAnimation, 1500, xc.ABGR(0, 255, 0, 255), 1, 0, true)
-	xc.XAnima_Run(hAnimation, w.Handle)
-
+		hAnimation = xc.XAnima_Create(hShapeText, 0)
+		list_animation = append(list_animation, hAnimation)
+		xc.XAnima_Color(hAnimation, 1500, xc.ARGB(0, 255, 0, 255), 1, 0, true)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
 	return 0
 }
 
+// 17.缩放 位置
 func OnBtnClick17(pbHandled *bool) int {
 	ReleaseAnimation()
 	var left int32 = 150
-	top = 50
+	var top int32 = 50
+	var hSvg, hAnimation, hScale int
 
-	hSvg = xc.XSvg_LoadStringW(svg5)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_leftTop", w.Handle))
+	{
+		hSvg = xc.XSvg_LoadStringW(svg5)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_leftTop", w.Handle))
 
-	hAnimation := xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	hScale := xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
-	xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_LeftTop)
-	xc.XAnima_Run(hAnimation, w.Handle)
-	top = top + 150
-	hSvg = xc.XSvg_LoadStringW(svg5)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_left", w.Handle))
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		hScale = xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
+		xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_LeftTop)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
+	{
+		top += 150
+		hSvg = xc.XSvg_LoadStringW(svg5)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_left", w.Handle))
 
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	hScale = xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
-	xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_Left)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		hScale = xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
+		xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_Left)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
+	{
+		top += 150
+		hSvg = xc.XSvg_LoadStringW(svg5)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_leftBottom", w.Handle))
 
-	top = top + 150
-	hSvg = xc.XSvg_LoadStringW(svg5)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_leftBottom", w.Handle))
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		hScale = xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
+		xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_LeftBottom)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
+	{
+		top = 50
+		left += 150
+		hSvg = xc.XSvg_LoadStringW(svg5)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_top", w.Handle))
 
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	hScale = xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
-	xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_LeftBottom)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		hScale = xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
+		xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_Top)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
+	{
+		top += 150
+		hSvg = xc.XSvg_LoadStringW(svg5)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_center", w.Handle))
 
-	top = 50
-	left = left + 150
-	hSvg = xc.XSvg_LoadStringW(svg5)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_top", w.Handle))
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		hScale = xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
+		xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_Center)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
+	{
+		top += 150
+		hSvg = xc.XSvg_LoadStringW(svg5)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_bottom", w.Handle))
 
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	hScale = xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
-	xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_Top)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		hScale = xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
+		xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_Bottom)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
+	{
+		left += 150
+		top = 50
+		hSvg = xc.XSvg_LoadStringW(svg5)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_rightTop", w.Handle))
 
-	top = top + 150
-	hSvg = xc.XSvg_LoadStringW(svg5)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_center", w.Handle))
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		hScale = xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
+		xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_RightTop)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
+	{
+		top += 150
+		hSvg = xc.XSvg_LoadStringW(svg5)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_right", w.Handle))
 
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	hScale = xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
-	xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_Center)
-	xc.XAnima_Run(hAnimation, w.Handle)
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		hScale = xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
+		xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_Right)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
+	{
+		top += 150
+		hSvg = xc.XSvg_LoadStringW(svg5)
+		list_svg = append(list_svg, hSvg)
+		xc.XSvg_SetPosition(hSvg, left, top)
+		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_rightBottom", w.Handle))
 
-	top = top + 150
-	hSvg = xc.XSvg_LoadStringW(svg5)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_bottom", w.Handle))
-
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	hScale = xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
-	xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_Bottom)
-	xc.XAnima_Run(hAnimation, w.Handle)
-
-	left = left + 150
-	top = 50
-	hSvg = xc.XSvg_LoadStringW(svg5)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_rightTop", w.Handle))
-
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	hScale = xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
-	xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_RightTop)
-	xc.XAnima_Run(hAnimation, w.Handle)
-
-	top = top + 150
-	hSvg = xc.XSvg_LoadStringW(svg5)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_right", w.Handle))
-
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	hScale = xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
-	xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_Right)
-	xc.XAnima_Run(hAnimation, w.Handle)
-
-	top = top + 150
-	hSvg = xc.XSvg_LoadStringW(svg5)
-	list_svg = append(list_svg, hSvg)
-	xc.XSvg_SetPosition(hSvg, left, top)
-	list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_rightBottom", w.Handle))
-
-	hAnimation = xc.XAnima_Create(hSvg, 0)
-	list_animation = append(list_animation, hAnimation)
-	hScale = xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
-	xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_RightBottom)
-	xc.XAnima_Run(hAnimation, w.Handle)
-
+		hAnimation = xc.XAnima_Create(hSvg, 0)
+		list_animation = append(list_animation, hAnimation)
+		hScale = xc.XAnima_Scale(hAnimation, 3000, 0.5, 0.5, 1, 0, true)
+		xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_RightBottom)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
 	return 0
 }
 
+// 18.按钮 宽度
 func OnBtnClick18(pbHandled *bool) int {
 	ReleaseAnimation()
 	var left int32 = 150
-	top = 50
+	var top int32 = 50
+	var hFont = font.New(10).Handle
 
 	for i := 0; i < 5; i++ {
 		hButton := xc.XBtn_Create(left, top, 100, 50, "鼠标 停留 离开", w.Handle)
 		list_xcgui = append(list_xcgui, hButton)
+		xc.XEle_SetFont(hButton, hFont)
+		xc.XEle_SetTextColor(hButton, xc.RGBA(255, 255, 255, 255))
+		xc.XBkM_SetInfo(xc.XEle_GetBkManager(hButton), "{99:1.9.9;98:16(0)32(1)64(2);5:2(15)20(1)21(3)26(1)22(-25024)23(255)9(4,4,4,4);5:2(15)20(1)21(3)26(1)22(-20122)23(255)9(4,4,4,4);5:2(15)20(1)21(3)26(1)22(-1667526)23(255)9(4,4,4,4);}")
+
 		xc.XEle_RegEventC1(hButton, xcc.XE_MOUSESTAY, OnMouseStay18)
 		xc.XEle_RegEventC1(hButton, xcc.XE_MOUSELEAVE, OnMouseLeave18)
-		top = top + 60
+		top += 60
 	}
 	w.Redraw(false)
-
 	return 0
 }
 
 // 鼠标进入事件18
 func OnMouseStay18(hButton int, pbHandled *bool) int {
 	// 释放当前对象关联的动画
-	for i := 0; i < len(list_animation); i++ {
-		if len(list_animation)-2 == i {
-			if hButton == xc.XAnima_GetObjectUI(list_animation[i]) {
-				xc.XAnima_Release(list_animation[i], false)
-				list_animation = append(list_animation[:i], list_animation[i+1:]...)
-			}
+	for i := len(list_animation) - 1; i >= 0; i-- {
+		hObjectUI := xc.XAnima_GetObjectUI(list_animation[i])
+		if hButton == hObjectUI {
+			xc.XAnima_Release(list_animation[i], false)
+			list_animation = append(list_animation[:i], list_animation[i+1:]...)
 		}
 	}
 
 	hAnimation := xc.XAnima_Create(hButton, 1)
 	list_animation = append(list_animation, hAnimation)
-	hScale := xc.XAnima_ScaleSize(hAnimation, 400, 200, 50, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, false)
+	hScale := xc.XAnima_ScaleSize(hAnimation, 400, 250, 40, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, false)
 	xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_Left)
 	xc.XAnima_Run(hAnimation, w.Handle)
-
 	return 0
 }
 
 // 鼠标离开事件18
 func OnMouseLeave18(hButton, hEleStay int, pbHandled *bool) int {
 	// 释放当前对象关联的动画
-	for i := 0; i < len(list_animation); i++ {
-		if len(list_animation)-2 == i {
-			if hButton == xc.XAnima_GetObjectUI(list_animation[i]) {
-				xc.XAnima_Release(list_animation[i], false)
-				list_animation = append(list_animation[:i], list_animation[i+1:]...)
-			}
+	for i := len(list_animation) - 1; i >= 0; i-- {
+		hObjectUI := xc.XAnima_GetObjectUI(list_animation[i])
+		if hButton == hObjectUI {
+			xc.XAnima_Release(list_animation[i], false)
+			list_animation = append(list_animation[:i], list_animation[i+1:]...)
 		}
 	}
 
 	hAnimation := xc.XAnima_Create(hButton, 1)
 	list_animation = append(list_animation, hAnimation)
-	hScale := xc.XAnima_ScaleSize(hAnimation, 400, 100, 50, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In, false)
+	hScale := xc.XAnima_ScaleSize(hAnimation, 400, 150, 40, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In, false)
 	xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_Left)
 	xc.XAnima_Run(hAnimation, w.Handle)
-
 	return 0
 }
