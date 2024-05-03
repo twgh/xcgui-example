@@ -18,13 +18,13 @@
 64位
 
 ```bash
-curl -fL "https://pkggo-generic.pkg.coding.net/xcgui/file/xcgui.dll?version=latest" -o xcgui.dll
+iwr https://pkggo-generic.pkg.coding.net/xcgui/file/xcgui.dll?version=latest -OutFile xcgui.dll
 ```
 
 32位
 
 ```bash
-curl -fL "https://pkggo-generic.pkg.coding.net/xcgui/file/xcgui-32.dll?version=latest" -o xcgui.dll
+iwr https://pkggo-generic.pkg.coding.net/xcgui/file/xcgui-32.dll?version=latest -OutFile xcgui.dll
 ```
 
 #### （3）使用getxcgui工具下载
