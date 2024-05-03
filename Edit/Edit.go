@@ -16,7 +16,7 @@ func main() {
 
 	// 1.普通编辑框
 	edit := widget.NewEdit(12, 35, 100, 30, w.Handle)
-	edit.SetTextColor(xc.ABGR(236, 64, 122, 255))
+	edit.SetTextColor(xc.ARGB(236, 64, 122, 255))
 	edit.SetText("hello")
 
 	// 2.密码输入框
@@ -33,7 +33,7 @@ func main() {
 	editMultiLine.EnableAutoWrap(true)
 	editMultiLine.AddText("你好, 世界")
 	// 添加样式
-	style1 := editMultiLine.AddStyleEx("Arial", 14, xcc.FontStyle_Bold, xc.ABGR(0, 191, 165, 255), true)
+	style1 := editMultiLine.AddStyleEx("Arial", 14, xcc.FontStyle_Bold, xc.ARGB(0, 191, 165, 255), true)
 	// 添加带样式的文本
 	editMultiLine.AddTextEx("\nhello world", style1)
 	// 获取编辑框文本
