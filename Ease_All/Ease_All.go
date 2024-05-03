@@ -2,6 +2,7 @@
 package main
 
 import (
+	"runtime"
 	"time"
 
 	"github.com/twgh/xcgui/app"
@@ -18,14 +19,21 @@ var (
 
 	m_easeFlag           = xcc.Ease_Type_Out // 缓动方式
 	m_easeType   int32   = 11                // 缓动类型
-	m_pos                = 0                 // 当前位置
-	m_time               = 60                // 缓动点数量
-	m_time_pos           = 0                 // 当前点
+	m_pos        int32   = 0                 // 当前位置
+	m_time       int32   = 60                // 缓动点数量
+	m_time_pos   int32   = 0                 // 当前点
 	m_rect       xc.RECT                     // 窗口客户区坐标
 	m_windowType = 2                         // 窗口水平或垂直缓动
 )
 
 func main() {
+	// 这是必要的, 这将保证main函数中对UI库命令的调用是在一个系统线程中执行的。
+	// 如果不在一个系统线程中执行, 那程序大概率卡死.
+	// 其他例子里没有加是因为简单的例子确实不需要这两句代码, 总之从初始化到Run需要保证是在一个系统线程中执行.
+	// 程序运行就窗口卡死未响应就是go的运行时调度的原因, 还没到Run就切换到其他线程了, 比如你在Run前http访问网页了main中加上这两句就不会有问题, 不加就可能出问题.
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+
 	a := app.New(true)
 	a.SetPaintFrequency(10)
 	w = window.New(0, 0, 700, 450, "炫彩缓动测试", 0, xcc.Window_Style_Default|xcc.Window_Style_Drag_Window)
@@ -92,25 +100,22 @@ func main() {
 	btn = widget.NewButton(550, 120, 110, 50, "Run - 缓动曲线", w.Handle)
 	btn.Event_BnClick(OnBtnStart)
 
+	w.AdjustLayout()
+	w.ShowWindow(xcc.SW_SHOW)
+
 	// 窗口绘制事件
 	w.Event_PAINT(OnDrawWindow)
 
-	w.ShowWindow(xcc.SW_SHOW)
-
-	// 窗口第一次出现时的缓动
-	time.AfterFunc(time.Millisecond*3, func() {
-		// 获取窗口坐标
-		var rect xc.RECT
-		w.GetRect(&rect)
-
-		for i := 1; i <= 30; i++ {
-			v := ease.Bounce(float32(i)/30.0, xcc.Ease_Type_Out)
-			y := int32(v * float32(rect.Top))
-
-			w.SetPosition(rect.Left, y)
-			time.Sleep(time.Millisecond * 10)
-		}
-	})
+	// 获取窗口坐标
+	var rect xc.RECT
+	w.GetRect(&rect)
+	// 第一次缓动
+	for t := 0; t <= 30; t++ {
+		v := ease.Bounce(float32(t)/30.0, xcc.Ease_Type_Out)
+		y := int32(v * float32(rect.Top))
+		w.SetPosition(rect.Left, y).Redraw(true)
+		time.Sleep(time.Millisecond * 10)
+	}
 
 	a.Run()
 	a.Exit()
@@ -146,7 +151,7 @@ func OnButtonCheck(hEle int, bCheck bool, pbHandled *bool) int {
 		m_easeType = id - 10
 	}
 
-	w.Redraw(false)
+	w.Redraw(true)
 	return 0
 }
 
@@ -182,31 +187,31 @@ func OnBtnStartWindow(pbHandled *bool) int {
 	w.GetRect(&rect)
 
 	time2 := m_time / 2
-	for i := 0; i <= time2; i++ {
+	for t := int32(0); t <= time2; t++ {
 		var v float32
 		switch m_easeType {
 		case 1:
-			v = ease.Linear(float32(i) / float32(time2))
+			v = ease.Linear(float32(t) / float32(time2))
 		case 2:
-			v = ease.Quad(float32(i)/float32(time2), m_easeFlag)
+			v = ease.Quad(float32(t)/float32(time2), m_easeFlag)
 		case 3:
-			v = ease.Cubic(float32(i)/float32(time2), m_easeFlag)
+			v = ease.Cubic(float32(t)/float32(time2), m_easeFlag)
 		case 4:
-			v = ease.Quart(float32(i)/float32(time2), m_easeFlag)
+			v = ease.Quart(float32(t)/float32(time2), m_easeFlag)
 		case 5:
-			v = ease.Quint(float32(i)/float32(time2), m_easeFlag)
+			v = ease.Quint(float32(t)/float32(time2), m_easeFlag)
 		case 6:
-			v = ease.Sine(float32(i)/float32(time2), m_easeFlag)
+			v = ease.Sine(float32(t)/float32(time2), m_easeFlag)
 		case 7:
-			v = ease.Expo(float32(i)/float32(time2), m_easeFlag)
+			v = ease.Expo(float32(t)/float32(time2), m_easeFlag)
 		case 8:
-			v = ease.Circ(float32(i)/float32(time2), m_easeFlag)
+			v = ease.Circ(float32(t)/float32(time2), m_easeFlag)
 		case 9:
-			v = ease.Elastic(float32(i)/float32(time2), m_easeFlag)
+			v = ease.Elastic(float32(t)/float32(time2), m_easeFlag)
 		case 10:
-			v = ease.Back(float32(i)/float32(time2), m_easeFlag)
+			v = ease.Back(float32(t)/float32(time2), m_easeFlag)
 		case 11:
-			v = ease.Bounce(float32(i)/float32(time2), m_easeFlag)
+			v = ease.Bounce(float32(t)/float32(time2), m_easeFlag)
 		}
 
 		if m_windowType == 1 {
@@ -216,7 +221,8 @@ func OnBtnStartWindow(pbHandled *bool) int {
 			y := int32(v * float32(rect.Top))
 			w.SetPosition(rect.Left, y)
 		}
-		time.Sleep(20 * time.Millisecond)
+		w.Redraw(true)
+		time.Sleep(10 * time.Millisecond)
 	}
 	return 0
 }
@@ -224,96 +230,7 @@ func OnBtnStartWindow(pbHandled *bool) int {
 // 缓动曲线
 func OnBtnStart(pbHandled *bool) int {
 	var width float32 = 400.0
-	for i := 0; i <= m_time; i++ {
-		var v float32
-		switch m_easeType {
-		case 1:
-			v = ease.Linear(float32(i) / float32(m_time))
-		case 2:
-			v = ease.Quad(float32(i)/float32(m_time), m_easeFlag)
-		case 3:
-			v = ease.Cubic(float32(i)/float32(m_time), m_easeFlag)
-		case 4:
-			v = ease.Quart(float32(i)/float32(m_time), m_easeFlag)
-		case 5:
-			v = ease.Quint(float32(i)/float32(m_time), m_easeFlag)
-		case 6:
-			v = ease.Sine(float32(i)/float32(m_time), m_easeFlag)
-		case 7:
-			v = ease.Expo(float32(i)/float32(m_time), m_easeFlag)
-		case 8:
-			v = ease.Circ(float32(i)/float32(m_time), m_easeFlag)
-		case 9:
-			v = ease.Elastic(float32(i)/float32(m_time), m_easeFlag)
-		case 10:
-			v = ease.Back(float32(i)/float32(m_time), m_easeFlag)
-		case 11:
-			v = ease.Bounce(float32(i)/float32(m_time), m_easeFlag)
-		}
-
-		m_pos = int(v * width)
-		m_time_pos = i
-		time.Sleep(20 * time.Millisecond)
-
-		rc := m_rect
-		rc.Top = 170
-		w.RedrawRect(&rc, true)
-	}
-	return 0
-}
-
-// 绘制
-func OnDrawWindow(hDraw int, pbHandled *bool) int {
-	*pbHandled = true
-
-	var rect xc.RECT
-	w.GetClientRect(&rect)
-	draw := drawx.NewByHandle(hDraw)
-
-	draw.SetBrushColor(xc.ABGR(230, 230, 230, 255))
-	draw.FillRect(&rect)
-	m_rect = rect
-
-	draw.SetBrushColor(xc.ABGR(200, 200, 200, 255))
-	draw.DrawRect(&rect)
-
-	draw.SetBrushColor(xc.ABGR(0, 0, 200, 255))
-	draw.TextOutEx(260, 10, "炫彩界面库(XCGUI) - 缓动测试")
-
-	var rc xc.RECT
-	rc.Left = 150
-	rc.Top = 190
-	rc.Right = rc.Left + 400 + 30
-	rc.Bottom = rc.Top + 50
-
-	rcBorder := rc
-	rcBorder.Left -= 2
-	rcBorder.Top -= 2
-	rcBorder.Right += 2
-	rcBorder.Bottom += 2
-	draw.SetBrushColor(xc.ABGR(0, 0, 200, 255))
-	draw.DrawRect(&rcBorder)
-
-	rcFill := rc
-	rcFill.Left = rcFill.Left + int32(m_pos)
-	rcFill.Right = rcFill.Left + 30
-	draw.SetBrushColor(xc.ABGR(128, 0, 0, 255))
-	draw.FillRect(&rcFill)
-
-	var rcBorder_Line xc.RECT
-	rcBorder_Line.Left = 150
-	rcBorder_Line.Right = 150 + 400
-	rcBorder_Line.Top = 255
-	rcBorder_Line.Bottom = 255 + 180
-
-	rcBorder = rcBorder_Line
-	rcBorder.Right++
-	rcBorder.Bottom++
-	draw.SetBrushColor(xc.ABGR(180, 180, 180, 255))
-	draw.DrawRect(&rcBorder)
-
-	pts := make([]xc.POINT, 121)
-	for t := 0; t <= m_time; t++ {
+	for t := int32(0); t <= m_time; t++ {
 		var v float32
 		switch m_easeType {
 		case 1:
@@ -340,16 +257,105 @@ func OnDrawWindow(hDraw int, pbHandled *bool) int {
 			v = ease.Bounce(float32(t)/float32(m_time), m_easeFlag)
 		}
 
-		pts[t].X = rc.Left + int32(float32(t)*400.0/float32(m_time))
-		pts[t].Y = rcBorder_Line.Bottom - int32(v*180.0)
+		m_pos = int32(v * width)
+		m_time_pos = t
+		time.Sleep(10 * time.Millisecond)
+
+		rc := m_rect
+		rc.Top = 170
+		w.RedrawRect(&rc, true)
+	}
+	return 0
+}
+
+// 绘制
+func OnDrawWindow(hDraw int, pbHandled *bool) int {
+	*pbHandled = true
+
+	var rect xc.RECT
+	w.GetClientRect(&rect)
+
+	draw := drawx.NewByHandle(hDraw)
+	draw.SetBrushColor(xc.ARGB(230, 230, 230, 255))
+	draw.FillRect(&rect)
+	m_rect = rect
+
+	draw.SetBrushColor(xc.ARGB(200, 200, 200, 255))
+	draw.DrawRect(&rect)
+
+	draw.SetBrushColor(xc.ARGB(0, 0, 200, 255))
+	draw.TextOutEx(260, 10, "炫彩界面库(XCGUI) - 缓动测试")
+
+	var rc xc.RECT
+	rc.Left = 150
+	rc.Top = 190
+	rc.Right = rc.Left + 400 + 30
+	rc.Bottom = rc.Top + 50
+
+	rcBorder := rc
+	rcBorder.Left -= 2
+	rcBorder.Top -= 2
+	rcBorder.Right += 2
+	rcBorder.Bottom += 2
+	draw.SetBrushColor(xc.ARGB(0, 0, 200, 255))
+	draw.DrawRect(&rcBorder)
+
+	rcFill := rc
+	rcFill.Left = rcFill.Left + m_pos
+	rcFill.Right = rcFill.Left + 30
+	draw.SetBrushColor(xc.ARGB(128, 0, 0, 255))
+	draw.FillRect(&rcFill)
+
+	var rcBorder_Line xc.RECT
+	rcBorder_Line.Left = 150
+	rcBorder_Line.Right = 150 + 400
+	rcBorder_Line.Top = 255
+	rcBorder_Line.Bottom = 255 + 180
+
+	rcBorder = rcBorder_Line
+	rcBorder.Right++
+	rcBorder.Bottom++
+	draw.SetBrushColor(xc.ARGB(180, 180, 180, 255))
+	draw.DrawRect(&rcBorder)
+
+	pts := make([]xc.POINTF, 121)
+	for t := int32(0); t <= m_time; t++ {
+		var v float32
+		switch m_easeType {
+		case 1:
+			v = ease.Linear(float32(t) / float32(m_time))
+		case 2:
+			v = ease.Quad(float32(t)/float32(m_time), m_easeFlag)
+		case 3:
+			v = ease.Cubic(float32(t)/float32(m_time), m_easeFlag)
+		case 4:
+			v = ease.Quart(float32(t)/float32(m_time), m_easeFlag)
+		case 5:
+			v = ease.Quint(float32(t)/float32(m_time), m_easeFlag)
+		case 6:
+			v = ease.Sine(float32(t)/float32(m_time), m_easeFlag)
+		case 7:
+			v = ease.Expo(float32(t)/float32(m_time), m_easeFlag)
+		case 8:
+			v = ease.Circ(float32(t)/float32(m_time), m_easeFlag)
+		case 9:
+			v = ease.Elastic(float32(t)/float32(m_time), m_easeFlag)
+		case 10:
+			v = ease.Back(float32(t)/float32(m_time), m_easeFlag)
+		case 11:
+			v = ease.Bounce(float32(t)/float32(m_time), m_easeFlag)
+		}
+
+		pts[t].X = float32(rc.Left) + float32(t)*400.0/float32(m_time)
+		pts[t].Y = float32(rcBorder_Line.Bottom) - v*180.0
 	}
 
 	draw.EnableSmoothingMode(true)
-	draw.SetBrushColor(xc.ABGR(128, 0, 0, 255))
+	draw.SetBrushColor(xc.ARGB(128, 0, 0, 255))
 
-	left := int(rc.Left) + int(float32(m_time_pos)*400.0/float32(m_time))
+	left := rc.Left + int32(float32(m_time_pos)*400.0/float32(m_time))
 
-	draw.DrawLine(left, int(rcBorder_Line.Top), left, int(rcBorder_Line.Bottom))
-	draw.DrawCurve(pts, m_time+1, 0.5)
+	draw.DrawLine(left, rcBorder_Line.Top, left, rcBorder_Line.Bottom)
+	draw.DrawCurveF(pts, m_time+1, 0.5)
 	return 0
 }
