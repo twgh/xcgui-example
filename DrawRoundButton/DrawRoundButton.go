@@ -22,7 +22,7 @@ func main() {
 	// 创建一个按钮
 	btn := widget.NewButton((w.GetWidth()-100)/2, 100, 100, 30, "圆角按钮", w.Handle)
 	// 设置按钮字体颜色, 白色
-	btn.SetTextColor(xc.ABGR(255, 255, 255, 255))
+	btn.SetTextColor(xc.ARGB(255, 255, 255, 255))
 	// 设置按钮圆角
 	setBtnRound(btn, 14)
 
@@ -35,7 +35,7 @@ func main() {
 }
 
 // 设置按钮圆角
-func setBtnRound(btn *widget.Button, round int) {
+func setBtnRound(btn *widget.Button, round int32) {
 	// 启用按钮背景透明
 	btn.EnableBkTransparent(true)
 	// 注册按钮绘制事件
@@ -47,14 +47,14 @@ func setBtnRound(btn *widget.Button, round int) {
 
 		// 设置不同状态下的按钮背景色
 		nState := xc.XBtn_GetStateEx(hEle)
-		bgcolor := xc.ABGR(1, 162, 232, 255) // 默认
+		bgcolor := xc.ARGB(1, 162, 232, 255) // 默认
 		switch nState {
 		case xcc.Button_State_Stay:
-			bgcolor = xc.ABGR(1, 182, 252, 255)
+			bgcolor = xc.ARGB(1, 182, 252, 255)
 		case xcc.Button_State_Down:
-			bgcolor = xc.ABGR(1, 122, 192, 255)
+			bgcolor = xc.ARGB(1, 122, 192, 255)
 		case xcc.Button_State_Disable:
-			bgcolor = xc.ABGR(211, 215, 212, 255)
+			bgcolor = xc.ARGB(211, 215, 212, 255)
 		}
 		// 设置画刷颜色
 		draw.SetBrushColor(bgcolor)
