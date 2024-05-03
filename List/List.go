@@ -58,7 +58,7 @@ func onBnClick(hEle int, pbHandled *bool) int {
 	case btn_del.Handle:
 		listDelSelectItem()
 	case btn_clear.Handle:
-		list.DeleteItemAll()
+		list.DeleteRowAll()
 		list.Redraw(true)
 	}
 
@@ -75,9 +75,9 @@ func createList() {
 	// 创建数据适配器: 5列
 	list.CreateAdapter(5)
 	// 列表_置项默认高度和选中时高度
-	list.SetItemHeightDefault(24, 26)
+	list.SetRowHeightDefault(24, 26)
 	// 列表_绘制项分割线
-	// list.SetDrawItemBkFlags(xcc.List_DrawItemBk_Flag_Line | xcc.List_DrawItemBk_Flag_LineV | xcc.List_DrawItemBk_Flag_Leave | xcc.List_DrawItemBk_Flag_Stay | xcc.List_DrawItemBk_Flag_Select)
+	// list.SetDrawRowBkFlags(xcc.List_DrawItemBk_Flag_Line | xcc.List_DrawItemBk_Flag_LineV | xcc.List_DrawItemBk_Flag_Leave | xcc.List_DrawItemBk_Flag_Stay | xcc.List_DrawItemBk_Flag_Select)
 	// 表头和表项居中
 	listTextAlign()
 
@@ -153,9 +153,9 @@ func listAddItem() {
 		// 添加行
 		var index int
 		if list.GetProperty("sortType") == "1" { // 正序
-			index = list.AddItemTextEx("name2", fmt.Sprintf("item%d-Column2", num))
+			index = list.AddRowTextEx("name2", fmt.Sprintf("item%d-Column2", num))
 		} else { // 倒序
-			index = list.InsertItemTextEx(0, "name2", fmt.Sprintf("item%d-Column2", num))
+			index = list.InsertRowTextEx(0, "name2", fmt.Sprintf("item%d-Column2", num))
 		}
 		fmt.Printf("添加行索引: %d\n", index)
 
@@ -172,7 +172,7 @@ func listAddItem() {
 
 // List删除选中行
 func listDelSelectItem() {
-	count := list.GetSelectItemCount()
+	count := list.GetSelectRowCount()
 	if count == 0 {
 		w.MessageBox("提示", "你没有选中列表任何行!", xcc.MessageBox_Flag_Ok|xcc.MessageBox_Flag_Icon_Info, xcc.Window_Style_Modal)
 		return
@@ -183,7 +183,7 @@ func listDelSelectItem() {
 	list.GetSelectAll(&indexArr, count)
 	// 根据选中行索引数组倒着删, 正着删的话你每删1行下面的行索引就变了
 	for i := count - 1; i > -1; i-- {
-		list.DeleteItem(int(indexArr[i]))
+		list.DeleteRow(int(indexArr[i]))
 		fmt.Printf("删除行索引: %d\n", indexArr[i])
 	}
 
