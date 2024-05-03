@@ -34,7 +34,7 @@ func main() {
 	// 设置窗口阴影
 	w.SetShadowInfo(8, 255, 10, false, 0)
 	// 给整个窗口添加背景色
-	w.AddBkFill(xcc.Window_State_Flag_Leave, xc.ABGR(51, 57, 60, 254))
+	w.AddBkFill(xcc.Window_State_Flag_Leave, xc.ARGB(51, 57, 60, 254))
 
 	// 创建最小化按钮
 	btnMin := widget.NewButton(397, 8, 30, 30, "", w.Handle)
