@@ -26,21 +26,25 @@ func main() {
 	w := window.New(0, 0, 430, 300, "TrayIcon", 0, xcc.Window_Style_Default|xcc.Window_Style_Drag_Window)
 	w.SetBorderSize(1, 30, 1, 1)
 
-	// 加载icon
-	hIcon := wapi.LoadImageW(0, "TrayIcon/icon.ico", wapi.IMAGE_ICON, 0, 0, wapi.LR_LOADFROMFILE|wapi.LR_DEFAULTSIZE|wapi.LR_SHARED)
-	fmt.Println("hIcon:", hIcon)
-	fmt.Println("LastErr:", syscall.GetLastError())
-
-	// 托盘图标_置图标
-	xc.XTrayIcon_SetIcon(hIcon)
-	// 托盘图标_置提示文本
-	xc.XTrayIcon_SetTips("托盘提示信息")
-	// 置弹出气泡
-	// xc.XTrayIcon_SetPopupBalloon("弹出气泡", "弹出气泡内容测试", 0, xcc.TrayIcon_Flag_Icon_Info)
-
 	// 添加
 	btn1 := widget.NewButton(50, 135, 80, 30, "添加", w.Handle)
 	btn1.Event_BnClick(func(pbHandled *bool) int {
+		// 加载icon
+		iconName := "TrayIcon/icon.ico"
+		hIcon := wapi.LoadImageW(0, iconName, wapi.IMAGE_ICON, 0, 0, wapi.LR_LOADFROMFILE|wapi.LR_DEFAULTSIZE|wapi.LR_SHARED)
+		fmt.Println("hIcon:", hIcon)
+		fmt.Println("LastErr:", syscall.GetLastError())
+		if hIcon == 0 {
+			xc.XC_Alert("提示", "hIcon为0")
+			return 0
+		}
+
+		// 托盘图标_置图标
+		xc.XTrayIcon_SetIcon(hIcon)
+		// 托盘图标_置提示文本
+		xc.XTrayIcon_SetTips("托盘提示信息")
+		// 置弹出气泡
+		// xc.XTrayIcon_SetPopupBalloon("弹出气泡", "弹出气泡内容测试", 0, xcc.TrayIcon_Flag_Icon_Info)
 		xc.XTrayIcon_Add(w.Handle, 111) // 自定义的id会传到托盘事件里
 		return 0
 	})
@@ -63,6 +67,7 @@ func main() {
 
 	// 注册托盘图标事件
 	w.Event_TRAYICON(func(wParam, lParam uint, pbHandled *bool) int {
+		fmt.Println(wParam, lParam)
 		switch xcc.WM_(lParam) {
 		case xcc.WM_LBUTTONDOWN:
 			w.ShowWindow(xcc.SW_SHOWNORMAL)
