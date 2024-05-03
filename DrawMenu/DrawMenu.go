@@ -129,11 +129,11 @@ func onMenuDrawBackground(hDraw int, pInfo *xc.Menu_DrawBackground_, pbHandled *
 	xc.XWnd_GetClientRect(pInfo.HWindow, &rc)
 
 	// 绘制菜单背景
-	xc.XDraw_SetBrushColor(hDraw, xc.ABGR(255, 255, 255, 255))
+	xc.XDraw_SetBrushColor(hDraw, xc.ARGB(255, 255, 255, 255))
 	xc.XDraw_FillRect(hDraw, &rc)
 
 	// 绘制菜单边框
-	xc.XDraw_SetBrushColor(hDraw, xc.ABGR(218, 220, 224, 255))
+	xc.XDraw_SetBrushColor(hDraw, xc.ARGB(218, 220, 224, 255))
 	xc.XDraw_DrawRect(hDraw, &rc)
 	return 0
 }
@@ -144,8 +144,8 @@ func onMenuDrawItem(hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *bool) int {
 
 	// 绘制分割栏
 	if pInfo.NState&xcc.Menu_Item_Flag_Separator > 0 {
-		xc.XDraw_SetBrushColor(hDraw, xc.ABGR(218, 220, 224, 255))
-		xc.XDraw_DrawLine(hDraw, int(pInfo.RcItem.Left+3), int(pInfo.RcItem.Top+1), int(pInfo.RcItem.Right-3), int(pInfo.RcItem.Top+1))
+		xc.XDraw_SetBrushColor(hDraw, xc.ARGB(218, 220, 224, 255))
+		xc.XDraw_DrawLine(hDraw, pInfo.RcItem.Left+3, pInfo.RcItem.Top+1, pInfo.RcItem.Right-3, pInfo.RcItem.Top+1)
 		return 0
 	}
 
@@ -158,12 +158,12 @@ func onMenuDrawItem(hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *bool) int {
 			Right:  pInfo.RcItem.Right + 2,
 			Bottom: pInfo.RcItem.Bottom,
 		}
-		xc.XDraw_SetBrushColor(hDraw, xc.ABGR(230, 230, 230, 255))
+		xc.XDraw_SetBrushColor(hDraw, xc.ARGB(230, 230, 230, 255))
 		xc.XDraw_FillRect(hDraw, &rc)
 	} else {
 		// 如果存在下一个兄弟项, 绘制菜单项之间的分割线
 		/* 		if xc.XMenu_GetNextSiblingItem(pInfo.HMenu, int(pInfo.NID)) != xcc.XC_ID_ERROR {
-			xc.XDraw_SetBrushColor(hDraw, xc.ABGR(82, 88, 94, 255))
+			xc.XDraw_SetBrushColor(hDraw, xc.ARGB(82, 88, 94, 255))
 			xc.XDraw_DrawLine(hDraw, int(pInfo.RcItem.Left)+3, int(pInfo.RcItem.Bottom)-1, int(pInfo.RcItem.Right)-3, int(pInfo.RcItem.Bottom)-1)
 		} */
 	}
@@ -179,7 +179,7 @@ func onMenuDrawItem(hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *bool) int {
 
 		pt[2].X = pInfo.RcItem.Right - 7
 		pt[2].Y = pInfo.RcItem.Top + 15
-		xc.XDraw_SetBrushColor(hDraw, xc.ABGR(130, 130, 130, 255))
+		xc.XDraw_SetBrushColor(hDraw, xc.ARGB(130, 130, 130, 255))
 		xc.XDraw_FillPolygon(hDraw, pt[:], 3)
 	}
 
@@ -190,10 +190,10 @@ func onMenuDrawItem(hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *bool) int {
 
 	if pInfo.NState&xcc.Menu_Item_Flag_Disable > 0 {
 		// 设置被禁用的菜单项文本颜色
-		xc.XDraw_SetBrushColor(hDraw, xc.ABGR(160, 160, 160, 255))
+		xc.XDraw_SetBrushColor(hDraw, xc.ARGB(160, 160, 160, 255))
 	} else {
 		// 设置未禁用的菜单项文本颜色
-		xc.XDraw_SetBrushColor(hDraw, xc.ABGR(77, 77, 77, 255))
+		xc.XDraw_SetBrushColor(hDraw, xc.ARGB(77, 77, 77, 255))
 	}
 	// 获取菜单项文本
 	text := common.UintPtrToString(pInfo.PText)
