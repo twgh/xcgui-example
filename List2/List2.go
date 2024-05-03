@@ -46,7 +46,7 @@ func main() {
 	// 创建数据适配器: 2列
 	ls.CreateAdapter(2)
 	// 列表_置项默认高度
-	ls.SetItemHeightDefault(28, 28)
+	ls.SetRowHeightDefault(28, 28)
 
 	// 添加列
 	ls.AddColumnText(68, "name1", "状态")
@@ -55,7 +55,7 @@ func main() {
 	// 循环添加数据
 	for i := 0; i < 8; i++ {
 		// 添加行
-		index := ls.AddItemText("")
+		index := ls.AddRowText("")
 		// 置行数据
 		ls.SetItemText(index, 1, "")
 	}
@@ -90,7 +90,7 @@ func onLIST_TEMP_CREATE_END(pItem *xc.List_Item_, nFlag int32, pbHandled *bool) 
 
 // 按钮事件
 func onBnClick(hEle int, pbHandled *bool) int {
-	row := ls.GetItemIndexFromHXCGUI(hEle) // 获取项索引
+	row := ls.GetRowIndexFromHXCGUI(hEle) // 获取项索引
 	btnText := xc.XBtn_GetText(hEle)
 	var col int // 列索引
 	switch btnText {
