@@ -47,7 +47,7 @@ func main() {
 
 	for i := 1; i < 10; i++ {
 		id := strconv.Itoa(i)
-		index := ls.AddItemText("item" + id + "-column" + id)
+		index := ls.AddRowText("item" + id + "-column" + id)
 		ls.SetItemText(index, 1, "item"+id+"-column"+id)
 		ls.SetItemText(index, 2, "item"+id+"-column"+id)
 		ls.SetItemText(index, 3, "item"+id+"-column"+id)
