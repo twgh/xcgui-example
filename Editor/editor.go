@@ -27,14 +27,14 @@ func main() {
 	// 设置Editor的字体
 	Editor.SetFont(font1.Handle)
 	// 设置默认颜色
-	Editor.SetTextColor(xc.ABGR(100, 100, 100, 255))
+	Editor.SetTextColor(xc.ARGB(100, 100, 100, 255))
 
 	// 添加样式
-	iStyle_fun := Editor.AddStyle(0, xc.ABGR(255, 128, 0, 255), true)     // 函数
-	iStyle_str := Editor.AddStyle(0, xc.ABGR(206, 145, 120, 255), true)   // 字符串
-	iStyle_comment := Editor.AddStyle(0, xc.ABGR(67, 166, 74, 255), true) // 注释
-	iStyle_key1 := Editor.AddStyle(0, xc.ABGR(86, 156, 214, 255), true)   // key1
-	iStyle_key2 := Editor.AddStyle(0, xc.ABGR(200, 0, 0, 255), true)      // key2
+	iStyle_fun := Editor.AddStyle(0, xc.ARGB(255, 128, 0, 255), true)     // 函数
+	iStyle_str := Editor.AddStyle(0, xc.ARGB(206, 145, 120, 255), true)   // 字符串
+	iStyle_comment := Editor.AddStyle(0, xc.ARGB(67, 166, 74, 255), true) // 注释
+	iStyle_key1 := Editor.AddStyle(0, xc.ARGB(86, 156, 214, 255), true)   // key1
+	iStyle_key2 := Editor.AddStyle(0, xc.ARGB(200, 0, 0, 255), true)      // key2
 
 	// 设置样式
 	Editor.SetStyleFunction(iStyle_fun)
