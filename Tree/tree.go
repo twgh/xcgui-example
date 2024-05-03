@@ -50,7 +50,7 @@ func main() {
 			// 设置文本字体
 			xc.XShapeText_SetFont(hst, font.NewEX("Arial", 12, xcc.FontStyle_Bold).Handle)
 			// 设置文本颜色
-			xc.XShapeText_SetTextColor(hst, xc.ABGR(255, 34, 33, 255))
+			xc.XShapeText_SetTextColor(hst, xc.ARGB(255, 34, 33, 255))
 		}
 		return 0
 	})
