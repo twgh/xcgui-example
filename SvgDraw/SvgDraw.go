@@ -41,8 +41,8 @@ func OnWndDrawWindow(hDraw int, pbHandled *bool) int {
 	// 创建绘制对象
 	draw := drawx.NewByHandle(hDraw)
 
-	left := 20
-	top := 50
+	var left int32 = 20
+	var top int32 = 50
 	draw.DrawSvgEx(svg1.Handle, left, top, 100, 100)
 	left += 100
 	draw.DrawSvgEx(svg1.Handle, left, top+(100-72)/2, 72, 72)
