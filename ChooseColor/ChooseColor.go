@@ -54,12 +54,12 @@ func ExampleChooseColorW() {
 	}
 
 	rgb := cc.RgbResult
-	abgr := xc.RGB2ABGR(int(rgb), 255)
+	argb := xc.RGB2ARGB(int(rgb), 255)
 	fmt.Println("rgb颜色:", rgb)
-	fmt.Println("abgr颜色:", abgr)
+	fmt.Println("argb颜色:", argb)
 	fmt.Println(custColors) // 如果你添加了自定义颜色, 会保存在这个数组里面, 然后只要这个数组还在, 再次打开选择颜色界面时, 之前添加的自定义颜色还会存在
 
 	// 设置窗口背景颜色
-	w.AddBkFill(xcc.Window_State_Flag_Leave, abgr)
+	w.AddBkFill(xcc.Window_State_Flag_Leave, argb)
 	w.Redraw(true)
 }
