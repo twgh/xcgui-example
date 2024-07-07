@@ -34,12 +34,13 @@ func main() {
 	// 设置窗口阴影
 	w.SetShadowInfo(8, 255, 10, false, 0)
 	// 给整个窗口添加背景色
-	w.AddBkFill(xcc.Window_State_Flag_Leave, xc.ARGB(51, 57, 60, 254))
+	w.AddBkFill(xcc.Window_State_Flag_Leave, xc.RGBA(51, 57, 60, 254))
 
 	// 创建最小化按钮
 	btnMin := widget.NewButton(397, 8, 30, 30, "", w.Handle)
 	btnMin.SetTypeEx(xcc.Button_Type_Min)
-	// 创建结束按钮
+
+	// 创建关闭按钮
 	btnClose := widget.NewButton(427, 8, 30, 30, "", w.Handle)
 	btnClose.SetTypeEx(xcc.Button_Type_Close)
 
@@ -57,8 +58,8 @@ func main() {
 
 // 给按钮加上三态图片
 func setBtnImg(btn *widget.Button, file []byte) {
-	for i := 0; i < 3; i++ {
-		x := int32(i * 31)
+	for i := int32(0); i < 3; i++ {
+		x := i * 31
 		// 图片_加载从内存, 指定区域位置及大小
 		img := imagex.NewByMemRect(file, x, 0, 30, 30)
 
