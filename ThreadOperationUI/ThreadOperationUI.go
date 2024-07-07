@@ -25,6 +25,8 @@ var (
 
 func main() {
 	a = app.New(true)
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
 	w = window.New(0, 0, 550, 300, "ThreadOperationUI", 0, xcc.Window_Style_Default)
 
 	// 创建按钮
@@ -34,9 +36,12 @@ func main() {
 	// 单选按钮
 	radioBtn1 = widget.NewButton(20, 70, 70, 30, "方式1", w.Handle)
 	radioBtn2 = widget.NewButton(100, 70, 70, 30, "方式2", w.Handle)
+
 	radioBtn1.SetTypeEx(xcc.Button_Type_Radio)
 	radioBtn2.SetTypeEx(xcc.Button_Type_Radio)
-	radioBtn1.SetCheck(true) // 默认选中radioBtn1
+	// 默认选中radioBtn1
+	radioBtn1.SetCheck(true)
+
 	radioBtn1.Event_BUTTON_CHECK1(onBnCheck)
 	radioBtn2.Event_BUTTON_CHECK1(onBnCheck)
 
@@ -49,7 +54,7 @@ func onBnClick(pbHandled *bool) int {
 	btn.Enable(false)
 	btn.Redraw(true)
 
-	// 另起线程是为了不卡界面
+	// 另起协程是为了不卡界面
 	switch t {
 	case 1:
 		go updateBtn1() // 第一种方式: xc.XC_CallUiThreadEx
@@ -63,11 +68,11 @@ func onBnClick(pbHandled *bool) int {
 func updateBtn1() {
 	fmt.Println("使用方式1: CallUiThreadEx")
 	for i := 0; i < 2010; i += 10 {
-		// 如果直接在非界面线程内操作UI, 次数多了程序必将崩溃, 而且你不会知道它在什么时候崩溃.
-		// 使用 a.CallUiThreadEx() 这样是在界面线程进行UI操作, 就不会崩溃了.
+		// 如果直接在非UI线程内操作UI, 次数多了程序必将崩溃, 而且你不会知道它在什么时候崩溃.
+		// 使用 a.CallUiThreadEx() 这样是在UI线程进行UI操作, 就不会崩溃了.
 		a.CallUiThreadEx(func(data int) int {
 			btn.SetText(strconv.Itoa(data))
-			btn.SetWidth(data / 5)
+			btn.SetWidth(int32(data / 5))
 			w.Redraw(false)
 			return 0
 		}, i) // 把i传进回调函数了
@@ -86,7 +91,7 @@ func updateBtn1() {
 type updateButton struct {
 	HEle         int
 	Text         string
-	Width        int
+	Width        int32
 	RedrawWindow bool
 }
 
@@ -104,17 +109,17 @@ func updateBtn2() {
 		RedrawWindow: false,
 	}
 
-	for i := 0; i < 2010; i += 10 {
+	for i := int32(0); i < 2010; i += 10 {
 		// 如果直接在非界面线程内操作UI, 次数多了程序必将崩溃, 而且你不会知道它在什么时候崩溃.
 		// 使用 CallUiThreader 这样是在界面线程进行UI操作, 就不会崩溃了.
-		u.Text = strconv.Itoa(i)
+		u.Text = xc.Itoa(i)
 		u.Width = i / 5
 		a.CallUiThreader(u, 0)
 		time.Sleep(time.Millisecond * 1)
 	}
 
 	// 解禁按钮.
-	// 如果不需要传参数进回调函数, 也不需要返回值时可以调用xc.XC_CallUT(), 回调函数写法能简单些.
+	// 如果不需要传参数进回调函数, 也不需要返回值时可以调用 a.CallUT(), 回调函数写法能简单些.
 	a.CallUT(func() {
 		btn.Enable(true)
 		btn.Redraw(true)
