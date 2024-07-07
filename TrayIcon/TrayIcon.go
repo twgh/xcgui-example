@@ -66,7 +66,7 @@ func main() {
 	})
 
 	// 注册托盘图标事件
-	w.Event_TRAYICON(func(wParam, lParam uint, pbHandled *bool) int {
+	w.Event_TRAYICON(func(wParam, lParam uintptr, pbHandled *bool) int {
 		fmt.Println(wParam, lParam)
 		switch xcc.WM_(lParam) {
 		case xcc.WM_LBUTTONDOWN:
