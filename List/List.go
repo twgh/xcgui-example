@@ -1,4 +1,4 @@
-// 列表: 添加行, 删除选中行, 清空行, 排序, 表头表项文本居中
+// 列表: 添加行, 删除选中行, 清空行, 排序, 表头表项文本居中, 双击编辑列表项
 package main
 
 import (
@@ -116,12 +116,77 @@ func createList() {
 		}
 		return 0
 	})
+
+	// 列表_鼠标左键双击事件
+	list.Event_LBUTTONDBCLICK(func(nFlags int, pPt *xc.POINT, pbHandled *bool) int {
+		// 取鼠标点击的行和列
+		var row, column int32
+		list.HitTestOffset(pPt, &row, &column)
+		fmt.Println("双击行索引:", row, "列索引:", column)
+		if row < 0 || column < 0 {
+			return 0
+		}
+		// 取列表行高
+		var height int32
+		list.GetRowHeight(row, &height, &height)
+
+		// 创建编辑框
+		// 获取双击项的布局元素句柄. 列表默认项都是一个布局元素里放一个形状文本, 第0个就是布局元素, 第1个就是形状文本
+		// 至于我是怎么知道的, 这个是打开设计器创建一个列表项模板文件后, 就知道它里面是什么了
+		hLayout := list.GetTemplateObject(row, column, 0)
+		if hLayout == 0 {
+			return 0
+		}
+		// 取列宽度
+		width := list.GetColumnWidth(column)
+		edit := widget.NewEdit(0, 0, width, height, hLayout)
+		// 设置编辑框的值为当前列表项内容, 并全选, 置焦点
+		text := list.GetItemText(row, column)
+		edit.SetText(text)
+		if text != "" {
+			edit.SelectAll()
+		}
+		w.SetFocusEle(edit.Handle)
+
+		// 存储当前列表项的行和列, 下面要用
+		edit.SetProperty("row", xc.Itoa(row))
+		edit.SetProperty("column", xc.Itoa(column))
+
+		// 编辑框键盘按下事件, 确认修改列表项文本
+		edit.Event_KEYDOWN1(onEleKeyDown)
+		// 编辑框失去焦点事件, 销毁编辑框
+		edit.Event_KILLFOCUS1(onEleKillFocus)
+		return 0
+	})
+}
+
+// 元素键盘按下事件
+func onEleKeyDown(hEle int, wParam, lParam uintptr, pbHandled *bool) int {
+	switch wParam {
+	case xcc.VK_Enter: // 回车键
+		row := xc.Atoi(xc.XC_GetProperty(hEle, "row"))
+		column := xc.Atoi(xc.XC_GetProperty(hEle, "column"))
+		list.SetItemText(row, column, xc.XEdit_GetText_Temp(hEle))
+		xc.XEle_Destroy(hEle)
+		list.RefreshRow(row)
+		list.Redraw(true)
+	case xcc.VK_Esc: // Esc键
+		xc.XEle_Destroy(hEle)
+		list.Redraw(true)
+	}
+	return 0
+}
+
+func onEleKillFocus(hEle int, pbHandled *bool) int {
+	xc.XEle_Destroy(hEle)
+	list.Redraw(true)
+	return 0
 }
 
 // 表头和表项居中, 纯代码实现需要记一些api, 需要有清晰的思维, 还是用设计器来的简单, 真要写大程序不可能离开设计器的
 func listTextAlign() {
 	list.Event_LIST_HEADER_TEMP_CREATE_END(func(pItem *xc.List_Header_Item_, pbHandled *bool) int {
-		for i := 0; i < list.GetColumnCount(); i++ {
+		for i := int32(0); i < list.GetColumnCount(); i++ {
 			hEle := list.GetHeaderTemplateObject(i, 1)
 			if a.IsHXCGUI(hEle, xcc.XC_SHAPE_TEXT) { // 是形状文本
 				xc.XShapeText_SetTextAlign(hEle, xcc.TextAlignFlag_Center|xcc.TextAlignFlag_Vcenter)
@@ -133,8 +198,8 @@ func listTextAlign() {
 	list.Event_LIST_TEMP_CREATE_END(func(pItem *xc.List_Item_, nFlag int32, pbHandled *bool) int {
 		// nFlag  0:状态改变(复用); 1:新模板实例; 2:旧模板复用
 		if nFlag == 1 {
-			for i := 0; i < list.GetColumnCount(); i++ {
-				hEle := list.GetTemplateObject(int(pItem.Index), i, 1)
+			for i := int32(0); i < list.GetColumnCount(); i++ {
+				hEle := list.GetTemplateObject(pItem.Index, i, 1)
 				if a.IsHXCGUI(hEle, xcc.XC_SHAPE_TEXT) { // 是形状文本
 					xc.XShapeText_SetTextAlign(hEle, xcc.TextAlignFlag_Center|xcc.TextAlignFlag_Vcenter)
 				}
@@ -151,7 +216,7 @@ func listAddItem() {
 		num := list.GetCount_AD() + 1
 
 		// 添加行
-		var index int
+		var index int32
 		if list.GetProperty("sortType") == "1" { // 正序
 			index = list.AddRowTextEx("name2", fmt.Sprintf("item%d-Column2", num))
 		} else { // 倒序
@@ -183,18 +248,18 @@ func listDelSelectItem() {
 	list.GetSelectAll(&indexArr, count)
 	// 根据选中行索引数组倒着删, 正着删的话你每删1行下面的行索引就变了
 	for i := count - 1; i > -1; i-- {
-		list.DeleteRow(int(indexArr[i]))
+		list.DeleteRow(indexArr[i])
 		fmt.Printf("删除行索引: %d\n", indexArr[i])
 	}
 
 	// 重排剩余行序号
 	count = list.GetCount_AD()
 	if list.GetProperty("sortType") == "1" { // 正序
-		for i := 0; i < count; i++ {
+		for i := int32(0); i < count; i++ {
 			list.SetItemInt(i, 0, i+1)
 		}
 	} else { // 倒序
-		for i, num := 0, count; i < count; i, num = i+1, num-1 {
+		for i, num := int32(0), count; i < count; i, num = i+1, num-1 {
 			list.SetItemInt(i, 0, num)
 		}
 	}
