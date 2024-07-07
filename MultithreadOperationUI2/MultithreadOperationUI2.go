@@ -59,8 +59,8 @@ func main() {
 }
 
 type updateList struct {
-	Item int    // 项索引
-	Col  int    // 列索引
+	Item int32  // 项索引
+	Col  int32  // 列索引
 	Text string // 项文本
 
 	rwm sync.RWMutex // 保证同时只有1个在给List置入数据
@@ -91,9 +91,9 @@ func onBnClick(pbHandled *bool) int {
 
 			go func() {
 				u.rwm.RLock()
-				u.Item = rand.Intn(ls.GetCount_AD())
-				u.Col = rand.Intn(ls.GetColumnCount())
-				u.Text = strconv.Itoa(rand.Intn(1000) + 1000)
+				u.Item = rand.Int31n(ls.GetCount_AD())
+				u.Col = rand.Int31n(ls.GetColumnCount())
+				u.Text = xc.Itoa(rand.Int31n(1000000) + 10000)
 				// 这种方式能够传递更多的数据进回调函数
 				a.CallUiThreader(u, ls.Handle) // 这样是在UI线程进行UI操作, 就不会崩溃了
 				u.rwm.RUnlock()
