@@ -45,8 +45,8 @@ func main() {
 	mb.AddButton("设置(T)")
 	mb.AddButton("工具(O)")
 
-	// 取消绘制菜单条按钮边框
-	for i := 0; i < mb.GetChildCount(); i++ {
+	// 取消绘制菜单条按钮边框, 注册按钮单击事件, 菜单被选择事件
+	for i := int32(0); i < mb.GetChildCount(); i++ {
 		hele := mb.GetChildByIndex(i)
 		xc.XEle_EnableDrawBorder(hele, false)
 		xc.XEle_RegEventC1(hele, xcc.XE_BNCLICK, onMenuBarBnClick)
