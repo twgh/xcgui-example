@@ -1,4 +1,4 @@
-// 复选按钮
+// 复选按钮(多选按钮/选择框)
 package main
 
 import (
@@ -15,16 +15,22 @@ func main() {
 	a := app.New(true)
 	a.EnableDPI(true)
 	a.EnableAutoDPI(true)
-	w := window.New(0, 0, 430, 300, "复选按钮", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 430, 300, "复选按钮(多选按钮/选择框)", 0, xcc.Window_Style_Default)
 
 	// 创建按钮
 	Check1 := widget.NewButton(10, 35, 70, 30, "Check1", w.Handle)
 	Check2 := widget.NewButton(10, 75, 70, 30, "Check2", w.Handle)
 	Check3 := widget.NewButton(10, 115, 70, 30, "Check3", w.Handle)
+
 	// 设置按钮类型
 	Check1.SetTypeEx(xcc.Button_Type_Check)
 	Check2.SetTypeEx(xcc.Button_Type_Check)
 	Check3.SetTypeEx(xcc.Button_Type_Check)
+
+	// 启用背景透明
+	Check1.EnableBkTransparent(true)
+	Check2.EnableBkTransparent(true)
+	Check3.EnableBkTransparent(true)
 
 	// 设置选中
 	Check1.SetCheck(true)
