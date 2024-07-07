@@ -22,6 +22,8 @@ var (
 
 func main() {
 	a = app.New(true)
+	a.EnableDPI(true)
+	a.EnableAutoDPI(true)
 	// 从内存zip加载资源文件
 	a.LoadResourceZipMem(zipData, "resource.res", "")
 	w = window.New(0, 0, 302, 308, "列表, 模板进阶操作", 0, xcc.Window_Style_Default)
@@ -72,15 +74,14 @@ func main() {
 func onLIST_TEMP_CREATE_END(pItem *xc.List_Item_, nFlag int32, pbHandled *bool) int {
 	// 只在创建新模板实例的时候, 给按钮注册事件, 这样是为了避免重复注册事件
 	if nFlag == 1 { // 0:状态改变(复用); 1:新模板实例; 2:旧模板复用
-		index := int(pItem.Index)
-		hBtn := ls.GetTemplateObject(index, 0, 2) // 前两个参数是项索引和列索引, 第三个参数是项模板里按钮的itemID, 在设计器里是可以自己填的, 必须填了, 这里才能获取
+		hBtn := ls.GetTemplateObject(pItem.Index, 0, 2) // 前两个参数是项索引和列索引, 第三个参数是项模板里按钮的itemID, 在设计器里是可以自己填的, 必须填了, 这里才能获取
 		fmt.Println(xc.XBtn_GetText(hBtn))
 		// 注册按钮事件
 		xc.XEle_RegEventC1(hBtn, xcc.XE_BNCLICK, onBnClick)
 
 		// 项模板里按钮的itemID是2,3,4
-		for i := 2; i < 5; i++ {
-			hBtn = ls.GetTemplateObject(index, 1, i)
+		for i := int32(2); i < 5; i++ {
+			hBtn = ls.GetTemplateObject(pItem.Index, 1, i)
 			fmt.Println(xc.XBtn_GetText(hBtn))
 			xc.XEle_RegEventC1(hBtn, xcc.XE_BNCLICK, onBnClick)
 		}
@@ -90,7 +91,6 @@ func onLIST_TEMP_CREATE_END(pItem *xc.List_Item_, nFlag int32, pbHandled *bool) 
 
 // 按钮事件
 func onBnClick(hEle int, pbHandled *bool) int {
-	row := ls.GetRowIndexFromHXCGUI(hEle) // 获取项索引
 	btnText := xc.XBtn_GetText(hEle)
 	var col int // 列索引
 	switch btnText {
@@ -100,6 +100,7 @@ func onBnClick(hEle int, pbHandled *bool) int {
 		col = 1
 	}
 
+	row := ls.GetRowIndexFromHXCGUI(hEle) // 获取项索引
 	xc.XC_MessageBox("提示", fmt.Sprintf("你点击了按钮: %s, 行: %d, 列: %d", btnText, row, col), xcc.MessageBox_Flag_Ok, w.GetHWND(), xcc.Window_Style_Default)
 	return 0
 }
