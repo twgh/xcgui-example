@@ -32,9 +32,8 @@ func main() {
 	img := imagex.NewByMem(img1)
 
 	// 循环把图片加到分组里
-	var index int
 	for i := 0; i < 3; i++ {
-		index = lv.Item_AddItemImage(group1, img.Handle, -1)
+		index := lv.Item_AddItemImage(group1, img.Handle, -1)
 		lv.Item_SetText(group1, index, 1, fmt.Sprintf("group1-item%d", i))
 
 		index = lv.Item_AddItemImage(group2, img.Handle, -1)
