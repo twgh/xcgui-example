@@ -102,8 +102,8 @@ func onBnClick(pbHandled *bool) int {
 }
 
 func setText(data int) int {
-	item := rand.Intn(ls.GetCount_AD())
-	col := rand.Intn(ls.GetColumnCount())
+	item := rand.Int31n(ls.GetCount_AD())
+	col := rand.Int31n(ls.GetColumnCount())
 	text := strconv.Itoa(rand.Intn(1000) + 1000)
 
 	rwm.RLock()
