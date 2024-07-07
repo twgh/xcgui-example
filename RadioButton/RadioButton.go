@@ -21,10 +21,17 @@ func main() {
 	Radio1 := widget.NewButton(10, 35, 70, 30, "Radio1", w.Handle)
 	Radio2 := widget.NewButton(10, 75, 70, 30, "Radio2", w.Handle)
 	Radio3 := widget.NewButton(10, 115, 70, 30, "Radio3", w.Handle)
+
 	// 设置按钮类型
 	Radio1.SetTypeEx(xcc.Button_Type_Radio)
 	Radio2.SetTypeEx(xcc.Button_Type_Radio)
 	Radio3.SetTypeEx(xcc.Button_Type_Radio)
+
+	// 设置背景透明
+	Radio1.EnableBkTransparent(true)
+	Radio2.EnableBkTransparent(true)
+	Radio3.EnableBkTransparent(true)
+
 	// 设置分组id
 	Radio1.SetGroupID(1)
 	Radio2.SetGroupID(1)
