@@ -1,4 +1,4 @@
-// 列表: 添加行, 删除选中行, 清空行, 排序, 表头表项文本居中, 双击编辑列表项
+// 列表: 添加行, 删除选中行, 清空行, 排序, 表头表项文本居中, 双击编辑列表项, 显示指定行
 package main
 
 import (
@@ -18,6 +18,9 @@ var (
 	btn_add   *widget.Button
 	btn_del   *widget.Button
 	btn_clear *widget.Button
+	btn_jump  *widget.Button
+
+	edit_line *widget.Edit
 )
 
 func main() {
@@ -43,6 +46,13 @@ func main() {
 	btn_clear = widget.NewButton(startX, 35, 100, 30, "删除所有行", w.Handle)
 	btn_clear.Event_BnClick1(onBnClick)
 
+	startX += 100 + 3
+	btn_jump = widget.NewButton(startX, 35, 100, 30, "跳转指定行", w.Handle)
+	btn_jump.Event_BnClick1(onBnClick)
+
+	startX += 100 + 3
+	edit_line = widget.NewEdit(startX, 35, 100, 30, w.Handle)
+
 	w.Show(true)
 	a.Run()
 	a.Exit()
@@ -60,6 +70,12 @@ func onBnClick(hEle int, pbHandled *bool) int {
 	case btn_clear.Handle:
 		list.DeleteRowAll()
 		list.Redraw(true)
+	case btn_jump.Handle:
+		row := xc.Atoi(edit_line.GetTextEx()) - 1
+		if row > -1 && row < list.GetCount_AD() {
+			list.VisibleRow(row) // TODO: 这里有个BUG, 向下跳转没问题, 但向上跳转就会少滚动一行
+			list.Redraw(true)
+		}
 	}
 
 	xc.XEle_Enable(hEle, true) // 操作后解禁按钮
