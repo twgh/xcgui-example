@@ -276,14 +276,14 @@ func OnDrawWindow(hDraw int, pbHandled *bool) int {
 	w.GetClientRect(&rect)
 
 	draw := drawx.NewByHandle(hDraw)
-	draw.SetBrushColor(xc.ARGB(230, 230, 230, 255))
+	draw.SetBrushColor(xc.RGBA(230, 230, 230, 255))
 	draw.FillRect(&rect)
 	m_rect = rect
 
-	draw.SetBrushColor(xc.ARGB(200, 200, 200, 255))
+	draw.SetBrushColor(xc.RGBA(200, 200, 200, 255))
 	draw.DrawRect(&rect)
 
-	draw.SetBrushColor(xc.ARGB(0, 0, 200, 255))
+	draw.SetBrushColor(xc.RGBA(0, 0, 200, 255))
 	draw.TextOutEx(260, 10, "炫彩界面库(XCGUI) - 缓动测试")
 
 	var rc xc.RECT
@@ -297,13 +297,13 @@ func OnDrawWindow(hDraw int, pbHandled *bool) int {
 	rcBorder.Top -= 2
 	rcBorder.Right += 2
 	rcBorder.Bottom += 2
-	draw.SetBrushColor(xc.ARGB(0, 0, 200, 255))
+	draw.SetBrushColor(xc.RGBA(0, 0, 200, 255))
 	draw.DrawRect(&rcBorder)
 
 	rcFill := rc
 	rcFill.Left = rcFill.Left + m_pos
 	rcFill.Right = rcFill.Left + 30
-	draw.SetBrushColor(xc.ARGB(128, 0, 0, 255))
+	draw.SetBrushColor(xc.RGBA(128, 0, 0, 255))
 	draw.FillRect(&rcFill)
 
 	var rcBorder_Line xc.RECT
@@ -315,7 +315,7 @@ func OnDrawWindow(hDraw int, pbHandled *bool) int {
 	rcBorder = rcBorder_Line
 	rcBorder.Right++
 	rcBorder.Bottom++
-	draw.SetBrushColor(xc.ARGB(180, 180, 180, 255))
+	draw.SetBrushColor(xc.RGBA(180, 180, 180, 255))
 	draw.DrawRect(&rcBorder)
 
 	pts := make([]xc.POINTF, 121)
@@ -351,7 +351,7 @@ func OnDrawWindow(hDraw int, pbHandled *bool) int {
 	}
 
 	draw.EnableSmoothingMode(true)
-	draw.SetBrushColor(xc.ARGB(128, 0, 0, 255))
+	draw.SetBrushColor(xc.RGBA(128, 0, 0, 255))
 
 	left := rc.Left + int32(float32(m_time_pos)*400.0/float32(m_time))
 
