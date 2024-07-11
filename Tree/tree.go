@@ -39,7 +39,7 @@ func main() {
 	// 你需要理解项模板的概念, Tree里面有一个默认的项模板, 它的每一项都是根据固定的项模板生成的.
 	// 如果你想知道默认的项模板是什么结构的, 可以打开设计器, 在一个项目中新建文件, 选择树项模板.
 	// 然后你就能理解项模板是什么样子了, 项模板就是各个基础元素组合而成的, 而你可以diy它达成你想要的样子.
-	// 这就是项模板存在的意义, 然后可以通过tree.SetItemTemplate相关函数设置你自己的项模板.
+	// 这就是项模板存在的意义, 然后可以通过 tree.SetItemTemplate 相关函数设置你自己的项模板.
 	// 其它有项模板的元素还有: List, ListBox, ListView等.
 	tree.Event_TREE_TEMP_CREATE_END(func(pItem *xc.Tree_Item_, nFlag int32, pbHandled *bool) int {
 		// nFlag  0:状态改变(复用); 1:新模板实例; 2:旧模板复用
@@ -50,7 +50,7 @@ func main() {
 			// 设置文本字体
 			xc.XShapeText_SetFont(hst, font.NewEX("Arial", 12, xcc.FontStyle_Bold).Handle)
 			// 设置文本颜色
-			xc.XShapeText_SetTextColor(hst, xc.ARGB(255, 34, 33, 255))
+			xc.XShapeText_SetTextColor(hst, xc.RGBA(255, 34, 33, 255))
 		}
 		return 0
 	})
