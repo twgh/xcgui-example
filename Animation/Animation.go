@@ -95,6 +95,19 @@ func main() {
 	CreateButtonRadio(left, &top, "17.缩放 位置").Event_BnClick(OnBtnClick17)
 	CreateButtonRadio(left, &top, "18.按钮 宽度").Event_BnClick(OnBtnClick18)
 
+	top = 35
+	left = 900
+	CreateButtonRadio(left, &top, "19.窗口特效").Event_BnClick(OnBtnClick19)
+	CreateButtonRadio(left, &top, "20.遮盖弹窗").Event_BnClick(OnBtnClick20)
+	// TODO
+	/*CreateButtonRadio(left, &top, "21.通知消息").Event_BnClick(OnBtnClick19)
+	CreateButtonRadio(left, &top, "22.进度条").Event_BnClick(OnBtnClick19)
+	CreateButtonRadio(left, &top, "23.焦点追踪").Event_BnClick(OnBtnClick19)
+	CreateButtonRadio(left, &top, "24.页面切换 滑动").Event_BnClick(OnBtnClick19)
+	CreateButtonRadio(left, &top, "25.折叠面板").Event_BnClick(OnBtnClick19)
+	CreateButtonRadio(left, &top, "26.图片轮播").Event_BnClick(OnBtnClick19)
+	CreateButtonRadio(left, &top, "27.背景管理器").Event_BnClick(OnBtnClick19)*/
+
 	w.Event_PAINT(OnWndDrawWindow)
 	w.ShowWindow(xcc.SW_SHOW)
 	a.Run()
@@ -582,7 +595,7 @@ func OnBtnClick8(pbHandled *bool) int {
 		xc.XEle_SetPadding(hLayout_, 10, 0, 10, 0)
 
 		hShapeText := xc.XShapeText_Create(0, 0, 100, 100, "炫彩界面库-www.xcgui.com-鼠标移动到上面查看", hLayout_)
-		xc.XShapeText_SetTextColor(hShapeText, xc.ARGB(255, 255, 255, 255))
+		xc.XShapeText_SetTextColor(hShapeText, xc.RGBA(255, 255, 255, 255))
 		xc.XWidget_LayoutItem_SetWidth(hShapeText, xcc.Layout_Size_Fill, 0)
 
 		list_xcgui = append(list_xcgui, hLayout_)
@@ -677,7 +690,7 @@ func OnBtnClick9(pbHandled *bool) int {
 		xc.XWidget_Show(hEle2, false)
 
 		hText := xc.XShapeText_Create(left, top+280, 200, 40, "炫彩界面库-图片切换\r\n$66.66", w.Handle)
-		xc.XShapeText_SetTextColor(hText, xc.ARGB(80, 80, 80, 255))
+		xc.XShapeText_SetTextColor(hText, xc.RGBA(80, 80, 80, 255))
 		list_xcgui = append(list_xcgui, hText)
 
 		xc.XEle_RegEventC1(hEle, xcc.XE_MOUSESTAY, OnMouseStay9)
@@ -780,7 +793,7 @@ func OnBtnClick10(pbHandled *bool) int {
 		xc.XShapePic_SetImage(hShapePic2, hImage2)
 
 		hText := xc.XShapeText_Create(left, top+280, 200, 40, "炫彩界面库-图片切换2\r\n$66.66", w.Handle)
-		xc.XShapeText_SetTextColor(hText, xc.ARGB(80, 80, 80, 255))
+		xc.XShapeText_SetTextColor(hText, xc.RGBA(80, 80, 80, 255))
 		list_xcgui = append(list_xcgui, hText)
 
 		xc.XEle_RegEventC1(hEle, xcc.XE_MOUSESTAY, OnMouseStay10)
@@ -1048,7 +1061,7 @@ func OnBtnClick12(pbHandled *bool) int {
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		xc.XSvg_SetRotateAngle(hSvg, -45)
-		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 0, 0, 255), true)
+		xc.XSvg_SetUserFillColor(hSvg, xc.RGBA(255, 0, 0, 255), true)
 
 		hAnimation = xc.XAnima_Create(hSvg, 0)
 		list_animation = append(list_animation, hAnimation)
@@ -1117,7 +1130,7 @@ func OnBtnClick13(pbHandled *bool) int {
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		xc.XSvg_SetRotateAngle(hSvg, 45)
-		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 0, 0, 255), true)
+		xc.XSvg_SetUserFillColor(hSvg, xc.RGBA(255, 0, 0, 255), true)
 
 		hAnimation = xc.XAnima_Create(hSvg, 0)
 		list_animation = append(list_animation, hAnimation)
@@ -1134,7 +1147,7 @@ func OnBtnClick13(pbHandled *bool) int {
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		xc.XSvg_SetRotateAngle(hSvg, -45)
-		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 0, 0, 255), true)
+		xc.XSvg_SetUserFillColor(hSvg, xc.RGBA(255, 0, 0, 255), true)
 
 		hAnimation = xc.XAnima_Create(hSvg, 0)
 		list_animation = append(list_animation, hAnimation)
@@ -1155,7 +1168,7 @@ func OnBtnClick14(pbHandled *bool) int {
 	hSvg := xc.XSvg_LoadStringW(svg7)
 	list_svg = append(list_svg, hSvg)
 	xc.XSvg_SetSize(hSvg, 50, 50)
-	xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 0, 0, 255), true)
+	xc.XSvg_SetUserFillColor(hSvg, xc.RGBA(255, 0, 0, 255), true)
 
 	// 移动 360度旋转
 	xc.XSvg_SetPosition(hSvg, left, top)
@@ -1235,7 +1248,7 @@ func OnBtnClick15(pbHandled *bool) int {
 		width = xc.XSvg_GetWidth(hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		xc.XSvg_SetRotateAngle(hSvg, 45)
-		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 0, 0, 255), true)
+		xc.XSvg_SetUserFillColor(hSvg, xc.RGBA(255, 0, 0, 255), true)
 
 		hAnimation = xc.XAnima_Create(hSvg, 0)
 		list_animation = append(list_animation, hAnimation)
@@ -1252,7 +1265,7 @@ func OnBtnClick15(pbHandled *bool) int {
 		width = xc.XSvg_GetWidth(hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		xc.XSvg_SetRotateAngle(hSvg, -45)
-		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 0, 0, 255), true)
+		xc.XSvg_SetUserFillColor(hSvg, xc.RGBA(255, 0, 0, 255), true)
 
 		hAnimation = xc.XAnima_Create(hSvg, 0)
 		list_animation = append(list_animation, hAnimation)
@@ -1274,11 +1287,11 @@ func OnBtnClick16(pbHandled *bool) int {
 		hSvg = xc.XSvg_LoadStringW(svg7)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
-		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 0, 0, 255), true)
+		xc.XSvg_SetUserFillColor(hSvg, xc.RGBA(255, 0, 0, 255), true)
 
 		hAnimation = xc.XAnima_Create(hSvg, 0)
 		list_animation = append(list_animation, hAnimation)
-		xc.XAnima_Color(hAnimation, 1500, xc.ARGB(0, 0, 255, 255), 1, 0, true)
+		xc.XAnima_Color(hAnimation, 1500, xc.RGBA(0, 0, 255, 255), 1, 0, true)
 		xc.XAnima_Run(hAnimation, w.Handle)
 	}
 	{
@@ -1286,11 +1299,11 @@ func OnBtnClick16(pbHandled *bool) int {
 		hSvg = xc.XSvg_LoadStringW(svg7)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
-		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(0, 255, 0, 255), true)
+		xc.XSvg_SetUserFillColor(hSvg, xc.RGBA(0, 255, 0, 255), true)
 
 		hAnimation = xc.XAnima_Create(hSvg, 0)
 		list_animation = append(list_animation, hAnimation)
-		xc.XAnima_Color(hAnimation, 1500, xc.ARGB(255, 0, 0, 255), 1, 0, true)
+		xc.XAnima_Color(hAnimation, 1500, xc.RGBA(255, 0, 0, 255), 1, 0, true)
 		xc.XAnima_Run(hAnimation, w.Handle)
 	}
 	{
@@ -1298,22 +1311,22 @@ func OnBtnClick16(pbHandled *bool) int {
 		hSvg = xc.XSvg_LoadStringW(svg7)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
-		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 255, 0, 255), true)
+		xc.XSvg_SetUserFillColor(hSvg, xc.RGBA(255, 255, 0, 255), true)
 
 		hAnimation = xc.XAnima_Create(hSvg, 0)
 		list_animation = append(list_animation, hAnimation)
-		xc.XAnima_Color(hAnimation, 1500, xc.ARGB(0, 0, 255, 255), 1, 0, true)
+		xc.XAnima_Color(hAnimation, 1500, xc.RGBA(0, 0, 255, 255), 1, 0, true)
 		xc.XAnima_Run(hAnimation, w.Handle)
 	}
 	{
 		hSvg = xc.XSvg_LoadString(svg15)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, 500, 300)
-		xc.XSvg_SetUserFillColor(hSvg, xc.ARGB(255, 255, 0, 255), true)
+		xc.XSvg_SetUserFillColor(hSvg, xc.RGBA(255, 255, 0, 255), true)
 
 		hAnimation = xc.XAnima_Create(hSvg, 0)
 		list_animation = append(list_animation, hAnimation)
-		xc.XAnima_Color(hAnimation, 1500, xc.ARGB(0, 255, 255, 255), 1, 0, true)
+		xc.XAnima_Color(hAnimation, 1500, xc.RGBA(0, 255, 255, 255), 1, 0, true)
 		xc.XAnima_Run(hAnimation, w.Handle)
 	}
 	{
@@ -1322,11 +1335,11 @@ func OnBtnClick16(pbHandled *bool) int {
 		xc.XWidget_LayoutItem_SetWidth(hShapeText, xcc.Layout_Size_Auto, -1) // 自动宽度
 		list_xcgui = append(list_xcgui, hShapeText)
 		xc.XShapeText_SetFont(hShapeText, hFontx)
-		xc.XShapeText_SetTextColor(hShapeText, xc.ARGB(255, 0, 0, 255))
+		xc.XShapeText_SetTextColor(hShapeText, xc.RGBA(255, 0, 0, 255))
 
 		hAnimation = xc.XAnima_Create(hShapeText, 0)
 		list_animation = append(list_animation, hAnimation)
-		xc.XAnima_Color(hAnimation, 1500, xc.ARGB(0, 0, 255, 255), 1, 0, true)
+		xc.XAnima_Color(hAnimation, 1500, xc.RGBA(0, 0, 255, 255), 1, 0, true)
 		xc.XAnima_Run(hAnimation, w.Handle)
 	}
 	{
@@ -1336,7 +1349,7 @@ func OnBtnClick16(pbHandled *bool) int {
 
 		hAnimation = xc.XAnima_Create(hShapeText, 0)
 		list_animation = append(list_animation, hAnimation)
-		xc.XAnima_Color(hAnimation, 1500, xc.ARGB(0, 255, 0, 255), 1, 0, true)
+		xc.XAnima_Color(hAnimation, 1500, xc.RGBA(0, 255, 0, 255), 1, 0, true)
 		xc.XAnima_Run(hAnimation, w.Handle)
 	}
 	return 0
@@ -1527,5 +1540,385 @@ func OnMouseLeave18(hButton, hEleStay int, pbHandled *bool) int {
 	hScale := xc.XAnima_ScaleSize(hAnimation, 400, 150, 40, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In, false)
 	xc.XAnimaScale_SetPosition(hScale, xcc.Position_Flag_Left)
 	xc.XAnima_Run(hAnimation, w.Handle)
+	return 0
+}
+
+// 19.窗口特效
+func OnBtnClick19(pbHandled *bool) int {
+	ReleaseAnimation()
+	var top int32 = 200
+	var left int32 = 140
+	var width int32 = 120
+	var height_btn int32 = 35
+	var height int32 = 34
+
+	btn := CreateButton(left, top, width, height_btn, "窗口 从上往下")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.Event_BnClick(OnBtnClick19_1)
+
+	btn = CreateButton(left, top, width, height_btn, "窗口 从左往右")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.Event_BnClick(OnBtnClick19_2)
+
+	btn = CreateButton(left, top, width, height_btn, "窗口 缩放")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.Event_BnClick(OnBtnClick19_3)
+
+	btn = CreateButton(left, top, width, height_btn, "窗口 缩放2")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.Event_BnClick(OnBtnClick19_4)
+
+	btn = CreateButton(left, top, width, height_btn, "窗口 透明")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.Event_BnClick(OnBtnClick19_5)
+
+	w.Redraw(false)
+	return 0
+}
+
+// 19.1 窗口缓动 从上往下
+func OnBtnClick19_1(pbHandled *bool) int {
+	var rcWindow xc.RECT
+	w.GetRect(&rcWindow)
+
+	left := float32(rcWindow.Left + (rcWindow.Right-rcWindow.Left)/2 + 100)
+	top := float32(rcWindow.Top + (rcWindow.Bottom-rcWindow.Top)/2 + 50)
+
+	hModal := xc.XModalWnd_Create(400, 300, "窗口缓动", w.GetHWND(), xcc.Window_Style_Modal|xcc.Window_Style_Drag_Window)
+
+	hAnimation := xc.XAnima_Create(hModal, 1)
+	list_animation = append(list_animation, hAnimation)
+	xc.XAnima_MoveEx(hAnimation, 1000, left, 20, left, top, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, false)
+	xc.XAnima_Run(hAnimation, hModal)
+
+	xc.XModalWnd_DoModal(hModal)
+	return 0
+}
+
+// 19.2 窗口缓动 从左往右
+func OnBtnClick19_2(pbHandled *bool) int {
+	var rcWindow xc.RECT
+	w.GetRect(&rcWindow)
+
+	left := float32(rcWindow.Left + (rcWindow.Right-rcWindow.Left)/2 + 100)
+	top := float32(rcWindow.Top + (rcWindow.Bottom-rcWindow.Top)/2 + 50)
+
+	hModal := xc.XModalWnd_Create(400, 300, "窗口缓动", w.GetHWND(), xcc.Window_Style_Modal|xcc.Window_Style_Drag_Window)
+
+	hAnimation := xc.XAnima_Create(hModal, 1)
+	list_animation = append(list_animation, hAnimation)
+	xc.XAnima_MoveEx(hAnimation, 1000, 20, top, left, top, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, false)
+	xc.XAnima_Run(hAnimation, hModal)
+
+	xc.XModalWnd_DoModal(hModal)
+	return 0
+}
+
+// 19.3 窗口缩放
+func OnBtnClick19_3(pbHandled *bool) int {
+	mw := window.NewModalWindow(400, 300, "窗口缩放", w.GetHWND(), xcc.Window_Style_Modal|xcc.Window_Style_Drag_Window)
+
+	hAnimation := xc.XAnima_Create(mw.Handle, 1)
+	list_animation = append(list_animation, hAnimation)
+
+	// TODO: 这里有个BUG, 导致窗口位置被改变了, 不应该改变才对, 是开启AutoDPI后出现的BUG
+	xc.XAnima_ScaleSize(hAnimation, 1000, 500, 400, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In, true)
+	xc.XAnima_Run(hAnimation, mw.Handle)
+
+	mw.DoModal()
+	return 0
+}
+
+// 19.4 窗口缩放2
+func OnBtnClick19_4(pbHandled *bool) int {
+	mw := window.NewModalWindow(400*0.5, 300*0.5, "窗口缩放2", w.GetHWND(), xcc.Window_Style_Modal|xcc.Window_Style_Drag_Window)
+
+	hAnimation := xc.XAnima_Create(mw.Handle, 1)
+	list_animation = append(list_animation, hAnimation)
+
+	// TODO: 这里有个BUG, 导致窗口位置被改变了, 不应该改变才对, 是开启AutoDPI后出现的BUG
+	xc.XAnima_ScaleSize(hAnimation, 1000, 400, 300, 1, xcc.Ease_Flag_Back|xcc.Ease_Flag_Out, false)
+	xc.XAnima_Run(hAnimation, mw.Handle)
+
+	mw.DoModal()
+	return 0
+}
+
+// 19.5 窗口透明
+func OnBtnClick19_5(pbHandled *bool) int {
+	hModal := xc.XModalWnd_Create(400, 300, "窗口透明", w.GetHWND(), xcc.Window_Style_Modal|xcc.Window_Style_Drag_Window)
+	xc.XWnd_SetTransparentType(hModal, xcc.Window_Transparent_Shadow)
+	xc.XWnd_SetTransparentAlpha(hModal, 1)
+
+	hAnimation := xc.XAnima_Create(hModal, 1)
+	list_animation = append(list_animation, hAnimation)
+	xc.XAnima_Delay(hAnimation, 100)
+	xc.XAnima_Alpha(hAnimation, 1000, 255, 1, 0, false)
+	xc.XAnima_Run(hAnimation, hModal)
+
+	xc.XModalWnd_DoModal(hModal)
+	return 0
+}
+
+// 20. 遮盖弹窗
+func OnBtnClick20(pbHandled *bool) int {
+	ReleaseAnimation()
+	var top int32 = 200
+	var left int32 = 140
+	var width int32 = 150
+	var height_btn int32 = 35
+	var height int32 = 34
+
+	hButton := CreateButton(left, top, width, height_btn, "遮盖层-内嵌子弹窗").Handle
+	top += height
+	list_xcgui = append(list_xcgui, hButton)
+	xc.XEle_RegEventC(hButton, xcc.XE_BNCLICK, OnBtnClick20_1)
+
+	hButton = CreateButton(left, top, width, height_btn, "遮盖层-内嵌消息框").Handle
+	top += height
+	list_xcgui = append(list_xcgui, hButton)
+	xc.XEle_RegEventC(hButton, xcc.XE_BNCLICK, OnBtnClick20_2)
+
+	hButton = CreateButton(left, top, width, height_btn, "遮盖层-消息框").Handle
+	top += height
+	list_xcgui = append(list_xcgui, hButton)
+	xc.XEle_RegEventC(hButton, xcc.XE_BNCLICK, OnBtnClick20_3)
+
+	hButton = CreateButton(left, top, width, height_btn, "遮盖层-等待").Handle
+	top += height
+	list_xcgui = append(list_xcgui, hButton)
+	xc.XEle_RegEventC(hButton, xcc.XE_BNCLICK, OnBtnClick20_4)
+
+	hButton = CreateButton(left, top, width, height_btn, "遮盖层-基础元素弹窗").Handle
+	top += height
+	list_xcgui = append(list_xcgui, hButton)
+	xc.XEle_RegEventC(hButton, xcc.XE_BNCLICK, OnBtnClick20_5)
+
+	w.Redraw(false)
+	return 0
+}
+
+var hEle_mask int // 遮罩
+
+// 20.1 遮盖层 内嵌子弹窗
+func OnBtnClick20_1(pbHandled *bool) int {
+	var rect xc.RECT
+	w.GetBodyRect(&rect)
+
+	xc.XC_EnableDPI(false)
+	hEle_mask = xc.XEle_Create(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top, w.Handle)
+	xc.XC_EnableDPI(true)
+
+	xc.XEle_AddBkFill(hEle_mask, xcc.CombinedState(xcc.Window_State_Flag_Leave), xc.RGBA(0, 0, 0, 200))
+	xc.XEle_Redraw(hEle_mask, true)
+
+	hWindow_ := xc.XWnd_CreateEx(0, 0x40000000, "", 0, 0, 300, 200, "内嵌子弹窗", w.GetHWND(), xcc.Window_Style_Default)
+
+	xc.XWnd_Show(hWindow_, true)
+	xc.XWnd_RegEventC(hWindow_, xcc.WM_DESTROY, OnWndDestroy20)
+	return 0
+}
+
+func OnWndDestroy20(pbHandled *bool) int {
+	if hEle_mask != 0 {
+		xc.XEle_Destroy(hEle_mask)
+		hEle_mask = 0
+		w.Redraw(false)
+	}
+	return 0
+}
+
+// 20.2 遮盖层 内嵌消息框
+func OnBtnClick20_2(pbHandled *bool) int {
+	var rect xc.RECT
+	w.GetBodyRect(&rect)
+
+	xc.XC_EnableDPI(false)
+	hEle_mask = xc.XEle_Create(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top, w.Handle)
+	xc.XC_EnableDPI(true)
+
+	xc.XEle_AddBkFill(hEle_mask, xcc.CombinedState(xcc.Window_State_Flag_Leave), xc.RGBA(0, 0, 0, 200))
+	xc.XEle_Redraw(hEle_mask, true)
+
+	hWindow_ := xc.XMsg_CreateEx(0, 0x40000000, "", "标题", "内嵌消息框", xcc.MessageBox_Flag_Ok|xcc.MessageBox_Flag_Icon_Info, w.GetHWND(), xcc.Window_Style_Default)
+
+	xc.XWnd_Show(hWindow_, true)
+	xc.XWnd_RegEventC(hWindow_, xcc.WM_DESTROY, OnWndDestroy20)
+	return 0
+}
+
+// 20.3 遮盖层 消息框
+func OnBtnClick20_3(pbHandled *bool) int {
+	var rect xc.RECT
+	w.GetBodyRect(&rect)
+
+	xc.XC_EnableDPI(false)
+	hEle_mask = xc.XEle_Create(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top, w.Handle)
+	xc.XC_EnableDPI(true)
+
+	xc.XEle_AddBkFill(hEle_mask, xcc.CombinedState(xcc.Window_State_Flag_Leave), xc.RGBA(0, 0, 0, 200))
+	xc.XEle_Redraw(hEle_mask, true)
+
+	hWindow_ := xc.XMsg_Create("标题", "消息框", xcc.MessageBox_Flag_Ok|xcc.MessageBox_Flag_Icon_Info, w.GetHWND(), xcc.Window_Style_Default)
+
+	xc.XWnd_Show(hWindow_, true)
+	xc.XWnd_RegEventC(hWindow_, xcc.WM_DESTROY, OnWndDestroy20)
+	return 0
+}
+
+var hSvg1, hSvg2 int
+
+// 20.4 遮盖层 等待
+func OnBtnClick20_4(pbHandled *bool) int {
+	const str = `<svg x="0" y="0" width="25" height="25" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#ee6362" /></svg>`
+	const str2 = `<svg x="0" y="0" width="25" height="25" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#2cb0b2" /></svg>`
+
+	hSvg1 = xc.XSvg_LoadStringW(str)
+	hSvg2 = xc.XSvg_LoadStringW(str2)
+
+	var rect xc.RECT
+	w.GetBodyRect(&rect)
+
+	xc.XC_EnableDPI(false)
+	hEle_mask = xc.XEle_Create(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top, w.Handle)
+	xc.XC_EnableDPI(true)
+
+	xc.XEle_AddBkFill(hEle_mask, xcc.CombinedState(xcc.Window_State_Flag_Leave), xc.RGBA(0, 0, 0, 200))
+	xc.XEle_Redraw(hEle_mask, true)
+
+	xc.XEle_RegEventC1(hEle_mask, xcc.XE_PAINT, OnDraw20_4and5)
+	xc.XEle_RegEventC1(hEle_mask, xcc.XE_LBUTTONDOWN, OnLButtonDown20_4and5)
+
+	left := rect.Left + (rect.Right-rect.Left-100)/2
+	top := (rect.Bottom-rect.Top)/2 - 50
+	xc.XShapeText_SetTextColor(xc.XShapeText_Create(left, top-25, 100, 20, "正在加载...", hEle_mask), xc.RGBA(255, 255, 255, 255))
+
+	// 两个球型交替移动
+	{
+		xc.XSvg_SetPosition(hSvg1, left, top)
+
+		hGroup := xc.XAnimaGroup_Create(0)
+		list_animation = append(list_animation, hGroup)
+		xc.XAnima_Run(hGroup, w.Handle)
+
+		hAnimation := xc.XAnima_Create(hSvg1, 1)
+		xc.XAnimaGroup_AddItem(hGroup, hAnimation)
+		xc.XAnima_Move(hAnimation, 1000, float32(left+50), float32(top), 1, xcc.Ease_Flag_Sine|xcc.Ease_Flag_InOut, false)
+		xc.XAnima_Move(hAnimation, 1000, float32(left), float32(top), 1, xcc.Ease_Flag_Sine|xcc.Ease_Flag_InOut, false)
+
+		xc.XSvg_SetPosition(hSvg2, left+50, top)
+
+		hGroup = xc.XAnimaGroup_Create(0)
+		list_animation = append(list_animation, hGroup)
+		xc.XAnima_Run(hGroup, w.Handle)
+
+		hAnimation = xc.XAnima_Create(hSvg2, 1)
+		xc.XAnimaGroup_AddItem(hGroup, hAnimation)
+		xc.XAnima_Move(hAnimation, 1000, float32(left), float32(top), 1, xcc.Ease_Flag_Sine|xcc.Ease_Flag_InOut, false)
+		xc.XAnima_Move(hAnimation, 1000, float32(left+50), float32(top), 1, xcc.Ease_Flag_Sine|xcc.Ease_Flag_InOut, false)
+	}
+	return 0
+}
+
+func OnDraw20_4and5(hEle int, hDraw int, pbHandled *bool) int {
+	*pbHandled = true
+	xc.XEle_DrawEle(hEle, hDraw)
+
+	xc.XDraw_DrawSvgSrc(hDraw, hSvg1)
+	xc.XDraw_DrawSvgSrc(hDraw, hSvg2)
+	return 0
+}
+
+func OnLButtonDown20_4and5(hEle int, nFlags uint32, pPt *xc.POINT, pbHandled *bool) int {
+	*pbHandled = true
+	xc.XEle_Destroy(hEle)
+
+	if hSvg1 != 0 {
+		xc.XSvg_Destroy(hSvg1)
+		hSvg1 = 0
+	}
+	if hSvg2 != 0 {
+		xc.XSvg_Destroy(hSvg2)
+		hSvg2 = 0
+	}
+	w.Redraw(false)
+	return 0
+}
+
+// 20.5 遮盖层 基础元素弹窗
+func OnBtnClick20_5(pbHandled *bool) int {
+	var rect xc.RECT
+	w.GetBodyRect(&rect)
+
+	xc.XC_EnableDPI(false)
+	hEle_mask = xc.XEle_Create(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top, w.Handle)
+	xc.XC_EnableDPI(true)
+
+	xc.XEle_AddBkFill(hEle_mask, xcc.CombinedState(xcc.Window_State_Flag_Leave), xc.RGBA(0, 0, 0, 200))
+	xc.XEle_RegEventC1(hEle_mask, xcc.XE_PAINT, OnDraw20_4and5)
+	xc.XEle_RegEventC1(hEle_mask, xcc.XE_LBUTTONDOWN, OnLButtonDown20_4and5)
+
+	var width int32 = 350
+	var height int32 = 170
+	left := rect.Left + (rect.Right-rect.Left-100)/2
+	top := (rect.Bottom-rect.Top)/2 - 50
+
+	hEleDlg := xc.XEle_Create(left, 10, width, height, hEle_mask)
+	xc.XWidget_Show(hEleDlg, false)
+	xc.XEle_EnableBkTransparent(hEleDlg, true)
+	xc.XBkM_SetInfo(xc.XEle_GetBkManager(hEleDlg), "{99:1.9.9;98:1(0);5:2(15)20(1)21(3)26(1)22(-1)23(255)9(10,10,10,10);}")
+	xc.XShapeText_SetTextColor(xc.XShapeText_Create(50, 5, 220, 20, "炫彩界面库-仅作功能演示,没有美化处理", hEleDlg), xc.RGBA(80, 80, 80, 255))
+
+	hBtnClose := xc.XBtn_Create(width-40, 2, 30, 22, "", hEleDlg)
+	xc.XBkM_SetInfo(xc.XEle_GetBkManager(hBtnClose), "{99:1.9.9;98:16(0,1)32(0,1)64(0,1);5:2(48)8(45.00)3(2,10,2,10)20(1)21(3)26(0)22(-8355712)23(255);5:2(48)8(45.00)3(10,2,100,100)20(1)21(3)26(0)22(-8355712)23(255);}")
+
+	xc.XShapeText_SetTextColor(xc.XShapeText_Create(20, 60, 200, 20, "请输入内容(这是一个演示)", hEleDlg), xc.RGBA(80, 80, 80, 255))
+
+	strBkm := "{99:1.9.9;98:16(0)32(1)64(1);5:2(15)20(1)21(3)26(0)22(-1)23(255)10(1)7(1)11(3)16(0)12(-3618616)13(255)9(5,5,5,5);5:2(15)20(1)21(3)26(0)22(-1)23(255)10(1)7(1)11(3)16(0)12(-17897)13(255)9(5,5,5,5);}"
+	hEdit := xc.XEdit_Create(20, 82, width-40, 26, hEleDlg)
+	xc.XEdit_SetDefaultText(hEdit, "请输入内容...")
+	xc.XEle_SetBorderSize(hEdit, 10, 0, 10, 0)
+	xc.XBkM_SetInfo(xc.XEle_GetBkManager(hEdit), strBkm)
+
+	var left_ int32 = 190
+	var top_ = height - 35
+	hBtnOk := xc.XBtn_Create(left_, top_, 60, 22, "确定", hEleDlg)
+	left_ += 80
+	hBtnCancel := xc.XBtn_Create(left_, top_, 60, 22, "取消", hEleDlg)
+	xc.XBkM_SetInfo(xc.XEle_GetBkManager(hBtnOk), strBkm)
+	xc.XBkM_SetInfo(xc.XEle_GetBkManager(hBtnCancel), strBkm)
+
+	xc.XEle_SetUserData(hBtnOk, hEle_mask)
+	xc.XEle_SetUserData(hBtnClose, hEle_mask)
+	xc.XEle_SetUserData(hBtnCancel, hEle_mask)
+
+	xc.XEle_RegEventC1(hBtnOk, xcc.XE_BNCLICK, OnBtnClick20_5_close)
+	xc.XEle_RegEventC1(hBtnClose, xcc.XE_BNCLICK, OnBtnClick20_5_close)
+	xc.XEle_RegEventC1(hBtnCancel, xcc.XE_BNCLICK, OnBtnClick20_5_close)
+
+	hAnimation := xc.XAnima_Create(hEle_mask, 1)
+	list_animation = append(list_animation, hAnimation)
+	xc.XAnima_AlphaEx(hAnimation, 500, 0, 255, 1, 0, false)
+	xc.XAnima_Run(hAnimation, hEle_mask)
+
+	hAnimation = xc.XAnima_Create(hEleDlg, 1)
+	list_animation = append(list_animation, hAnimation)
+	xc.XAnima_Show(hAnimation, 500, true)
+	xc.XAnima_Move(hAnimation, 500, float32(left), float32(top), 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, false)
+	xc.XAnima_Run(hAnimation, hEle_mask)
+
+	w.Redraw(false)
+	return 0
+}
+
+func OnBtnClick20_5_close(hEle int, pbHandled *bool) int {
+	*pbHandled = true
+	xc.XEle_Destroy(xc.XEle_GetUserData(hEle))
+	w.Redraw(false)
 	return 0
 }
