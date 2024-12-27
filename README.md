@@ -65,7 +65,7 @@ git clone https://github.com/twgh/xcgui-example
 
 [点击下载](https://codeload.github.com/twgh/xcgui-example/zip/refs/heads/main)
 
-## 三、在项目目录里执行命令
+## 三、在项目根目录里执行命令
 
 ```bash
 go mod tidy
