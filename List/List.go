@@ -90,6 +90,7 @@ func createList() {
 	list.CreateAdapterHeader()
 	// 创建数据适配器: 5列
 	list.CreateAdapter(5)
+
 	// 列表_置项默认高度和选中时高度
 	list.SetRowHeightDefault(24, 26)
 	// 列表_绘制项分割线
@@ -109,7 +110,7 @@ func createList() {
 	list.SetSort(0, 0, true)
 	// 这里我使用了置属性的方法是为了不新建多个变量, 因为考虑到组件可能会很多, 当然你也可以用变量来控制.
 	// 这个置属性你可以理解为就是给元素绑定的map中赋值. 并不是在操作元素的属性.
-	// 也是为了演示Set/GetProperty, 这个东西很有用, 比如说你的列表每1行都有隐藏的值, 就可以存在这里, 而不用自己新建一个map或slice, 看你需求了.
+	// 也是为了演示Set/GetProperty, 这个东西很有用, 比如说你的列表每1行都有隐藏的值, 就可以存在这里.
 	list.SetProperty("sortType", "1") // 1是正序, 0是倒序.
 	list.SetProperty("sortFlag", "0") // 只是我设定的标记
 
@@ -147,7 +148,7 @@ func createList() {
 		list.GetRowHeight(row, &height, &height)
 
 		// 创建编辑框
-		// 获取双击项的布局元素句柄. 列表默认项都是一个布局元素里放一个形状文本, 第0个就是布局元素, 第1个就是形状文本
+		// 获取双击项的布局元素句柄. 列表默认项都是一个布局元素里放一个形状文本, 布局元素itemID: 0, 形状文本itemID: 1
 		// 至于我是怎么知道的, 这个是打开设计器创建一个列表项模板文件后, 就知道它里面是什么了
 		hLayout := list.GetTemplateObject(row, column, 0)
 		if hLayout == 0 {
