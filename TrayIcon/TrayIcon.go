@@ -17,6 +17,7 @@ import (
 )
 
 func main() {
+	rand.Seed(time.Now().Unix())
 	// 1.初始化UI库
 	a := app.New(true)
 	defer a.Exit()
@@ -94,7 +95,6 @@ func main() {
 		}
 
 		// 修改托盘提示信息
-		rand.Seed(time.Now().Unix())
 		tray.SetTips("修改了图标和托盘提示信息: " + strconv.Itoa(rand.Int()))
 
 		// 应用修改
@@ -111,11 +111,6 @@ func main() {
 	})
 
 	// 显示或隐藏, 原理实际是添加或删除.
-	// 当你手动把托盘图标从隐藏区域拖拽到任务栏固定后, 你肯定想让他一直固定在任务栏, 不再回隐藏区域.
-	// 但这里有个坑: 如果你在托盘图标创建并显示后, 有过修改图标/提示信息的操作, 那你隐藏图标再显示时它会回到隐藏区域.
-	// 如果你在托盘图标创建后, 没有过修改图标/提示信息的操作, 那你随便控制显示和隐藏都没问题.
-	// 如果你不需要切换隐藏和显示状态, 那你随便修改都无所谓.
-	// 如果你想修改, 还想控制显示和隐藏, 那么你隐藏后应该调用一下重置函数, 显示后再重新对托盘图标进行设置.
 	btnShow.Event_BnClick(func(pbHandled *bool) int {
 		btnShow.Enable(false).Redraw(false)
 
@@ -128,9 +123,15 @@ func main() {
 		}
 
 		/*
-			// 解决你想修改, 还想控制图标显示和隐藏的办法: 在隐藏后调用一下重置函数, 显示后再重新对托盘图标进行设置.
+			// 当你手动把托盘图标从隐藏区域拖拽到任务栏固定后, 你肯定想让他一直固定在任务栏, 不再回隐藏区域.
+			// 但这里有个坑: 如果你在托盘图标创建并显示后, 有过修改图标/提示信息的操作, 那你隐藏图标再显示时它会回到隐藏区域.
+			// 如果你在托盘图标创建后, 没有过修改图标/提示信息的操作, 那你随便控制显示和隐藏都没问题.
+			// 如果你不需要切换隐藏和显示状态, 那你随便修改都无所谓.
+			// 如果你想修改, 还想控制显示和隐藏, 那么你应该在隐藏后调用一下重置函数, 显示后再重新对托盘图标进行设置.
+			//
 			// 因为我不知道xcgui.dll里这几个函数的内部实现究竟是什么, 所以这只是我测试得出的解决办法, 是否有更好的我不知道.
 			// 不过控制隐藏和显示本来就是个小众需求, 用到的人应该很少. 大部分人的托盘图标都只用来呼出托盘菜单罢了.
+
 			if btnShow.GetText() == "显示" {
 				btnShow.SetText("隐藏")
 				tray.Show(true)
@@ -185,7 +186,7 @@ func main() {
 			menu.AddItem(10001, "窗口置顶", 0, xcc.Menu_Item_Flag_Select)
 			// 获取自己 SetProperty 的值, 这不是读写元素的属性, 可理解为对元素里内置的一个map进行读写
 			// 这样可以不用另外声明变量, 能用到很多地方记录一些东西
-			if a.GetProperty(w.Handle, "记录窗口置顶状态") == "1" {
+			if w.GetProperty("记录窗口置顶状态") == "1" {
 				menu.SetItemCheck(10001, true)
 			} else {
 				menu.SetItemCheck(10001, false)
@@ -207,12 +208,12 @@ func main() {
 		fmt.Println("托盘菜单被选择:", nID)
 		switch nID {
 		case 10001:
-			if a.GetProperty(w.Handle, "记录窗口置顶状态") == "1" {
-				a.SetProperty(w.Handle, "记录窗口置顶状态", "0")
+			if w.GetProperty("记录窗口置顶状态") == "1" {
+				w.SetProperty("记录窗口置顶状态", "0")
 				wnd.SetTop(w.GetHWND(), false)
 				fmt.Println("窗口已取消置顶")
 			} else {
-				a.SetProperty(w.Handle, "记录窗口置顶状态", "1")
+				w.SetProperty("记录窗口置顶状态", "1")
 				wnd.SetTop(w.GetHWND(), true)
 				fmt.Println("窗口已被置顶")
 			}
