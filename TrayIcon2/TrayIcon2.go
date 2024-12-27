@@ -18,6 +18,7 @@ import (
 )
 
 func main() {
+	rand.Seed(time.Now().Unix())
 	// 1.初始化UI库
 	a := app.New(true)
 	defer a.Exit()
@@ -109,7 +110,6 @@ func main() {
 		}
 
 		// 修改托盘提示信息
-		rand.Seed(time.Now().Unix())
 		xc.XTrayIcon_SetTips("修改了图标和托盘提示信息: " + strconv.Itoa(rand.Int()))
 
 		// 应用修改
@@ -169,7 +169,7 @@ func main() {
 			menu.AddItem(10001, "窗口置顶", 0, xcc.Menu_Item_Flag_Select)
 			// 获取自己 SetProperty 的值, 这不是读写元素的属性, 可理解为对元素里内置的一个map进行读写
 			// 这样可以不用另外声明变量, 能用到很多地方记录一些东西
-			if a.GetProperty(w.Handle, "记录窗口置顶状态") == "1" {
+			if w.GetProperty("记录窗口置顶状态") == "1" {
 				menu.SetItemCheck(10001, true)
 			} else {
 				menu.SetItemCheck(10001, false)
@@ -191,12 +191,12 @@ func main() {
 		fmt.Println("托盘菜单被选择:", nID)
 		switch nID {
 		case 10001:
-			if a.GetProperty(w.Handle, "记录窗口置顶状态") == "1" {
-				a.SetProperty(w.Handle, "记录窗口置顶状态", "0")
+			if w.GetProperty("记录窗口置顶状态") == "1" {
+				w.SetProperty("记录窗口置顶状态", "0")
 				wnd.SetTop(w.GetHWND(), false)
 				fmt.Println("窗口已取消置顶")
 			} else {
-				a.SetProperty(w.Handle, "记录窗口置顶状态", "1")
+				w.SetProperty("记录窗口置顶状态", "1")
 				wnd.SetTop(w.GetHWND(), true)
 				fmt.Println("窗口已被置顶")
 			}
