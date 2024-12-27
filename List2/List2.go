@@ -62,7 +62,7 @@ func main() {
 		ls.SetItemText(index, 1, "")
 	}
 
-	// 注册项模板创建完成事件
+	// 列表_项模板创建完成事件
 	ls.Event_LIST_TEMP_CREATE_END(onLIST_TEMP_CREATE_END)
 
 	w.ShowWindow(xcc.SW_SHOW)
@@ -84,6 +84,8 @@ func onLIST_TEMP_CREATE_END(pItem *xc.List_Item_, nFlag int32, pbHandled *bool) 
 			hBtn = ls.GetTemplateObject(pItem.Index, 1, i)
 			fmt.Println(xc.XBtn_GetText(hBtn))
 			xc.XEle_RegEventC1(hBtn, xcc.XE_BNCLICK, onBnClick)
+			// 把按钮所在列索引存进去, 可能会用到, 用不到就不存
+			xc.XEle_SetUserData(hBtn, 1)
 		}
 	}
 	return 0
@@ -91,16 +93,11 @@ func onLIST_TEMP_CREATE_END(pItem *xc.List_Item_, nFlag int32, pbHandled *bool) 
 
 // 按钮事件
 func onBnClick(hEle int, pbHandled *bool) int {
-	btnText := xc.XBtn_GetText(hEle)
-	var col int // 列索引
-	switch btnText {
-	case "运行中":
-		col = 0
-	case "日志", "复制", "删除":
-		col = 1
-	}
+	// 获取按钮所在的行索引
+	row := ls.GetRowIndexFromHXCGUI(hEle)
+	// 获取按钮所在的列索引
+	col := xc.XEle_GetUserData(hEle)
 
-	row := ls.GetRowIndexFromHXCGUI(hEle) // 获取项索引
-	xc.XC_MessageBox("提示", fmt.Sprintf("你点击了按钮: %s, 行: %d, 列: %d", btnText, row, col), xcc.MessageBox_Flag_Ok, w.GetHWND(), xcc.Window_Style_Default)
+	xc.XC_MessageBox("提示", fmt.Sprintf("你点击了按钮: %s, 行: %d, 列: %d", xc.XBtn_GetText(hEle), row, col), xcc.MessageBox_Flag_Ok, w.GetHWND(), xcc.Window_Style_Default)
 	return 0
 }
