@@ -15,12 +15,12 @@ var (
 	w    *window.Window
 	list *widget.List
 
-	btn_add   *widget.Button
-	btn_del   *widget.Button
-	btn_clear *widget.Button
-	btn_jump  *widget.Button
+	btnAdd   *widget.Button
+	btnDel   *widget.Button
+	btnClear *widget.Button
+	btnJump  *widget.Button
 
-	edit_line *widget.Edit
+	editLine *widget.Edit
 )
 
 func main() {
@@ -35,23 +35,23 @@ func main() {
 	listAddItem()
 
 	var startX int32 = 10
-	btn_add = widget.NewButton(startX, 35, 100, 30, "添加20行", w.Handle)
-	btn_add.Event_BnClick1(onBnClick)
+	btnAdd = widget.NewButton(startX, 35, 100, 30, "添加20行", w.Handle)
+	btnAdd.Event_BnClick1(onBnClick)
 
 	startX += 100 + 3
-	btn_del = widget.NewButton(startX, 35, 100, 30, "删除选中行", w.Handle)
-	btn_del.Event_BnClick1(onBnClick)
+	btnDel = widget.NewButton(startX, 35, 100, 30, "删除选中行", w.Handle)
+	btnDel.Event_BnClick1(onBnClick)
 
 	startX += 100 + 3
-	btn_clear = widget.NewButton(startX, 35, 100, 30, "删除所有行", w.Handle)
-	btn_clear.Event_BnClick1(onBnClick)
+	btnClear = widget.NewButton(startX, 35, 100, 30, "删除所有行", w.Handle)
+	btnClear.Event_BnClick1(onBnClick)
 
 	startX += 100 + 3
-	btn_jump = widget.NewButton(startX, 35, 100, 30, "跳转指定行", w.Handle)
-	btn_jump.Event_BnClick1(onBnClick)
+	btnJump = widget.NewButton(startX, 35, 100, 30, "跳转指定行", w.Handle)
+	btnJump.Event_BnClick1(onBnClick)
 
 	startX += 100 + 3
-	edit_line = widget.NewEdit(startX, 35, 100, 30, w.Handle)
+	editLine = widget.NewEdit(startX, 35, 100, 30, w.Handle)
 
 	w.Show(true)
 	a.Run()
@@ -63,17 +63,17 @@ func onBnClick(hEle int, pbHandled *bool) int {
 	xc.XEle_Enable(hEle, false) // 操作前禁用按钮
 
 	switch hEle {
-	case btn_add.Handle:
+	case btnAdd.Handle:
 		listAddItem()
-	case btn_del.Handle:
+	case btnDel.Handle:
 		listDelSelectItem()
-	case btn_clear.Handle:
+	case btnClear.Handle:
 		list.DeleteRowAll()
 		list.Redraw(true)
-	case btn_jump.Handle:
-		row := xc.Atoi(edit_line.GetTextEx()) - 1
+	case btnJump.Handle:
+		row := xc.Atoi(editLine.GetTextEx()) - 1
 		if row > -1 && row < list.GetCount_AD() {
-			list.VisibleRow(row) // TODO: 这里有个BUG, 向下跳转没问题, 但向上跳转就会少滚动一行
+			list.VisibleRow(row)
 			list.Redraw(true)
 		}
 	}
