@@ -4,6 +4,7 @@ package main
 import (
 	"fmt"
 	"github.com/twgh/xcgui/app"
+	"github.com/twgh/xcgui/wapi"
 	"github.com/twgh/xcgui/wapi/wutil"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
@@ -47,11 +48,35 @@ func onBnClick(hEle int, pbHandled *bool) int {
 	case btn1.Handle:
 		fmt.Println(wutil.OpenDir(w.Handle))
 	case btn2.Handle:
-		fmt.Println(wutil.OpenFile(w.Handle, []string{"Text Files(*txt)", "*.txt", "All Files(*.*)", "*.*"}, ""))
+		fmt.Println(wutil.OpenFile(w.Handle, []string{"All Files(*.*)", "*.*", "Text Files(*txt)", "*.txt"}, ""))
 	case btn3.Handle:
-		fmt.Println(wutil.OpenFiles(w.Handle, []string{"Text Files(*txt)", "*.txt", "All Files(*.*)", "*.*"}, ""))
+		arr := wutil.OpenFileEx(wutil.OpenFileOption{
+			HwndOwner:    w.GetHWND(),
+			Title:        "打开文件 (最多选择2个)",
+			Filters:      []string{"All Files(*.*)", "*.*", "Text Files(*txt)", "*.txt"},
+			MaxOpenFiles: 2,
+			// 打开多个文件时, 需要填这个
+			Flags: wapi.OFN_ALLOWMULTISELECT | wapi.OFN_EXPLORER | wapi.OFN_PATHMUTEXIST,
+		})
+
+		if arr == nil && wapi.CommDlgExtendedError() == wapi.FNERR_BUFFERTOOSMALL {
+			a.Alert("提示", "最多只能选择2个文件")
+			return 0
+		}
+
+		for i, s := range arr {
+			fmt.Printf("第%d个文件: %s\n", i+1, s)
+		}
 	case btn4.Handle:
-		fmt.Println(wutil.SaveFile(w.Handle, []string{"Text Files(*txt)", "*.txt", "All Files(*.*)", "*.*"}, "", "默认文件名.txt"))
+		fileName := wutil.SaveFileEx(wutil.OpenFileOption{
+			HwndOwner:   w.GetHWND(),
+			Title:       "保存文件",
+			Filters:     []string{"Text Files(*txt)", "*.txt", "All Files(*.*)", "*.*"},
+			DefDir:      "D:\\",
+			DefExt:      "txt",
+			DefFileName: "默认文件名.txt",
+		})
+		fmt.Println(fileName)
 	}
 	return 0
 }
