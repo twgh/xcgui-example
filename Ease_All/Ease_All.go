@@ -31,6 +31,7 @@ func main() {
 	// 如果不在一个系统线程中执行, 那程序大概率卡死.
 	// 其他例子里没有加是因为简单的例子确实不需要这两句代码, 总之从初始化到Run需要保证是在一个系统线程中执行.
 	// 程序运行就窗口卡死未响应就是go的运行时调度的原因, 还没到Run就切换到其他线程了, 比如你在Run前http访问网页了main中加上这两句就不会有问题, 不加就可能出问题.
+	// 因为下面用了time.Sleep(), go的运行时可能会进行调度, 就跳到其他线程了, 所以必须用这个.
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -107,13 +108,12 @@ func main() {
 	w.Event_PAINT(OnDrawWindow)
 
 	// 获取窗口坐标
-	var rect xc.RECT
-	w.GetRect(&rect)
+	rc := w.GetRectDPI()
 	// 第一次缓动
 	for t := 0; t <= 30; t++ {
 		v := ease.Bounce(float32(t)/30.0, xcc.Ease_Type_Out)
-		y := int32(v * float32(rect.Top))
-		w.SetPosition(rect.Left, y).Redraw(true)
+		y := int32(v * float32(rc.Top))
+		w.SetPosition(rc.Left, y).Redraw(true)
 		time.Sleep(time.Millisecond * 10)
 	}
 
@@ -183,8 +183,7 @@ func OnBtnCheck_TopToBottom(bCheck bool, pbHandled *bool) int {
 
 // 窗口缓动
 func OnBtnStartWindow(pbHandled *bool) int {
-	var rect xc.RECT
-	w.GetRect(&rect)
+	rect := w.GetRectDPI()
 
 	time2 := m_time / 2
 	for t := int32(0); t <= time2; t++ {
