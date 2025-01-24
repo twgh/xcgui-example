@@ -3,6 +3,7 @@ package main
 
 import (
 	_ "embed"
+	"fmt"
 	"github.com/twgh/xcgui/font"
 
 	"github.com/twgh/xcgui/ani"
@@ -1583,69 +1584,78 @@ func OnBtnClick19(pbHandled *bool) int {
 
 // 19.1 窗口缓动 从上往下
 func OnBtnClick19_1(pbHandled *bool) int {
-	var rcWindow xc.RECT
-	w.GetRect(&rcWindow)
+	m := window.NewModalWindow(400, 300, "窗口缓动", w.GetHWND(), xcc.Window_Style_Modal|xcc.Window_Style_Drag_Window)
 
-	left := float32(rcWindow.Left + (rcWindow.Right-rcWindow.Left)/2 + 100)
-	top := float32(rcWindow.Top + (rcWindow.Bottom-rcWindow.Top)/2 + 50)
+	rcWindow := w.GetRectDPI()
+	rcModal := m.GetRectDPI()
+	left := float32(rcWindow.Left + (rcWindow.Right-rcWindow.Left-(rcModal.Right-rcModal.Left))/2)
+	top := float32(rcWindow.Top + (rcWindow.Bottom-rcWindow.Top-(rcModal.Bottom-rcModal.Top))/2)
 
-	hModal := xc.XModalWnd_Create(400, 300, "窗口缓动", w.GetHWND(), xcc.Window_Style_Modal|xcc.Window_Style_Drag_Window)
-
-	hAnimation := xc.XAnima_Create(hModal, 1)
+	hAnimation := xc.XAnima_Create(m.Handle, 1)
 	list_animation = append(list_animation, hAnimation)
 	xc.XAnima_MoveEx(hAnimation, 1000, left, 20, left, top, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, false)
-	xc.XAnima_Run(hAnimation, hModal)
+	xc.XAnima_Run(hAnimation, m.Handle)
 
-	xc.XModalWnd_DoModal(hModal)
+	m.DoModal()
 	return 0
 }
 
 // 19.2 窗口缓动 从左往右
 func OnBtnClick19_2(pbHandled *bool) int {
-	var rcWindow xc.RECT
-	w.GetRect(&rcWindow)
+	m := window.NewModalWindow(400, 300, "窗口缓动", w.GetHWND(), xcc.Window_Style_Modal|xcc.Window_Style_Drag_Window)
 
-	left := float32(rcWindow.Left + (rcWindow.Right-rcWindow.Left)/2 + 100)
-	top := float32(rcWindow.Top + (rcWindow.Bottom-rcWindow.Top)/2 + 50)
+	rcWindow := w.GetRectDPI()
+	rcModal := m.GetRectDPI()
+	left := float32(rcWindow.Left + (rcWindow.Right-rcWindow.Left-(rcModal.Right-rcModal.Left))/2)
+	top := float32(rcWindow.Top + (rcWindow.Bottom-rcWindow.Top-(rcModal.Bottom-rcModal.Top))/2)
 
-	hModal := xc.XModalWnd_Create(400, 300, "窗口缓动", w.GetHWND(), xcc.Window_Style_Modal|xcc.Window_Style_Drag_Window)
-
-	hAnimation := xc.XAnima_Create(hModal, 1)
+	hAnimation := xc.XAnima_Create(m.Handle, 1)
 	list_animation = append(list_animation, hAnimation)
 	xc.XAnima_MoveEx(hAnimation, 1000, 20, top, left, top, 1, xcc.Ease_Flag_Bounce|xcc.Ease_Flag_Out, false)
-	xc.XAnima_Run(hAnimation, hModal)
+	xc.XAnima_Run(hAnimation, m.Handle)
 
-	xc.XModalWnd_DoModal(hModal)
+	m.DoModal()
 	return 0
 }
 
 // 19.3 窗口缩放
 func OnBtnClick19_3(pbHandled *bool) int {
-	mw := window.NewModalWindow(400, 300, "窗口缩放", w.GetHWND(), xcc.Window_Style_Modal|xcc.Window_Style_Drag_Window)
+	m := window.NewModalWindow(400, 300, "窗口缩放", w.GetHWND(), xcc.Window_Style_Modal|xcc.Window_Style_Drag_Window)
 
-	hAnimation := xc.XAnima_Create(mw.Handle, 1)
+	rcModal := m.GetRectEx()
+	fmt.Println(rcModal)
+	width := rcModal.Right - rcModal.Left
+	height := rcModal.Bottom - rcModal.Top
+
+	hAnimation := xc.XAnima_Create(m.Handle, 1)
 	list_animation = append(list_animation, hAnimation)
 
 	// TODO: 这里有个BUG, 导致窗口位置被改变了, 不应该改变才对, 是开启AutoDPI后出现的BUG
-	xc.XAnima_ScaleSize(hAnimation, 1000, 500, 400, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In, true)
-	xc.XAnima_Run(hAnimation, mw.Handle)
+	xc.XAnima_ScaleSize(hAnimation, 1000, float32(width)*1.5, float32(height)*1.5, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In, true)
+	xc.XAnima_Run(hAnimation, m.Handle)
 
-	mw.DoModal()
+	rcModal = m.GetRectEx()
+	fmt.Println(rcModal)
+	m.DoModal()
 	return 0
 }
 
 // 19.4 窗口缩放2
 func OnBtnClick19_4(pbHandled *bool) int {
-	mw := window.NewModalWindow(400*0.5, 300*0.5, "窗口缩放2", w.GetHWND(), xcc.Window_Style_Modal|xcc.Window_Style_Drag_Window)
+	m := window.NewModalWindow(400, 300, "窗口缩放2", w.GetHWND(), xcc.Window_Style_Modal|xcc.Window_Style_Drag_Window)
 
-	hAnimation := xc.XAnima_Create(mw.Handle, 1)
+	rcModal := m.GetRectEx()
+	width := rcModal.Right - rcModal.Left
+	height := rcModal.Bottom - rcModal.Top
+
+	hAnimation := xc.XAnima_Create(m.Handle, 1)
 	list_animation = append(list_animation, hAnimation)
 
 	// TODO: 这里有个BUG, 导致窗口位置被改变了, 不应该改变才对, 是开启AutoDPI后出现的BUG
-	xc.XAnima_ScaleSize(hAnimation, 1000, 400, 300, 1, xcc.Ease_Flag_Back|xcc.Ease_Flag_Out, false)
-	xc.XAnima_Run(hAnimation, mw.Handle)
+	xc.XAnima_ScaleSize(hAnimation, 1000, float32(width)*2, float32(height)*2, 1, xcc.Ease_Flag_Back|xcc.Ease_Flag_Out, false)
 
-	mw.DoModal()
+	xc.XAnima_Run(hAnimation, m.Handle)
+	m.DoModal()
 	return 0
 }
 
@@ -1717,7 +1727,7 @@ func OnBtnClick20_1(pbHandled *bool) int {
 	xc.XEle_AddBkFill(hEle_mask, xcc.CombinedState(xcc.Window_State_Flag_Leave), xc.RGBA(0, 0, 0, 200))
 	xc.XEle_Redraw(hEle_mask, true)
 
-	hWindow_ := xc.XWnd_CreateEx(0, 0x40000000, "", 0, 0, 300, 200, "内嵌子弹窗", w.GetHWND(), xcc.Window_Style_Default)
+	hWindow_ := xc.XWnd_CreateEx(0, xcc.WS_CHILD, "", 0, 0, 300, 200, "内嵌子弹窗", w.GetHWND(), xcc.Window_Style_Default)
 
 	xc.XWnd_Show(hWindow_, true)
 	xc.XWnd_RegEventC(hWindow_, xcc.WM_DESTROY, OnWndDestroy20)
