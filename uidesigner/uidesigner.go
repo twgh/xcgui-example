@@ -13,8 +13,7 @@ var qqmusic []byte
 
 func main() {
 	a := app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
 	// 从内存zip中加载资源文件
 	a.LoadResourceZipMem(qqmusic, "resource.res", "")
 	// 从内存zip中加载布局文件, 创建窗口对象
