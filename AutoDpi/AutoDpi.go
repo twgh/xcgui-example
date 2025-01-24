@@ -1,4 +1,4 @@
-// 启用自动DPI的两种方法, 解决高分辨率屏幕界面模糊问题.
+// 启用自动DPI的三种方法, 解决高分辨率屏幕界面模糊问题.
 package main
 
 import (
@@ -12,12 +12,13 @@ func main() {
 	// 1.初始化UI库
 	a := app.New(true)
 
-	// 告诉系统本软件要自己控制DPI的两种方法:
+	// 三种方法:
 	// 1.调用 a.EnableDPI(true)
-	// 2.使用程序清单, 看这个: 程序清单方式启用DPI.7z
+	// 2.使用程序清单, 看这个: 程序清单方式启用DPI.rar
+	// 3.自行调用 Windows 相关api
 	a.EnableDPI(true)
 
-	// 使用上面的两种方法之一, 然后调用这个函数启用自动DPI
+	// 使用上面的几种方法之一, 然后调用这个函数启用自动DPI
 	a.EnableAutoDPI(true)
 	// 2.创建窗口
 	w := window.New(0, 0, 430, 300, "xcgui window", 0, xcc.Window_Style_Default)
