@@ -9,15 +9,17 @@ import (
 )
 
 func main() {
+	// 初始化界面库
+	app.InitOrExit()
 	a := app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+	// 创建窗口
 	w := window.New(0, 0, 430, 300, "模态窗口", 0, xcc.Window_Style_Default)
 
 	// 创建按钮_模态窗口
 	btn := widget.NewButton(30, 50, 100, 30, "ModalWindow", w.Handle)
 	// 给按钮绑定事件
-	btn.Event_BnClick(func(pbHandled *bool) int {
+	btn.AddEvent_BnClick(func(hEle int, pbHandled *bool) int {
 		// 创建模态窗口
 		mw := window.NewModalWindow(300, 200, "ModalWindow", w.GetHWND(), xcc.Window_Style_Modal)
 		// 显示模态窗口
