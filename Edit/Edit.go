@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/imagex"
 	"github.com/twgh/xcgui/widget"
@@ -12,9 +13,11 @@ import (
 )
 
 func main() {
+	// 初始化界面库
+	app.InitOrExit()
 	a := app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+	// 创建窗口
 	w := window.New(0, 0, 340, 280, "", 0, xcc.Window_Style_Default)
 
 	// 1.普通编辑框
