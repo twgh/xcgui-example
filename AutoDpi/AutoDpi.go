@@ -10,6 +10,7 @@ import (
 
 func main() {
 	// 1.初始化UI库
+	app.InitOrExit()
 	a := app.New(true)
 
 	// 三种方法:
@@ -21,7 +22,7 @@ func main() {
 	// 使用上面的几种方法之一, 然后调用这个函数启用自动DPI
 	a.EnableAutoDPI(true)
 	// 2.创建窗口
-	w := window.New(0, 0, 430, 300, "xcgui window", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 430, 300, "EnableAutoDPI", 0, xcc.Window_Style_Default)
 
 	// 创建按钮
 	btn := widget.NewButton(165, 135, 100, 30, "Button", w.Handle)
