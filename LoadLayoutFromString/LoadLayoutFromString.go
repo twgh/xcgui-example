@@ -2,19 +2,25 @@
 package main
 
 import (
+	_ "embed"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/window"
 	"github.com/twgh/xcgui/xcc"
 )
 
 func main() {
+	// 初始化界面库
+	app.InitOrExit()
 	a := app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+
 	// 加载资源文件从字符串
 	a.LoadResourceFromStringW(resStr, "resource.res")
+
 	// 加载窗口布局文件从字符串
-	w := window.NewByLayoutStringW(layoutStr, 0, 0)
+	w := window.NewByLayoutStringW(xmlStr, 0, 0)
+
 	// 加载布局文件后, 调整布局是必须的, 因为窗口布局改变了
 	w.AdjustLayout()
 
@@ -23,8 +29,8 @@ func main() {
 	a.Exit()
 }
 
-// 可以到设计器里创建一个xml, 把文本覆盖进去, 关掉xml重新打开, 可看到效果, 然后可自己修改加以使用
-const layoutStr = `<?xml version="1.0" encoding="UTF-8"?>
+const (
+	xmlStr = `<?xml version="1.0" encoding="UTF-8"?>
 <!--炫彩界面库-窗口布局文件-->
 <head />
 <windowUI bkInfoM="{99:1.9.9;5:2(15)20(1)21(3)26(0)22(-10927566)23(255);98:1(0);}" center="true" content="炫彩界面库 - 我的窗口名" dragWindow="true" enableLayout="true" overlayBorder="true" rect="20,20,350,600" showT="true" transparentAlpha="255" transparentFlag="shadow" windowStyle="0">
@@ -72,10 +78,9 @@ const layoutStr = `<?xml version="1.0" encoding="UTF-8"?>
 			</layoutEleUI>
 		</layoutEleUI>
 	</layoutEleUI>
-</windowUI>
-`
+</windowUI>`
 
-const resStr = `<?xml version="1.0" encoding="UTF-8"?>
+	resStr = `<?xml version="1.0" encoding="UTF-8"?>
 <!--炫彩界面库-资源文件-->
 <resources>
 	<type_image />
@@ -92,5 +97,5 @@ const resStr = `<?xml version="1.0" encoding="UTF-8"?>
 	<type_color />
 	<type_bkInfo />
 	<type_nameTable />
-</resources>
-`
+</resources>`
+)
