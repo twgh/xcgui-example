@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
@@ -24,9 +25,11 @@ var (
 )
 
 func main() {
+	// 初始化界面库
+	app.InitOrExit()
 	a = app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+	// 创建窗口
 	w = window.New(0, 0, 784, 400, "List", 0, xcc.Window_Style_Default)
 
 	// 创建List
