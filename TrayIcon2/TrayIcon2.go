@@ -3,6 +3,11 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
+	"strconv"
+	"syscall"
+	"time"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/wapi"
 	"github.com/twgh/xcgui/wapi/wnd"
@@ -11,19 +16,15 @@ import (
 	"github.com/twgh/xcgui/window"
 	"github.com/twgh/xcgui/xc"
 	"github.com/twgh/xcgui/xcc"
-	"math/rand"
-	"strconv"
-	"syscall"
-	"time"
 )
 
 func main() {
 	rand.Seed(time.Now().Unix())
+
 	// 1.初始化UI库
+	app.InitOrExit()
 	a := app.New(true)
-	defer a.Exit()
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
 
 	// 2.创建窗口
 	w := window.New(0, 0, 430, 300, "TrayIcon2", 0, xcc.Window_Style_Default|xcc.Window_Style_Drag_Window)
@@ -210,4 +211,5 @@ func main() {
 	// 3.显示窗口
 	w.Show(true)
 	a.Run()
+	a.Exit()
 }
