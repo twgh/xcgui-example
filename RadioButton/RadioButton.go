@@ -12,9 +12,12 @@ import (
 )
 
 func main() {
+	// 初始化界面库
+	app.InitOrExit()
 	a := app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+
+	// 创建窗口
 	w := window.New(0, 0, 430, 300, "单选按钮", 0, xcc.Window_Style_Default)
 
 	// 创建按钮
@@ -41,9 +44,9 @@ func main() {
 	Radio1.SetCheck(true)
 
 	// 注册事件_按钮被选中
-	Radio1.Event_BUTTON_CHECK1(btn_check)
-	Radio2.Event_BUTTON_CHECK1(btn_check)
-	Radio3.Event_BUTTON_CHECK1(btn_check)
+	Radio1.AddEvent_Button_Check(btn_check)
+	Radio2.AddEvent_Button_Check(btn_check)
+	Radio3.AddEvent_Button_Check(btn_check)
 
 	w.ShowWindow(xcc.SW_SHOW)
 	a.Run()
