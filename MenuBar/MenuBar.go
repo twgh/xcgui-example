@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/wapi"
 	"github.com/twgh/xcgui/widget"
@@ -12,22 +13,21 @@ import (
 )
 
 var (
-	a  *app.App
-	w  *window.Window
-	mb *widget.MenuBar
+	w *window.Window
 )
 
 func main() {
 	// 1.初始化UI库
-	a = app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	app.InitOrExit()
+	a := app.New(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+
 	// 2.创建窗口
 	w = window.New(0, 0, 570, 400, "MenuBar", 0, xcc.Window_Style_Default)
 	w.SetBorderSize(1, 30, 1, 1)
 
 	// 创建菜单条
-	mb = widget.NewMenuBar(5, 32, w.GetWidth()-10, 30, w.Handle)
+	mb := widget.NewMenuBar(5, 32, w.GetWidth()-10, 30, w.Handle)
 	// 菜单条禁用按钮自动宽度
 	mb.EnableAutoWidth(false)
 	// 菜单条禁用绘制边框
@@ -47,10 +47,10 @@ func main() {
 
 	// 取消绘制菜单条按钮边框, 注册按钮单击事件, 菜单被选择事件
 	for i := int32(0); i < mb.GetChildCount(); i++ {
-		hele := mb.GetChildByIndex(i)
-		xc.XEle_EnableDrawBorder(hele, false)
-		xc.XEle_RegEventC1(hele, xcc.XE_BNCLICK, onMenuBarBnClick)
-		xc.XEle_RegEventC1(hele, xcc.XE_MENU_SELECT, onMenuSelect)
+		hEle := mb.GetChildByIndex(i)
+		xc.XEle_EnableDrawBorder(hEle, false)
+		xc.XEle_RegEventC1(hEle, xcc.XE_BNCLICK, onMenuBarBnClick)
+		xc.XEle_RegEventC1(hEle, xcc.XE_MENU_SELECT, onMenuSelect)
 	}
 
 	// 3.显示窗口
