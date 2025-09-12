@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>MP4 Player</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    header {
+      padding: 15px 20px;
+      background: rgba(0,0,0,0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      font-weight: 300;
+      font-size: 1.5rem;
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .player {
+      width: 100%;
+      max-width: 1000px;
+      box-shadow: 0 5px 30px rgba(0,0,0,0.4);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    video {
+      width: 100%;
+      display: block;
+      background: #000;
+    }
+
+    footer {
+      padding: 10px;
+      text-align: center;
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>WebView2 视频播放器</h1>
+</header>
+
+<div class="container">
+  <div class="player">
+    <video controls autoplay>
+      <source src="" type="video/mp4">
+      您的浏览器不支持视频标签。
+    </video>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 WebView2 MP4 播放器 | 使用 Go 和 WebView2</p>
+</footer>
+</body>
+</html>

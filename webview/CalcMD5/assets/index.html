@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>MD5计算器</title>
+</head>
+<body>
+<!-- 自定义标题栏 -->
+<div id="title-bar">
+    <div>MD5 计算器</div>
+    <div id="window-controls">
+        <button class="window-btn" onclick="go.minimizeWindow()">−</button>
+        <button class="window-btn" onclick="go.toggleMaximize()">□</button>
+        <button class="window-btn close" onclick="go.closeWindow()">×</button>
+    </div>
+</div>
+
+<div class="container">
+    <h1>文件MD5计算器</h1>
+    <div class="input-group">
+        <input type="text" id="filePath" placeholder="请选择文件或输入文件路径">
+        <button id="selectFile" onclick="selectFile()">选择文件</button>
+    </div>
+    <button id="calcMd5" onclick="calculate()">计算MD5</button>
+    <div id="result"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

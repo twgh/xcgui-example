@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--炫彩界面库-窗口布局文件-->
+<head />
+<windowUI bkInfoM="{99:1.9.9;98:4(5);5:2(15)20(1)21(3)26(1)22(16711680)23(0);5:2(15)20(1)21(3)26(1)22(33554431)23(1);5:2(15)20(1)21(3)26(1)22(-65536)23(255);5:2(15)20(1)21(3)26(1)22(1682227710)23(100);5:2(15)20(1)21(3)26(1)22(-1)23(255);5:2(15)20(1)21(3)26(1)22(-152009)23(255);5:2(15)20(1)21(3)26(1)22(-13358039)23(255);}" bkInfoM_nameT="0(矩形)1(矩形)2(矩形)3(矩形)4(矩形)5(矩形)6(矩形)" border="0,34,0,0" captionMargin="4,-2,0,0" center="true" content="图表" enableLayout="true" layout.alignBaseline="auto" layout.alignH="center" layout.alignV="center" layout.horizon="true" layout.space="0" layout.spaceRow="0" padding="8,16,8,16" rect="20,20,1200,800" shadowAngleSize="8" shadowDepth="255" shadowRightAngle="false" shadowSize="8" showT="true" transparentAlpha="255" transparentFlag="shadow" windowStyle="2031">
+	<layoutEleUI bkInfoM="{99:1.9.9;98:16(0);5:2(15)20(1)21(3)26(1)22(-1)23(255)9(8,8,8,8);}" bkInfoM_nameT="0(矩形)" expandT="true" layout.height="%50(百分比)" layout.margin="0,0,16,16" layout.width="%50(百分比)" name="layout_chart1" rect="184,181,609,380" showT="true" />
+	<layoutEleUI bkInfoM="{99:1.9.9;98:16(0);5:2(15)20(1)21(3)26(1)22(-1)23(255)9(8,8,8,8);}" bkInfoM_nameT="0(矩形)" expandT="true" layout.height="%50(百分比)" layout.margin="0,0,0,16" layout.width="%50(百分比)" name="layout_chart2" rect="1332,683,609,380" showT="true" />
+	<layoutEleUI bkInfoM="{99:1.9.9;98:16(0);5:2(15)20(1)21(3)26(1)22(-1)23(255)9(8,8,8,8);}" bkInfoM_nameT="0(矩形)" expandT="true" layout.height="%50(百分比)" layout.margin="0,0,16,0" layout.width="%50(百分比)" name="layout_chart3" rect="743,450,609,380" showT="true" />
+	<layoutEleUI bkInfoM="{99:1.9.9;98:16(0);5:2(15)20(1)21(3)26(1)22(-1)23(255)9(8,8,8,8);}" bkInfoM_nameT="0(矩形)" expandT="true" layout.alignV="center" layout.height="%50(百分比)" layout.width="%50(百分比)" name="layout_chart4" rect="1298,450,609,380" showT="true">
+		<buttonUI content="发送数据" name="按钮_发送数据" rect="106,119,100,30" showT="true" expandT="true" />
+	</layoutEleUI>
+</windowUI>

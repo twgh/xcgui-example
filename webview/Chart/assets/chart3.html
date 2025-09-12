@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="css/style.css">
+        <title>动态数据柱状图示例</title>
+        <script src="js/chart.js"></script>
+    </head>
+    <body>
+        <div class="chart-container">
+            <canvas id="myChart"></canvas>
+        </div>
+        <script>
+            // 全局变量存储Chart实例
+            let myChartInstance = null;
+            
+            // 接收来自 Go 后端的数据
+            // 事件参数的 data 属性是将 webMessage 字符串参数解析为 JSON 字符串后得到的 JavaScript 对象。
+            // 事件参数的 source 属性是对 window.chrome.webview 对象的引用。
+            window.chrome.webview.addEventListener('message', arg => {
+                console.log(arg.data);
+                const labels = arg.data.map(item => item.label);
+                const values = arg.data.map(item => item.value);
+
+                if (!myChartInstance) {
+                    // 首次创建图表
+                    const ctx = document.getElementById('myChart').getContext('2d');
+                    myChartInstance = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Dataset from Go',
+                                data: values,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.5)',
+                                    'rgba(54, 162, 235, 0.5)',
+                                    'rgba(255, 206, 86, 0.5)',
+                                    'rgba(75, 192, 192, 0.5)',
+                                    'rgba(153, 102, 255, 0.5)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: '动态数据-柱状图'
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    // 更新现有图表数据
+                    myChartInstance.data.labels = labels;
+                    myChartInstance.data.datasets[0].data = values;
+                    myChartInstance.update(); // 更新图表显示
+                }
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="css/style.css">
+        <title>静态数据饼图示例</title>
+        <script src="js/chart.js"></script>
+    </head>
+    <body>
+        <div class="chart-container">
+            <canvas id="myChart"></canvas>
+        </div>
+        <script>
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'pie', // 图表类型为饼图
+                data: {
+                    labels: ['Red', 'Blue', 'Yellow'],
+                    datasets: [{
+                        label: '# of Votes',
+                        data: [12, 19, 3],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(255, 206, 86, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 1,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '静态数据-饼图'
+                        }
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>

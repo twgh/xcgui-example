@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<project name="" ui_loadType="1" ui_zipPassword="" expand="1">
+	<vc platform="x86" moduleLib="" autoDefFile="1" loadDllSymbol="0" moduleBeta="0" config="调试版">
+		<setting>
+			<config name="调试版">
+				<x86>
+					<common debug="1" platformToolset="vs2015" runtimeLibrary="/MDd" sdk="Windows7" type="exe" warningLevel="/W3" />
+					<options value="" />
+					<options_link value="" />
+					<def_file path="" />
+					<out name="" out_path="" obj_path="" />
+					<include_path />
+					<lib_path />
+					<exe_path />
+					<lib_import>
+						<item name="kernel32.lib" />
+						<item name="user32.lib" />
+						<item name="gdi32.lib" />
+					</lib_import>
+					<lib_ignore />
+					<macro>
+						<item name="DEBUG" />
+						<item name="_DEBUG" />
+					</macro>
+				</x86>
+				<x64>
+					<common debug="1" platformToolset="vs2015" runtimeLibrary="/MDd" sdk="Windows7" type="exe" warningLevel="/W3" />
+					<options value="" />
+					<options_link value="" />
+					<def_file path="" />
+					<out name="" out_path="" obj_path="" />
+					<include_path />
+					<lib_path />
+					<exe_path />
+					<lib_import>
+						<item name="kernel32.lib" />
+						<item name="user32.lib" />
+						<item name="gdi32.lib" />
+					</lib_import>
+					<lib_ignore />
+					<macro>
+						<item name="DEBUG" />
+						<item name="_DEBUG" />
+					</macro>
+				</x64>
+			</config>
+			<config name="发布版">
+				<x86>
+					<common debug="0" platformToolset="vs2015" runtimeLibrary="/MT" sdk="Windows7" type="exe" warningLevel="/W3" />
+					<options value="" />
+					<options_link value="" />
+					<def_file path="" />
+					<out name="" out_path="" obj_path="" />
+					<include_path />
+					<lib_path />
+					<exe_path />
+					<lib_import>
+						<item name="kernel32.lib" />
+						<item name="user32.lib" />
+						<item name="gdi32.lib" />
+					</lib_import>
+					<lib_ignore />
+					<macro>
+						<item name="NDEBUG" />
+					</macro>
+				</x86>
+				<x64>
+					<common debug="0" platformToolset="vs2015" runtimeLibrary="/MT" sdk="Windows7" type="exe" warningLevel="/W3" />
+					<options value="" />
+					<options_link value="" />
+					<def_file path="" />
+					<out name="" out_path="" obj_path="" />
+					<include_path />
+					<lib_path />
+					<exe_path />
+					<lib_import>
+						<item name="kernel32.lib" />
+						<item name="user32.lib" />
+						<item name="gdi32.lib" />
+					</lib_import>
+					<lib_ignore />
+					<macro>
+						<item name="NDEBUG" />
+					</macro>
+				</x64>
+			</config>
+		</setting>
+	</vc>
+	<codeExpand />
+	<watches />
+	<breakpoints />
+	<bookmarks />
+</project>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--炫彩界面库-窗口布局文件-->
+<head />
+<windowUI bkInfoM="{99:1.9.9;98:1(0);5:2(15)20(1)21(3)26(1)22(-7839744)23(255);}" border="3,30,3,3" center="true" content="Go调用WebView2" enableLayout="true" rect="20,20,1600,1024" shadowDepth="255" shadowSize="10" showT="true" transparentFlag="shadow" windowStyle="2031">
+	<layoutEleUI expandT="true" layout.alignH="left" layout.horizon="true" layout.space="1" layout.width="fill" rect="363,183,100,30" showT="true">
+		<buttonUI content="后退" expandT="true" name="按钮_后退" rect="321,14,60,25" showT="true" />
+		<buttonUI content="前进" expandT="true" name="按钮_前进" rect="321,14,60,25" showT="true" />
+		<editUI content="https://www.baidu.com/" expandT="true" layout.width=":1" name="编辑框_地址栏" rect="165,48,591,25" showT="true" />
+		<buttonUI content="跳转" expandT="true" name="按钮_跳转" rect="604,41,60,25" showT="true" />
+		<buttonUI content="刷新" expandT="true" layout.float="true" name="按钮_刷新" rect="341,34,60,25" showT="true" />
+	</layoutEleUI>
+	<layoutEleUI expandT="true" layout.height="auto" layout.space="1" layout.width="fill" rect="356,97,1054,28" showT="true">
+		<buttonUI content="隐藏" expandT="true" name="按钮_隐藏" rect="321,14,60,25" showT="true" />
+		<buttonUI content="销毁" expandT="true" name="按钮_销毁" rect="638,36,60,25" showT="true" />
+		<buttonUI content="JS测试" expandT="true" name="按钮_JS测试" rect="618,16,60,25" showT="true" />
+		<buttonUI content="执行Go函数" expandT="true" layout.width="auto" name="按钮_执行Go函数" rect="553,3,115,25" showT="true" />
+		<buttonUI content="前端发消息到后端" expandT="true" layout.width="auto" name="按钮_前端发消息到后端" rect="36,12,86,25" showT="true" />
+		<buttonUI content="打开百度" expandT="true" layout.width="auto" name="按钮_打开百度" rect="321,23,86,25" showT="true" />
+		<buttonUI content="设置搜索关键词" expandT="true" layout.width="auto" name="按钮_设置搜索关键词" rect="95,6,113,25" showT="true" />
+		<buttonUI content="点击搜索" expandT="true" name="按钮_点击搜索" rect="79,26,60,25" showT="true" />
+		<buttonUI content="打开vue-element-admin" expandT="true" layout.width="auto" name="按钮_打开vea" rect="301,3,86,25" showT="true" />
+		<buttonUI content="打开vben.pro" expandT="true" layout.width="auto" name="按钮_打开vben" rect="301,3,86,25" showT="true" />
+		<buttonUI content="浏览器内核" expandT="true" layout.width="auto" name="按钮_浏览器内核" rect="301,3,86,25" showT="true" />
+		<buttonUI content="新建窗口" expandT="true" layout.width="auto" name="按钮_新建窗口" rect="1528,12,86,25" showT="true" />
+		<buttonUI content="window.close" expandT="true" layout.width="auto" name="按钮_WindowClose" rect="1528,12,86,25" showT="true" />
+		<buttonUI content="在新窗口打开新页面" expandT="true" layout.width="auto" name="按钮_在新窗口打开新页面" rect="1528,12,86,25" showT="true" />
+		<buttonUI content="拦截重定向" expandT="true" layout.width="auto" name="按钮_拦截重定向" rect="1528,12,86,25" showT="true" />
+		<buttonUI content="截图" expandT="true" layout.width="auto" name="按钮_截图" rect="1528,12,86,25" showT="true" />
+		<buttonUI content="任务管理器" expandT="true" layout.width="auto" name="按钮_任务管理器" rect="1528,12,86,25" showT="true" />
+		<buttonUI content="下载文件" expandT="true" layout.width="auto" name="按钮_下载文件" rect="1528,12,86,25" showT="true" />
+		<buttonUI content="开启静音" expandT="true" layout.width="auto" name="按钮_静音" rect="1528,12,86,25" showT="true" />
+		<buttonUI content="事件开关" expandT="true" layout.width="auto" name="按钮_事件开关" rect="1528,12,86,25" showT="true" />
+		<buttonUI content="播放本地视频" expandT="true" layout.width="auto" name="按钮_播放本地视频" rect="1528,12,86,25" showT="true" />
+		<buttonUI content="保存为PDF" expandT="true" layout.width="auto" name="按钮_保存为PDF" rect="1528,12,86,25" showT="true" />
+		<buttonUI content="保存网页" expandT="true" layout.width="auto" name="按钮_保存网页" rect="1528,12,86,25" showT="true" />
+	</layoutEleUI>
+	<layoutEleUI drawBorder="true" expandT="true" layout.height=":1" layout.margin="2,2,2,2" layout.width="fill" name="布局WV" rect="200,145,794,484" showT="true" />
+</windowUI>

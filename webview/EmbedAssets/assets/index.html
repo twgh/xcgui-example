@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的应用</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div class="app-container">
+    <!-- 左侧导航栏 -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-rocket"></i>
+                <span class="logo-text">我的应用</span>
+            </div>
+            <button class="toggle-btn">
+                <i class="fas fa-angle-left"></i>
+            </button>
+        </div>
+
+        <ul class="nav-links">
+            <li class="nav-item">
+                <a href="#dashboard" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    <span class="nav-text">仪表盘</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#analytics" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="nav-text">数据分析</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#users" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span class="nav-text">用户管理</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#settings" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span class="nav-text">系统设置</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#messages" class="nav-link">
+                    <i class="fas fa-envelope"></i>
+                    <span class="nav-text">消息中心</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#calendar" class="nav-link">
+                    <i class="fas fa-calendar"></i>
+                    <span class="nav-text">日历</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#help" class="nav-link">
+                    <i class="fas fa-question-circle"></i>
+                    <span class="nav-text">帮助中心</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <header class="header">
+            <div class="page-title">仪表盘</div>
+
+            <div class="header-actions" title="切换主题">
+                <div class="user-menu">
+                    <div class="user-avatar">JD</div>
+                    <div class="user-name">John Doe</div>
+                </div>
+
+                <button class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                <div class="window-controls">
+                    <button class="window-btn minimize-btn" title="最小化" onclick="go.minimizeWindow()">
+                        <i class="fas fa-window-minimize"></i>
+                    </button>
+                    <button class="window-btn maximize-btn" title="最大化" onclick="toggleMaximize2()">
+                        <i class="fas fa-window-maximize"></i>
+                    </button>
+                    <button class="window-btn close-btn" title="关闭" onclick="go.closeWindow()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- 仪表盘页面 -->
+            <section id="dashboard" class="page active">
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">1,254</div>
+                            <div class="stat-label">总用户数</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">324</div>
+                            <div class="stat-label">今日订单</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">$8,560</div>
+                            <div class="stat-label">今日收入</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">56</div>
+                            <div class="stat-label">新消息</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">最近活动</div>
+                    </div>
+                    <div class="card-content">
+                        <p>这里是最近的活动记录...</p>
+                        <p>用户 "张三" 刚刚创建了新订单 #ORD-00123</p>
+                        <p>用户 "李四" 更新了个人资料</p>
+                        <p>系统在 10:23 AM 完成了每日备份</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">性能统计</div>
+                    </div>
+                    <div class="card-content">
+                        <p>系统运行状态良好，资源使用率正常。</p>
+                        <p>CPU 使用率: 24%</p>
+                        <p>内存使用: 1.2GB / 4GB</p>
+                        <p>磁盘空间: 45GB / 120GB</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 其他页面内容 -->
+            <section id="analytics" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">数据分析</div>
+                    </div>
+                    <div class="card-content">
+                        <p>这里是数据分析页面，您可以查看各种统计图表和报告。</p>
+                        <p>功能包括：</p>
+                        <ul>
+                            <li>用户行为分析</li>
+                            <li>销售趋势图</li>
+                            <li>转化率统计</li>
+                            <li>地域分布图</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="users" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">用户管理</div>
+                    </div>
+                    <div class="card-content">
+                        <p>用户管理功能允许您：</p>
+                        <ul>
+                            <li>添加/删除用户</li>
+                            <li>管理用户权限</li>
+                            <li>查看用户活动日志</li>
+                            <li>设置用户组和角色</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="settings" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">系统设置</div>
+                    </div>
+                    <div class="card-content">
+                        <p>系统配置选项：</p>
+                        <ul>
+                            <li>常规设置</li>
+                            <li>安全与权限</li>
+                            <li>通知设置</li>
+                            <li>备份与恢复</li>
+                            <li>API 集成</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
