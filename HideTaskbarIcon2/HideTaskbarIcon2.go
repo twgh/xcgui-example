@@ -3,6 +3,7 @@ package main
 
 import (
 	_ "embed"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/wapi"
 	"github.com/twgh/xcgui/window"
@@ -13,6 +14,8 @@ import (
 var xmlStr string
 
 func main() {
+	// 初始化UI库
+	app.InitOrExit()
 	a := app.New(true)
 	a.EnableAutoDPI(true).EnableDPI(true)
 
