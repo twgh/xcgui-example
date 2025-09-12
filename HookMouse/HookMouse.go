@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/wapi"
 	"github.com/twgh/xcgui/wapi/wutil"
@@ -14,10 +15,10 @@ import (
 
 func main() {
 	// 1.初始化UI库
+	app.InitOrExit()
 	a := app.New(true)
 	// 启用自适应DPI
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
 	// 2.创建窗口
 	w := window.New(0, 0, 430, 300, "全局鼠标钩子", 0, xcc.Window_Style_Default)
 
@@ -26,8 +27,8 @@ func main() {
 	checkBtn.EnableBkTransparent(true)
 
 	// 注册事件_窗口鼠标右键按下, 用来检测是否真的拦截了鼠标右键按下消息
-	w.Event_RBUTTONDOWN(func(nFlags uint, pPt *xc.POINT, pbHandled *bool) int {
-		xc.XC_Alert("提示", fmt.Sprintf("响应了炫彩窗口鼠标右键被按下消息, 证明没有被拦截, nFlags: %d, pPt: %v", nFlags, pPt))
+	w.AddEvent_RButtonDown(func(hWindow int, nFlags uint, pPt *xc.POINT, pbHandled *bool) int {
+		app.Alert("提示", fmt.Sprintf("响应了炫彩窗口鼠标右键被按下消息, 证明没有被拦截, nFlags: %d, pPt: %v", nFlags, pPt))
 		return 0
 	})
 
@@ -64,7 +65,7 @@ func main() {
 		return wutil.CallNextHookEx_Mouse(nCode, wParam, lParam)
 	})
 
-	w.Event_CLOSE(func(pbHandled *bool) int {
+	w.AddEvent_Close(func(hWindow int, pbHandled *bool) int {
 		msHook.Unhook()
 		return 0
 	})
