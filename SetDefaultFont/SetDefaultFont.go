@@ -14,9 +14,9 @@ import (
 
 func main() {
 	// 1.初始化UI库
+	app.InitOrExit()
 	a := app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
 
 	// 创建字体
 	f := font.NewEX("Arial", 11, xcc.FontStyle_Regular)
@@ -28,7 +28,7 @@ func main() {
 
 	// 创建一个按钮
 	btn := widget.NewButton(30, 50, 150, 30, "GetFontInfo", w.Handle)
-	btn.Event_BnClick(func(pbHandled *bool) int {
+	btn.AddEvent_BnClick(func(hEle int, pbHandled *bool) int {
 		// 获取字体信息
 		var fontInfo xc.Font_Info_
 		f.GetFontInfo(&fontInfo)
