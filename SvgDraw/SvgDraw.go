@@ -6,19 +6,19 @@ import (
 	"github.com/twgh/xcgui/drawx"
 	"github.com/twgh/xcgui/svg"
 	"github.com/twgh/xcgui/window"
+	"github.com/twgh/xcgui/xc"
 	"github.com/twgh/xcgui/xcc"
 )
 
-var (
-	w    *window.Window
-	svg1 *svg.Svg
-)
+var svg1 *svg.Svg
 
 func main() {
+	// 初始化界面库
+	app.InitOrExit()
 	a := app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
-	w = window.New(0, 0, 350, 200, "svg绘制", 0, xcc.Window_Style_Default)
+	a.EnableAutoDPI(true).EnableDPI(true)
+	// 创建窗口
+	w := window.New(0, 0, 350, 200, "svg绘制", 0, xcc.Window_Style_Default)
 
 	// SVG_加载从字符串
 	svg1 = svg.NewByStringW(svgStr)
@@ -27,17 +27,17 @@ func main() {
 	}
 
 	// 窗口绘制消息
-	w.Event_PAINT(OnWndDrawWindow)
+	w.AddEvent_Paint(OnWndDrawWindow)
 
 	w.ShowWindow(xcc.SW_SHOW)
 	a.Run()
 	a.Exit()
 }
 
-func OnWndDrawWindow(hDraw int, pbHandled *bool) int {
+func OnWndDrawWindow(hWindow int, hDraw int, pbHandled *bool) int {
 	*pbHandled = true
 	// 在自绘事件函数中,用户手动调用绘制窗口, 以便控制绘制顺序
-	w.DrawWindow(hDraw)
+	xc.XWnd_DrawWindow(hWindow, hDraw)
 	// 创建绘制对象
 	draw := drawx.NewByHandle(hDraw)
 
