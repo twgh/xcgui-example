@@ -5,7 +5,7 @@ package main
 
 import (
 	_ "embed"
-	"fmt"
+	"log"
 
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/imagex"
@@ -24,11 +24,12 @@ var (
 
 func main() {
 	// 1.初始化UI库
+	app.InitOrExit()
 	a := app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
-	// 2.创建窗口
-	w := window.New(0, 0, 465, 300, "", 0, xcc.Window_Style_Simple|xcc.Window_Style_Title|xcc.Window_Style_Drag_Window)
+	a.EnableAutoDPI(true).EnableDPI(true)
+
+	// 2.创建窗口, ^是去除样式, |是添加样式
+	w := window.New(0, 0, 465, 300, "给按钮加上三种状态下的图片", 0, xcc.Window_Style_Default|xcc.Window_Style_Drag_Window^xcc.Window_Style_Btn_Min^xcc.Window_Style_Btn_Max^xcc.Window_Style_Btn_Close)
 	// 设置窗口透明类型
 	w.SetTransparentType(xcc.Window_Transparent_Shadow)
 	// 设置窗口阴影
@@ -58,18 +59,19 @@ func main() {
 
 // 给按钮加上三态图片
 func setBtnImg(btn *widget.Button, file []byte) {
+	var img *imagex.Image
 	for i := int32(0); i < 3; i++ {
 		x := i * 31
 		// 图片_加载从内存, 指定区域位置及大小
-		img := imagex.NewByMemRect(file, x, 0, 30, 30)
+		img = imagex.NewByMemRect(file, x, 0, 30, 30)
 
 		if img.Handle == 0 {
-			fmt.Println("Error: hImg=", img.Handle)
+			log.Println("Error: hImg = 0")
 			continue
 		}
-
 		// 启用图片透明色
 		img.EnableTranColor(true)
+
 		// 添加背景图片
 		switch i {
 		case 0:
