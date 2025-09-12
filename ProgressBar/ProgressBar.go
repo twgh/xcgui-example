@@ -3,6 +3,8 @@ package main
 
 import (
 	_ "embed"
+	"fmt"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/imagex"
 	"github.com/twgh/xcgui/widget"
@@ -11,24 +13,21 @@ import (
 	"github.com/twgh/xcgui/xcc"
 )
 
-var (
-	bar    *widget.ProgressBar
-	bar2   *widget.ProgressBar
-	btnAdd *widget.Button
-	btnSub *widget.Button
-)
-
 //go:embed jindu.png
 var img []byte
 
 func main() {
+	// 初始化界面库
+	app.InitOrExit()
 	a := app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	// 启用自适应DPI
+	a.EnableAutoDPI(true).EnableDPI(true)
+
+	// 创建窗口
 	w := window.New(0, 0, 436, 450, "ProgressBar", 0, xcc.Window_Style_Default)
 
 	// 创建一个水平进度条
-	bar = widget.NewProgressBar(24, 60, 200, 10, w.Handle)
+	bar := widget.NewProgressBar(24, 60, 200, 10, w.Handle)
 	// 设置进度条边框大小
 	bar.SetBorderSize(1, 1, 1, 1)
 	// 设置进度条不显示进度文字
@@ -42,7 +41,7 @@ func main() {
 	// 置进度条背景颜色
 	bar.AddBkFill(xcc.Element_State_Flag_Leave, xc.RGBA(221, 221, 223, 255))
 
-	bar2 = widget.NewProgressBar(24, 200, 24, 200, w.Handle)
+	bar2 := widget.NewProgressBar(24, 200, 24, 200, w.Handle)
 	// 设置为垂直进度条
 	bar2.EnableHorizon(false)
 	// 设置进度条边框大小
@@ -55,28 +54,27 @@ func main() {
 	bar2.AddBkFill(xcc.Element_State_Flag_Leave, xc.RGBA(221, 221, 223, 255))
 
 	// 创建按钮_进度加
-	btnAdd = widget.NewButton(238, 50, 70, 30, "+", w.Handle)
-	btnAdd.Event_BnClick1(onBtnClick)
+	btnAdd := widget.NewButton(238, 50, 70, 30, "+", w.Handle)
+	btnAdd.AddEvent_BnClick(func(hEle int, pbHandled *bool) int {
+		bar.SetPos(bar.GetPos() + 10).Redraw(false)
+		bar2.SetPos(bar.GetPos() + 10).Redraw(false)
+		return 0
+	})
 	// 创建按钮_进度减
-	btnSub = widget.NewButton(318, 50, 70, 30, "-", w.Handle)
-	btnSub.Event_BnClick1(onBtnClick)
+	btnSub := widget.NewButton(318, 50, 70, 30, "-", w.Handle)
+	btnSub.AddEvent_BnClick(func(hEle int, pbHandled *bool) int {
+		bar.SetPos(bar.GetPos() - 10).Redraw(false)
+		bar2.SetPos(bar.GetPos() - 10).Redraw(false)
+		return 0
+	})
+
+	// 添加进度条元素进度改变事件.
+	bar.AddEvent_ProgressBar_Change(func(hEle int, pos int32, pbHandled *bool) int {
+		fmt.Println("进度条进度改变:", pos)
+		return 0
+	})
 
 	w.ShowWindow(xcc.SW_SHOW)
 	a.Run()
 	a.Exit()
-}
-
-// 事件_按钮被单击
-func onBtnClick(hEle int, pbHandled *bool) int {
-	switch hEle {
-	case btnAdd.Handle:
-		bar.SetPos(bar.GetPos() + 10)
-		bar2.SetPos(bar.GetPos() + 10)
-	case btnSub.Handle:
-		bar.SetPos(bar.GetPos() - 10)
-		bar2.SetPos(bar.GetPos() - 10)
-	}
-	bar.Redraw(true)
-	bar2.Redraw(true)
-	return 0
 }
