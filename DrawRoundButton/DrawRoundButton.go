@@ -13,9 +13,10 @@ import (
 
 func main() {
 	// 1.初始化UI库
+	app.InitOrExit()
 	a := app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+
 	// 2.创建窗口
 	w := window.New(0, 0, 430, 300, "绘制圆角按钮", 0, xcc.Window_Style_Default)
 
@@ -39,7 +40,7 @@ func setBtnRound(btn *widget.Button, round int32) {
 	// 启用按钮背景透明
 	btn.EnableBkTransparent(true)
 	// 注册按钮绘制事件
-	btn.Event_PAINT1(func(hEle int, hDraw int, pbHandled *bool) int {
+	btn.AddEvent_Paint(func(hEle int, hDraw int, pbHandled *bool) int {
 		// 创建Draw对象
 		draw := drawx.NewByHandle(hDraw)
 		// 启用平滑模式
