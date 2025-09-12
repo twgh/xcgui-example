@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/wapi"
 	"github.com/twgh/xcgui/wapi/wutil"
@@ -13,10 +14,10 @@ import (
 
 func main() {
 	// 1.初始化UI库
+	app.InitOrExit()
 	a := app.New(true)
 	// 启用自适应DPI
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
 	// 2.创建窗口
 	w := window.New(0, 0, 430, 300, "全局键盘钩子", 0, xcc.Window_Style_Default)
 
@@ -30,7 +31,8 @@ func main() {
 			return wutil.CallNextHookEx_Keyboard(nCode, wParam, lParam)
 		}
 
-		if wParam == xcc.WM_KEYDOWN { // 键盘按下
+		switch wParam {
+		case xcc.WM_KEYDOWN:
 			if checkBtn.GetStateEx() == xcc.Button_State_Check {
 				if lParam.VkCode == xcc.VK_A {
 					fmt.Println("拦截了A键按下, 是不会输入文本框的, 部分程序不会被拦截, 自行研究")
@@ -38,13 +40,18 @@ func main() {
 				}
 			}
 			fmt.Printf("按键按下: 虚拟键码=%d, 扫描码=%d\n", lParam.VkCode, lParam.ScanCode)
-		} else if wParam == xcc.WM_KEYUP { // 键盘弹起
+
+			if lParam.VkCode == xcc.VK_S && wutil.IsKeyPressed(xcc.VK_Ctrl) { // 判断 Ctrl+S 组合键被按下
+				fmt.Println("Ctrl+S 组合键被按下")
+			}
+		case xcc.WM_KEYUP:
 			fmt.Printf("按键弹起: 虚拟键码=%d, 扫描码=%d\n", lParam.VkCode, lParam.ScanCode)
 		}
+
 		return wutil.CallNextHookEx_Keyboard(nCode, wParam, lParam)
 	})
 
-	w.Event_CLOSE(func(pbHandled *bool) int {
+	w.AddEvent_Close(func(hWindow int, pbHandled *bool) int {
 		kbHook.Unhook()
 		return 0
 	})
