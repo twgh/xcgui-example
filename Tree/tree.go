@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/font"
 	"github.com/twgh/xcgui/widget"
@@ -12,9 +13,13 @@ import (
 )
 
 func main() {
+	// 初始化界面库
+	app.InitOrExit()
 	a := app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	// 启用自适应DPI
+	a.EnableAutoDPI(true).EnableDPI(true)
+
+	// 创建窗口
 	w := window.New(0, 0, 430, 300, "Tree", 0, xcc.Window_Style_Default)
 
 	// 创建Tree
@@ -41,7 +46,7 @@ func main() {
 	// 然后你就能理解项模板是什么样子了, 项模板就是各个基础元素组合而成的, 而你可以diy它达成你想要的样子.
 	// 这就是项模板存在的意义, 然后可以通过 tree.SetItemTemplate 相关函数设置你自己的项模板.
 	// 其它有项模板的元素还有: List, ListBox, ListView等.
-	tree.Event_TREE_TEMP_CREATE_END(func(pItem *xc.Tree_Item_, nFlag int32, pbHandled *bool) int {
+	tree.AddEvent_Tree_Temp_Create_End(func(hEle int, pItem *xc.Tree_Item_, nFlag int32, pbHandled *bool) int {
 		// nFlag  0:状态改变(复用); 1:新模板实例; 2:旧模板复用
 		if nFlag == 1 {
 			// 获取项模板中(itemID=2)的形状文本句柄.
@@ -52,6 +57,18 @@ func main() {
 			// 设置文本颜色
 			xc.XShapeText_SetTextColor(hst, xc.RGBA(255, 34, 33, 255))
 		}
+		return 0
+	})
+
+	// 添加树元素-项展开收缩事件.
+	tree.AddEvent_Tree_Expand(func(hEle int, id int32, bExpand bool, pbHandled *bool) int {
+		fmt.Println("项展开/收缩:", id, bExpand)
+		return 0
+	})
+
+	// 添加树元素-项选择事件.
+	tree.AddEvent_Tree_Select(func(hEle int, nItemID int32, pbHandled *bool) int {
+		fmt.Println("项选中:", nItemID)
 		return 0
 	})
 
