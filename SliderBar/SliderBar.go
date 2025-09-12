@@ -11,9 +11,13 @@ import (
 )
 
 func main() {
+	// 初始化界面库
+	app.InitOrExit()
 	a := app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	// 启用自适应DPI
+	a.EnableAutoDPI(true).EnableDPI(true)
+
+	// 创建窗口
 	w := window.New(0, 0, 430, 300, "SliderBar", 0, xcc.Window_Style_Default)
 
 	// 创建SliderBar
@@ -29,8 +33,8 @@ func main() {
 	sb.EnableBkTransparent(true)
 
 	// 注册滑块位置改变事件
-	sb.Event_SLIDERBAR_CHANGE(func(pos int32, pbHandled *bool) int {
-		fmt.Println(pos)
+	sb.AddEvent_SliderBar_Change(func(hEle int, pos int32, pbHandled *bool) int {
+		fmt.Println("滑块位置改变:", pos)
 		return 0
 	})
 
