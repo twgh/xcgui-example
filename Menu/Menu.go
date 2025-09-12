@@ -1,9 +1,10 @@
-// 菜单. 默认的菜单并不好看, 好看的可参考DrawMenu例子, 但那个不熟练的话又不好理解.
-// 用无边框窗口里放按钮来做菜单会更方便美化, 也比自绘好理解一些, 也是一个常用的做法.
+// 菜单. 默认的菜单并不好看, 好看的可参考 DrawMenu 例子, 但那个不熟练的话又不好理解.
+// 用窗口放按钮来做菜单会更方便美化, 也比自绘好理解一些, 也是一个常用的做法.
 package main
 
 import (
 	"fmt"
+
 	"github.com/twgh/xcgui/wapi"
 
 	"github.com/twgh/xcgui/app"
@@ -14,10 +15,6 @@ import (
 )
 
 var (
-	a   *app.App
-	w   *window.Window
-	btn *widget.Button
-
 	item_selected = true // 控制item_select是否选中
 )
 
@@ -33,23 +30,27 @@ const (
 
 func main() {
 	// 1.初始化UI库
-	a = app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
-	// 2.创建窗口
-	w = window.New(0, 0, 400, 300, "Menu", 0, xcc.Window_Style_Default)
+	app.InitOrExit()
+	a := app.New(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
 
-	// 创建一个按钮
-	btn = widget.NewButton(50, 50, 100, 30, "ShowMenu", w.Handle)
-	// 注册按钮被单击事件
-	btn.Event_BnClick(onBnClick)
+	// 2.创建窗口
+	w := window.New(0, 0, 400, 300, "Menu", 0, xcc.Window_Style_Default)
+
+	// 启用窗口布局
+	w.EnableLayout(true)
+	// 水平居中
+	w.SetAlignH(xcc.Layout_Align_Center)
+
+	widget.NewShapeText(0, 0, 400, 30, "点击鼠标右键显示菜单", w.Handle).SetFont(app.NewFont(16).Handle).LayoutItem_SetWidth(xcc.Layout_Size_Auto, 0)
+
+	// 窗口鼠标右键按下事件
+	w.AddEvent_RButtonDown(onWindowRButtonDown)
 
 	// 注册菜单被选择事件
 	w.Event_MENU_SELECT(onMenuSelect)
-
 	// 注册菜单弹出事件
 	w.Event_MENU_POPUP(onMenuPopup)
-
 	// 注册菜单退出事件
 	w.Event_MENU_EXIT(onMenuExit)
 
@@ -62,7 +63,7 @@ func main() {
 }
 
 // 按钮被单击事件
-func onBnClick(pbHandled *bool) int {
+func onWindowRButtonDown(hWindow int, nFlags uint, pPt *xc.POINT, pbHandled *bool) int {
 	// 创建菜单
 	menu := widget.NewMenu()
 	// 一级菜单
@@ -80,14 +81,11 @@ func onBnClick(pbHandled *bool) int {
 	menu.AddItem(subitem1, "subitem1", item1, xcc.Menu_Item_Flag_Normal)
 	menu.AddItem(subitem2, "subitem2", item1, xcc.Menu_Item_Flag_Normal)
 
-	// 获取按钮坐标
-	var rc xc.RECT
-	btn.GetWndClientRectDPI(&rc)
-	// 转换到屏幕坐标
-	pt := wapi.POINT{X: rc.Left, Y: rc.Bottom}
-	wapi.ClientToScreen(w.GetHWND(), &pt)
+	// 获取鼠标光标的位置
+	var pt wapi.POINT
+	wapi.GetCursorPos(&pt)
 	// 弹出菜单
-	menu.Popup(w.GetHWND(), pt.X, pt.Y, 0, xcc.Menu_Popup_Position_Left_Top)
+	menu.Popup(xc.XWnd_GetHWND(hWindow), pt.X, pt.Y, 0, xcc.Menu_Popup_Position_Left_Top)
 	return 0
 }
 
