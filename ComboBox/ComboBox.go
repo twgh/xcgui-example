@@ -2,18 +2,21 @@
 package main
 
 import (
+	"strconv"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
 	"github.com/twgh/xcgui/xc"
 	"github.com/twgh/xcgui/xcc"
-	"strconv"
 )
 
 func main() {
+	// 初始化界面库
+	app.InitOrExit()
 	a := app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+	
 	w := window.New(0, 0, 400, 240, "ComboBox", 0, xcc.Window_Style_Default)
 
 	// 创建组合框
