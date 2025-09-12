@@ -9,9 +9,6 @@ import (
 )
 
 var (
-	a *app.App
-	w *window.Window
-
 	layoutTab *widget.LayoutEle
 	tabBtn1   *widget.Button
 	tabBtn2   *widget.Button
@@ -24,10 +21,11 @@ var (
 )
 
 func main() {
-	a = app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
-	w = window.New(0, 0, 600, 400, "选择夹切换页面", 0, xcc.Window_Style_Default)
+	// 初始化界面库
+	a := app.New(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+	// 创建窗口
+	w := window.New(0, 0, 600, 400, "选择夹切换页面", 0, xcc.Window_Style_Default)
 
 	// 我是喜欢创建一个水平布局元素, tab按钮都放在里面
 	layoutTab = widget.NewLayoutEle(14, 35, 500, 30, w.Handle)
