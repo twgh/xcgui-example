@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
@@ -12,10 +13,14 @@ import (
 )
 
 func main() {
+	// 初始化UI库
+	app.InitOrExit()
 	a := app.New(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+	// 创建窗口
 	w := window.New(0, 0, 430, 300, "xc", 0, xcc.Window_Style_Default)
 
-	// 创建一个按钮
+	// 创建按钮
 	btn := widget.NewButton(50, 50, 70, 30, "button", w.Handle)
 
 	// 一个事件可以注册多个处理函数，执行顺序为先执行最后注册的函数，最后执行第一个注册的函数.
@@ -36,11 +41,11 @@ func event1(pbHandled *bool) int {
 
 func event2(pbHandled *bool) int {
 	fmt.Println("event2")
+	*pbHandled = true // 拦截事件, 不往后传递
 	return 0
 }
 
 func event3(pbHandled *bool) int {
 	fmt.Println("event3")
-	*pbHandled = true
 	return 0
 }
