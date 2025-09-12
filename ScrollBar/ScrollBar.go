@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/twgh/xcgui/xc"
 
 	"github.com/twgh/xcgui/app"
@@ -12,9 +13,13 @@ import (
 )
 
 func main() {
+	// 初始化界面库
+	app.InitOrExit()
 	a := app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	// 启用自适应DPI
+	a.EnableAutoDPI(true).EnableDPI(true)
+
+	// 创建窗口
 	w := window.New(0, 0, 430, 300, "ScrollBar", 0, xcc.Window_Style_Default)
 
 	// 创建滚动条
@@ -44,19 +49,19 @@ func main() {
 	// 因为上下按钮背景改变了, 你可以自己准备图片设置到按钮上去
 	// btnDown.SetIcon()  或  btnDown.AddBkImage()
 
+	// 滚动条元素滚动事件
+	SBar_Scroll := func(hEle int, pos int32, pbHandled *bool) int {
+		fmt.Println(pos)
+		// 为了鼠标滚轮滚动和点击两端按钮实时显示效果而刷新
+		xc.XEle_Redraw(hEle, false)
+		return 0
+	}
+
 	// 注册滚动条元素滚动事件
-	bar1.Event_SBAR_SCROLL1(SBAR_SCROLL1)
-	bar2.Event_SBAR_SCROLL1(SBAR_SCROLL1)
+	bar1.AddEvent_SBar_Scroll(SBar_Scroll)
+	bar2.AddEvent_SBar_Scroll(SBar_Scroll)
 
 	w.ShowWindow(xcc.SW_SHOW)
 	a.Run()
 	a.Exit()
-}
-
-// 滚动条元素滚动事件
-func SBAR_SCROLL1(hEle int, pos int32, pbHandled *bool) int {
-	fmt.Println(pos)
-	// 为了鼠标滚轮滚动和点击两端按钮实时显示效果而刷新
-	xc.XEle_Redraw(hEle, false)
-	return 0
 }
