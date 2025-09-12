@@ -17,7 +17,6 @@ import (
 )
 
 var (
-	a   *app.App
 	w   *window.Window
 	btn *widget.Button
 	ls  *widget.List
@@ -27,14 +26,19 @@ func main() {
 	// 置随机数种子
 	rand.Seed(time.Now().UnixNano())
 
-	a = app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	// 初始化界面库
+	app.InitOrExit()
+	a := app.New(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+
+	// 创建窗口
 	w = window.New(0, 0, 550, 300, "MultithreadOperationUI2", 0, xcc.Window_Style_Default)
 
+	// 创建按钮
 	btn = widget.NewButton(15, 33, 70, 24, "click", w.Handle)
-	btn.Event_BnClick(onBnClick)
+	btn.AddEvent_BnClick(onBnClick)
 
+	// 创建列表
 	ls = widget.NewList(10, 60, 530, 230, w.Handle)
 	ls.CreateAdapterHeader() // 创建表头数据适配器
 	ls.CreateAdapter(5)      // 创建数据适配器, 5列
@@ -74,12 +78,11 @@ func (l *updateList) UiThreadCallBack(data int) int {
 }
 
 // 按钮单击事件
-func onBnClick(pbHandled *bool) int {
+func onBnClick(hEle int, pbHandled *bool) int {
 	if !btn.IsEnable() {
 		return 0
 	}
-	btn.Enable(false)
-	btn.Redraw(false)
+	btn.Enable(false).Redraw(false)
 
 	go func() {
 		u := new(updateList)
@@ -95,7 +98,7 @@ func onBnClick(pbHandled *bool) int {
 				u.Col = rand.Int31n(ls.GetColumnCount())
 				u.Text = xc.Itoa(rand.Int31n(1000000) + 10000)
 				// 这种方式能够传递更多的数据进回调函数
-				a.CallUiThreader(u, ls.Handle) // 这样是在UI线程进行UI操作, 就不会崩溃了
+				app.CallUiThreader(u, ls.Handle) // 这样是在UI线程进行UI操作, 就不会崩溃了
 				u.rwm.RUnlock()
 
 				u.wg.Done()
@@ -103,12 +106,11 @@ func onBnClick(pbHandled *bool) int {
 		}
 		u.wg.Wait()
 
-		// 如果不需要传参数进回调函数, 也不需要返回值时可以调用a.CallUT(), 回调函数写法能简单些.
-		a.CallUT(func() {
+		// 如果不需要传参数进回调函数, 也不需要返回值时可以调用 app.CallUT(), 回调函数写法能简单些.
+		app.CallUT(func() {
 			ls.RefreshData() // 刷新列表项数据
 			ls.Redraw(false) // 列表重绘
-			btn.Enable(true)
-			btn.Redraw(true)
+			btn.Enable(true).Redraw(true)
 			w.MessageBox("提示", fmt.Sprintf("全部执行完毕, 耗时: %v", time.Since(t)), xcc.MessageBox_Flag_Ok, xcc.Window_Style_Default)
 		})
 	}()
