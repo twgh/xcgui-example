@@ -11,9 +11,10 @@ import (
 )
 
 func main() {
+	// 初始化界面库
+	app.InitOrExit()
 	a := app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
 
 	// 炫彩_显示布局边界
 	a.ShowLayoutFrame(true)
