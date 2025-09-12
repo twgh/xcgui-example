@@ -11,7 +11,11 @@ import (
 )
 
 func main() {
+	// 初始化UI库
+	app.InitOrExit()
 	a := app.New(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+	// 创建窗口
 	w := window.New(0, 0, 430, 500, "ListBox", 0, xcc.Window_Style_Default)
 
 	// 创建ListBox
