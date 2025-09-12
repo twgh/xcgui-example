@@ -2,7 +2,6 @@
 package main
 
 import (
-	"runtime"
 	"time"
 
 	"github.com/twgh/xcgui/app"
@@ -27,16 +26,12 @@ var (
 )
 
 func main() {
-	// 这是必要的, 这将保证main函数中对UI库命令的调用是在一个系统线程中执行的。
-	// 如果不在一个系统线程中执行, 那程序大概率卡死.
-	// 其他例子里没有加是因为简单的例子确实不需要这两句代码, 总之从初始化到Run需要保证是在一个系统线程中执行.
-	// 程序运行就窗口卡死未响应就是go的运行时调度的原因, 还没到Run就切换到其他线程了, 比如你在Run前http访问网页了main中加上这两句就不会有问题, 不加就可能出问题.
-	// 因为下面用了time.Sleep(), go的运行时可能会进行调度, 就跳到其他线程了, 所以必须用这个.
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-
+	// 初始化界面库
+	app.InitOrExit()
 	a := app.New(true)
+	// 设置UI的最小重绘频率.
 	a.SetPaintFrequency(10)
+	// 创建窗口
 	w = window.New(0, 0, 700, 450, "炫彩缓动测试", 0, xcc.Window_Style_Default|xcc.Window_Style_Drag_Window)
 
 	var left int32 = 30
