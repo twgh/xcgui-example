@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/twgh/xcgui/wapi/wutil"
 
 	"github.com/twgh/xcgui/app"
@@ -14,15 +15,15 @@ import (
 )
 
 var (
-	a    *app.App
 	w    *window.Window
 	edit *widget.Edit
 )
 
 func main() {
-	a = app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	// 初始化界面库.
+	app.InitOrExit()
+	a := app.New(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
 
 	w = window.New(0, 0, 600, 600, "拖放文件到窗口or元素", 0, xcc.Window_Style_Default|xcc.Window_Style_Drag_Window)
 	// 创建编辑框.
