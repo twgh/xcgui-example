@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/wapi"
 	"github.com/twgh/xcgui/wapi/wutil"
@@ -12,7 +13,6 @@ import (
 )
 
 var (
-	a *app.App
 	w *window.Window
 
 	btn1 *widget.Button
@@ -22,9 +22,12 @@ var (
 )
 
 func main() {
-	a = app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	// 初始化界面库
+	app.InitOrExit()
+	a := app.New(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+
+	// 创建窗口
 	w = window.New(0, 0, 430, 300, "", 0, xcc.Window_Style_Default)
 
 	// 创建按钮
@@ -34,10 +37,10 @@ func main() {
 	btn4 = widget.NewButton(20, 120, 100, 30, "保存文件", w.Handle)
 
 	// 注册按钮事件
-	btn1.Event_BnClick1(onBnClick)
-	btn2.Event_BnClick1(onBnClick)
-	btn3.Event_BnClick1(onBnClick)
-	btn4.Event_BnClick1(onBnClick)
+	btn1.AddEvent_BnClick(onBnClick)
+	btn2.AddEvent_BnClick(onBnClick)
+	btn3.AddEvent_BnClick(onBnClick)
+	btn4.AddEvent_BnClick(onBnClick)
 
 	a.ShowAndRun(w.Handle)
 	a.Exit()
@@ -60,7 +63,7 @@ func onBnClick(hEle int, pbHandled *bool) int {
 		})
 
 		if arr == nil && wapi.CommDlgExtendedError() == wapi.FNERR_BUFFERTOOSMALL {
-			a.Alert("提示", "最多只能选择2个文件")
+			app.Alert("提示", "最多只能选择2个文件")
 			return 0
 		}
 
