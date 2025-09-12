@@ -13,12 +13,9 @@ import (
 )
 
 var (
-	a   *app.App
-	w   *window.Window
-	btn *widget.Button
-
-	item_selected = true                 // 控制item_select是否选中
-	svgMap        = make(map[int]int, 7) // 存放图片句柄
+	w      *window.Window
+	menu   *widget.Menu
+	svgMap = make(map[int]int) // 存放图片句柄
 )
 
 // 菜单项ID
@@ -34,37 +31,6 @@ const (
 	menuid_item4
 	menuid_item_disable
 )
-
-func main() {
-	// 1.初始化UI库
-	a = app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
-	// 2.创建窗口
-	w = window.New(0, 0, 500, 350, "DrawMenu", 0, xcc.Window_Style_Default)
-	w.SetBorderSize(1, 30, 1, 1)
-
-	// 加载所有的svg图片
-	loadAllSvg()
-
-	// 创建一个按钮
-	btn = widget.NewButton(50, 50, 100, 30, "ShowMenu", w.Handle)
-	// 注册按钮被单击事件
-	btn.Event_BnClick(onBnClick)
-
-	// 注册菜单背景绘制事件
-	w.Event_MENU_DRAW_BACKGROUND(onMenuDrawBackground)
-	// 注册菜单项绘制事件
-	w.Event_MENU_DRAWITEM(onMenuDrawItem)
-	// 注册菜单被选择事件
-	w.Event_MENU_SELECT(onMenuSelect)
-
-	// 3.显示窗口
-	w.ShowWindow(xcc.SW_SHOW)
-	// 4.运行程序
-	a.Run()
-	a.Exit()
-}
 
 // 加载所有的svg图片
 func loadAllSvg() {
@@ -85,10 +51,46 @@ func loadSvg(svgText string) int {
 	return hSvg
 }
 
-// 按钮被单击事件
-func onBnClick(pbHandled *bool) int {
+func main() {
+	// 1.初始化UI库
+	app.InitOrExit()
+	a := app.New(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+
+	// 2.创建窗口
+	w = window.New(0, 0, 500, 350, "DrawMenu", 0, xcc.Window_Style_Default)
+	w.SetBorderSize(1, 30, 1, 1)
+	// 启用窗口布局
+	w.EnableLayout(true)
+	// 水平居中
+	w.SetAlignH(xcc.Layout_Align_Center)
+
+	// 加载所有的svg图片
+	loadAllSvg()
+
+	widget.NewShapeText(0, 0, 400, 30, "点击鼠标右键显示菜单", w.Handle).SetFont(app.NewFont(16).Handle).LayoutItem_SetWidth(xcc.Layout_Size_Auto, 0)
+
+	// 窗口鼠标右键按下事件
+	w.Event_RBUTTONDOWN(onWindowRButtonDown)
+
+	// 注册菜单背景绘制事件
+	w.Event_MENU_DRAW_BACKGROUND(onMenuDrawBackground)
+	// 注册菜单项绘制事件
+	w.Event_MENU_DRAWITEM(onMenuDrawItem)
+	// 注册菜单被选择事件
+	w.Event_MENU_SELECT(onMenuSelect)
+
+	// 3.显示窗口
+	w.ShowWindow(xcc.SW_SHOW)
+	// 4.运行程序
+	a.Run()
+	a.Exit()
+}
+
+// 窗口鼠标右键按下事件
+func onWindowRButtonDown(nFlags uint, pPt *xc.POINT, pbHandled *bool) int {
 	// 创建菜单
-	menu := widget.NewMenu()
+	menu = widget.NewMenu()
 	menu.SetItemHeight(30)          // 设置菜单项高度
 	menu.EnableDrawBackground(true) // 菜单_启用用户绘制背景
 	menu.EnableDrawItem(true)       // 菜单_启用用户绘制项
@@ -97,7 +99,7 @@ func onBnClick(pbHandled *bool) int {
 	menu.AddItemIcon(menuid_item1, "item1测试", 0, svgMap[menuid_item1], xcc.Menu_Item_Flag_Normal)
 	menu.SetItemWidth(menuid_item1, 100) // 设置菜单宽度
 	menu.AddItemIcon(menuid_item2, "item2中文", 0, svgMap[menuid_item2], xcc.Menu_Item_Flag_Normal)
-	if item_selected {
+	if common.StringToBool(w.GetProperty("菜单项选中")) {
 		menu.AddItemIcon(menuid_item_select, "item_select", 0, svgMap[menuid_item_select], xcc.Menu_Item_Flag_Check)
 	} else {
 		menu.AddItem(menuid_item_select, "item_select", 0, xcc.Menu_Item_Flag_Normal)
@@ -111,12 +113,9 @@ func onBnClick(pbHandled *bool) int {
 	menu.AddItemIcon(menuid_subitem1, "subitem1", menuid_item1, svgMap[menuid_subitem1], xcc.Menu_Item_Flag_Normal)
 	menu.AddItemIcon(menuid_subitem2, "subitem2", menuid_item1, svgMap[menuid_subitem2], xcc.Menu_Item_Flag_Normal)
 
-	// 获取按钮坐标
-	var rc xc.RECT
-	btn.GetWndClientRectDPI(&rc)
-	// 转换到屏幕坐标
-	pt := wapi.POINT{X: rc.Left, Y: rc.Bottom}
-	wapi.ClientToScreen(w.GetHWND(), &pt)
+	// 获取鼠标光标的位置
+	var pt wapi.POINT
+	wapi.GetCursorPos(&pt)
 	// 弹出菜单
 	menu.Popup(w.GetHWND(), pt.X, pt.Y, 0, xcc.Menu_Popup_Position_Left_Top)
 	return 0
@@ -224,7 +223,11 @@ func onMenuDrawItem(hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *bool) int {
 // 菜单被选择事件
 func onMenuSelect(nID int32, pbHandled *bool) int {
 	if nID == menuid_item_select {
-		item_selected = !item_selected
+		if common.StringToBool(w.GetProperty("菜单项选中")) {
+			w.SetProperty("菜单项选中", common.BoolToString(false))
+		} else {
+			w.SetProperty("菜单项选中", common.BoolToString(true))
+		}
 	}
 	return 0
 }
