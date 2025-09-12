@@ -4,6 +4,7 @@ package main
 import (
 	_ "embed"
 	"fmt"
+
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
@@ -12,7 +13,7 @@ import (
 )
 
 var (
-	//go:embed list2/list2.zip
+	//go:embed res/list2.zip
 	zipData []byte
 
 	a  *app.App
@@ -21,11 +22,14 @@ var (
 )
 
 func main() {
+	// 初始化界面库
+	app.InitOrExit()
 	a = app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+
 	// 从内存zip加载资源文件
 	a.LoadResourceZipMem(zipData, "resource.res", "")
+	// 创建窗口
 	w = window.New(0, 0, 302, 308, "列表, 模板进阶操作", 0, xcc.Window_Style_Default)
 
 	// 创建List
