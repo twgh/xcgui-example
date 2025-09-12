@@ -11,30 +11,32 @@ import (
 )
 
 func main() {
+	// 初始化界面库
+	app.InitOrExit()
 	a := app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+
 	w := window.New(0, 0, 400, 300, "给按钮设置Svg图标", 0, xcc.Window_Style_Default)
 
-	// 加载svg1从string
-	svg1 := imagex.NewBySvgStringW(svgStr1)
-	// 设置svg1的大小
-	xc.XSvg_SetSize(svg1.GetSvg(), 24, 24)
+	// 加载图片从svg string
+	img1 := imagex.NewBySvgStringW(svgStr1)
+	// 设置图片的大小
+	xc.XSvg_SetSize(img1.GetSvg(), 24, 24)
 
 	// 创建按钮1
 	btn1 := widget.NewButton(30, 40, 130, 30, "Test Svg Icon", w.Handle)
 	// 设置按钮1的icon
-	btn1.SetIcon(svg1.Handle)
+	btn1.SetIcon(img1.Handle)
 
-	// 加载svg2从string
-	svg2 := imagex.NewBySvgStringW(svgStr2)
-	// 设置svg2的大小
-	xc.XSvg_SetSize(svg2.GetSvg(), 100, 100)
+	// 加载图片从svg string
+	img2 := imagex.NewBySvgStringW(svgStr2)
+	// 设置图片的大小
+	xc.XSvg_SetSize(img2.GetSvg(), 100, 100)
 
 	// 创建按钮2
 	btn2 := widget.NewButton(30, 80, 100, 100, "", w.Handle)
 	// 设置按钮2的icon
-	btn2.SetIcon(svg2.Handle)
+	btn2.SetIcon(img2.Handle)
 
 	w.ShowWindow(xcc.SW_SHOW)
 	a.Run()
