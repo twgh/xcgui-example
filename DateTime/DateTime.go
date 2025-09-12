@@ -1,6 +1,6 @@
 // 日期时间框
 // 要美化的话, 就得自绘, 看这个: http://www.xcgui.com/doc-ui/page_draw__month_cal.html
-// 我以后有空会翻译几个好看的: http://mall.xcgui.com/1618.html
+// todo: 翻译几个好看的日期时间框: http://mall.xcgui.com/1618.html
 package main
 
 import (
@@ -11,9 +11,11 @@ import (
 )
 
 func main() {
+	// 初始化界面库
+	app.InitOrExit()
 	a := app.New(true)
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+
 	w := window.New(0, 0, 400, 300, "日期时间框", 0, xcc.Window_Style_Default)
 
 	dt := widget.NewDateTime(20, 50, 120, 26, w.Handle)
