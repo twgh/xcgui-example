@@ -31,8 +31,10 @@ cd SimpleWindow && go run .
 
 [![uidesigner](https://z3.ax1x.com/2021/09/15/4Vmh9S.png)](https://github.com/twgh/xcgui-example/tree/main/uidesigner)
 
-#### 简单窗口
+#### WebView 例子
 
-[![SimpleWindow](https://s1.ax1x.com/2022/05/24/XiEWtg.png)](https://github.com/twgh/xcgui-example/tree/main/SimpleWindow)
+![Chart](https://raw.githubusercontent.com/twgh/xcgui-example/refs/heads/main/webview/Chart/1.jpg)
 
-[![ButtonImage](https://s1.ax1x.com/2022/05/24/XiuLAx.jpg)](https://github.com/twgh/xcgui-example/tree/main/ButtonImage)
+![EmbedAssets](https://raw.githubusercontent.com/twgh/xcgui-example/refs/heads/main/webview/EmbedAssets/1.jpg)
+
+![](https://raw.githubusercontent.com/twgh/xcgui-example/refs/heads/main/webview/CreateByLayoutEle/1.jpg)
