@@ -80,7 +80,24 @@ func createWebView1(edg *edge.Edge, wvOption []edge.WebViewOption) {
 		log.Println("创建 webview1 失败: " + err.Error())
 		return
 	}
+	wv.Show(false)
 	wv.EnableVirtualHostNameToEmbedFSMapping(true)
+
+	firstLoad := true
+	// 导航完成事件
+	wv.Event_NavigationCompleted(func(sender *edge.ICoreWebView2, args *edge.ICoreWebView2NavigationCompletedEventArgs) uintptr {
+		uri := sender.MustGetSource()
+		switch uri {
+		case edge.JoinUrlHeader(hostName) + "/chart1.html":
+			if firstLoad { // 首次加载页面
+				firstLoad = false
+				wv.Show(true) // 首次加载完成才显示
+				return 0
+			}
+		}
+		return 0
+	})
+
 	wv.Navigate(edge.JoinUrlHeader(hostName) + "/chart1.html")
 }
 
@@ -91,7 +108,24 @@ func createWebView2(edg *edge.Edge, wvOption []edge.WebViewOption) {
 		log.Println("创建 webview2 失败: " + err.Error())
 		return
 	}
+	wv.Show(false)
 	wv.EnableVirtualHostNameToEmbedFSMapping(true)
+
+	firstLoad := true
+	// 导航完成事件
+	wv.Event_NavigationCompleted(func(sender *edge.ICoreWebView2, args *edge.ICoreWebView2NavigationCompletedEventArgs) uintptr {
+		uri := sender.MustGetSource()
+		switch uri {
+		case edge.JoinUrlHeader(hostName) + "/chart2.html":
+			if firstLoad { // 首次加载页面
+				firstLoad = false
+				wv.Show(true) // 首次加载完成才显示
+				return 0
+			}
+		}
+		return 0
+	})
+
 	wv.Navigate(edge.JoinUrlHeader(hostName) + "/chart2.html")
 }
 
@@ -108,6 +142,7 @@ func createWebView3(edg *edge.Edge, wvOption []edge.WebViewOption) {
 		log.Println("创建 webview3 失败: " + err.Error())
 		return
 	}
+	wv.Show(false)
 	wv.EnableVirtualHostNameToEmbedFSMapping(true)
 
 	firstLoad := true
@@ -128,6 +163,7 @@ func createWebView3(edg *edge.Edge, wvOption []edge.WebViewOption) {
 				}
 				bs, _ := json.Marshal(data)
 				wv.PostWebMessageAsJSON(string(bs))
+				wv.Show(true) // 首次加载完成才显示
 				return 0
 			}
 		}

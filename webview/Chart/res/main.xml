@@ -6,6 +6,6 @@
 	<layoutEleUI bkInfoM="{99:1.9.9;98:16(0);5:2(15)20(1)21(3)26(1)22(-1)23(255)9(8,8,8,8);}" bkInfoM_nameT="0(矩形)" expandT="true" layout.height="%50(百分比)" layout.margin="0,0,0,16" layout.width="%50(百分比)" name="layout_chart2" rect="1332,683,609,380" showT="true" />
 	<layoutEleUI bkInfoM="{99:1.9.9;98:16(0);5:2(15)20(1)21(3)26(1)22(-1)23(255)9(8,8,8,8);}" bkInfoM_nameT="0(矩形)" expandT="true" layout.height="%50(百分比)" layout.margin="0,0,16,0" layout.width="%50(百分比)" name="layout_chart3" rect="743,450,609,380" showT="true" />
 	<layoutEleUI bkInfoM="{99:1.9.9;98:16(0);5:2(15)20(1)21(3)26(1)22(-1)23(255)9(8,8,8,8);}" bkInfoM_nameT="0(矩形)" expandT="true" layout.alignV="center" layout.height="%50(百分比)" layout.width="%50(百分比)" name="layout_chart4" rect="1298,450,609,380" showT="true">
-		<buttonUI content="发送数据" name="按钮_发送数据" rect="106,119,100,30" showT="true" expandT="true" />
+		<buttonUI content="发送数据" expandT="true" name="按钮_发送数据" rect="106,119,100,30" showT="true" />
 	</layoutEleUI>
 </windowUI>
