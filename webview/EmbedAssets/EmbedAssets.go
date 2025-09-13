@@ -95,7 +95,7 @@ func (m *MainWindow) main() {
 		uri := sender.MustGetSource()
 		fmt.Println("导航完成:", uri)
 		switch uri {
-		case edge.JoinUrlHeader(hostName) + "/index.html":
+		case edge.JoinUrlHeader(hostName) + "/EmbedAssets.html":
 			// 在导航完成事件里判断第一次加载完毕时才显示窗口,
 			// 这是因为采用嵌入文件系统的方式时, 网页还没加载出来的时候, 会显示webview白色的背景,
 			// 然后才会加载出网页, 表现出来就是有一瞬间的闪烁, 所以等加载完再显示窗口
@@ -111,7 +111,7 @@ func (m *MainWindow) main() {
 	// 绑定函数
 	m.bindBasicFuncs()
 	// 导航到首页
-	m.wv.Navigate(edge.JoinUrlHeader(hostName) + "/index.html")
+	m.wv.Navigate(edge.JoinUrlHeader(hostName) + "/EmbedAssets.html")
 }
 
 // bindBasicFuncs 绑定基本函数.

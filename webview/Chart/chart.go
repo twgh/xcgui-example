@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	//go:embed res/main.xml
+	//go:embed res/Chart.xml
 	xmlStr string
 	//go:embed assets/**
 	embedAssets embed.FS // 嵌入 assets 目录以及子目录下的文件, 不包括隐藏文件

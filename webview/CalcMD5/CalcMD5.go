@@ -81,7 +81,7 @@ func (m *MainWindow) main() {
 	m.bindFuncs()
 
 	// 访问 HTML
-	m.wv.Navigate(edge.JoinUrlHeader(hostName) + "/index.html")
+	m.wv.Navigate(edge.JoinUrlHeader(hostName) + "/CalcMD5.html")
 	// 显示窗口
 	w.AdjustLayout()
 	w.Show(true)
