@@ -33,9 +33,9 @@ cd SimpleWindow && go run .
 
 ### UI Show
 
-[![HouTai017](https://gitee.com/twgh/image/raw/master/xcgui-example/HouTai017.jpg)](https://github.com/twgh/xcgui-example/tree/main/humui/HouTai017)
+[![HouTai017](https://gitee.com/twgh/image/raw/master/xcgui-example/HouTai017.jpg)](https://github.com/twgh/xcgui-example/tree/main/HUMUI/HouTai017)
 
-[![YanZheng018](https://gitee.com/twgh/image/raw/master/xcgui-example/YanZheng018.jpg)](https://github.com/twgh/xcgui-example/tree/main/humui/YanZheng018)
+[![YanZheng018](https://gitee.com/twgh/image/raw/master/xcgui-example/YanZheng018.jpg)](https://github.com/twgh/xcgui-example/tree/main/HUMUI/YanZheng018)
 
 ### WebView Examples
 
