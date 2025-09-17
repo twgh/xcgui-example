@@ -1,4 +1,4 @@
-// 未闻花名 - 验证界面.
+// 未闻花名 - 验证界面018.
 // https://mall.xcgui.com/1698.html
 package main
 
@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/twgh/xcgui/app"
+	"github.com/twgh/xcgui/common"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
 	"github.com/twgh/xcgui/xcc"
@@ -16,7 +17,6 @@ var (
 	//go:embed res/data.zip
 	resData []byte // 打包的炫彩资源文件
 
-	m_code    bool                // false: 登录模式，true: 卡密模式
 	m_layouts []*widget.LayoutEle // 布局面板，0.卡密，1.登录，2.注册，3.改密，4.充值
 	w         *window.Window
 )
@@ -32,15 +32,6 @@ func main() {
 
 	// 创建窗口
 	w = window.NewByLayoutZipMem(resData, "布局文件\\main.xml", "", 0, 0)
-	// 禁止拖动边框
-	w.EnableDragBorder(false)
-
-	// 原窗口是没有阴影的, 由于要加阴影, 就给窗口宽高加上阴影大小*2
-	shawdowSize := int32(14) // 阴影大小
-	w.SetSize(500+shawdowSize*2, 670+shawdowSize*2)
-	// 设置窗口阴影
-	w.SetTransparentType(xcc.Window_Transparent_Shadow)
-	w.SetShadowInfo(shawdowSize, 100, 25, false, xcc.COLOR_BLACK)
 
 	// 加载布局面板
 	loadLayout(true)
@@ -64,7 +55,7 @@ const (
 // 加载布局面板
 //   - isCode: 是否为卡密模式
 func loadLayout(isCode bool) {
-	m_code = isCode
+	w.SetProperty("卡密模式", common.BoolToString(isCode))
 	layoutParent := widget.NewLayoutEleByName("warp") // 获取父级布局元素句柄
 	// 加载布局面板到布局元素
 	// 0.卡密，1.登录，2.注册，3.改密，4.充值
@@ -88,7 +79,7 @@ func loadLayout(isCode bool) {
 func regEvent() {
 	// 注册返回按钮事件
 	widget.NewButtonByName("back").AddEvent_BnClick(func(hEle int, pbHandled *bool) int {
-		if m_code {
+		if w.GetProperty("卡密模式") == "true" {
 			changeLayout(layout_code)
 		} else {
 			changeLayout(layout_login)
@@ -321,7 +312,6 @@ func Msg(hWindow int, text string, opt ...MsgOptins) xcc.MessageBox_Flag_ {
 	}
 	// 创建提示框窗口
 	mw := window.NewModalWindowByLayoutZipMem(resData, "布局文件\\msg.xml", "", hWindow, 0)
-	mw.EnableDragBorder(false) // 禁止拖动边框
 	if o.Title != "" {
 		widget.NewButtonByName("msg_title").SetText(o.Title)
 	}
