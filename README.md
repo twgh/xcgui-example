@@ -33,12 +33,14 @@ cd SimpleWindow && go run .
 
 ### UI 展示
 
-[![YanZheng018](https://raw.githubusercontent.com/twgh/xcgui-example/refs/heads/main/humui/YanZheng018/1.jpg)](https://github.com/twgh/xcgui-example/tree/main/humui/YanZheng018)
+[![HouTai017](https://gitee.com/twgh/image/raw/master/xcgui-example/HouTai017.jpg)](https://github.com/twgh/xcgui-example/tree/main/humui/HouTai017)
+
+[![YanZheng018](https://gitee.com/twgh/image/raw/master/xcgui-example/YanZheng018.jpg)](https://github.com/twgh/xcgui-example/tree/main/humui/YanZheng018)
 
 ### WebView 例子
 
-[![Chart](https://raw.githubusercontent.com/twgh/xcgui-example/refs/heads/main/webview/Chart/1.jpg)](https://github.com/twgh/xcgui-example/tree/main/webview/Chart)
+[![Chart](https://gitee.com/twgh/image/raw/master/xcgui-example/chart.jpg)](https://github.com/twgh/xcgui-example/tree/main/webview/Chart)
 
-[![EmbedAssets](https://raw.githubusercontent.com/twgh/xcgui-example/refs/heads/main/webview/EmbedAssets/1.jpg)](https://github.com/twgh/xcgui-example/tree/main/webview/EmbedAssets)
+[![EmbedAssets](https://gitee.com/twgh/image/raw/master/xcgui-example/EmbedAssets.jpg)](https://github.com/twgh/xcgui-example/tree/main/webview/EmbedAssets)
 
-[![](https://raw.githubusercontent.com/twgh/xcgui-example/refs/heads/main/webview/CreateByLayoutEle/1.jpg)](https://github.com/twgh/xcgui-example/tree/main/webview/CreateByLayoutEle)
+[![](https://gitee.com/twgh/image/raw/master/xcgui-example/CreateByLayoutEle.jpg)](https://github.com/twgh/xcgui-example/tree/main/webview/CreateByLayoutEle)
