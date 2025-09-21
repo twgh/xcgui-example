@@ -57,7 +57,7 @@ func ExampleChooseColor() {
 	}
 
 	rgb := cc.RgbResult
-	rgba := xc.RGB2RGBA(int(rgb), 255)
+	rgba := xc.RGB2RGBA(rgb, 255)
 	fmt.Println("rgb颜色:", rgb)
 	fmt.Println("炫彩使用的颜色:", rgba)
 	fmt.Println("自定义颜色:", custColors) // 如果你添加了自定义颜色, 会保存在这个数组里面, 然后只要这个数组还在, 再次打开选择颜色界面时, 之前添加的自定义颜色还会存在
