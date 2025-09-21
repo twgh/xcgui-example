@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -301,7 +302,7 @@ func addXcEvent(wv *edge.WebView) {
 		if wv.CoreWebView == nil {
 			return 0
 		}
-		wv.Eval("document.querySelectorAll('#kw')[0].value = 'Microsoft Edge WebView2 简介'")
+		wv.Eval("document.querySelectorAll('#chat-textarea')[0].value = 'Microsoft Edge WebView2 简介'")
 		return 0
 	})
 
@@ -311,7 +312,7 @@ func addXcEvent(wv *edge.WebView) {
 		if wv.CoreWebView == nil {
 			return 0
 		}
-		wv.Eval("document.querySelectorAll('#su')[0].click()")
+		wv.Eval("document.querySelectorAll('#chat-submit-button')[0].click()")
 		return 0
 	})
 
@@ -455,27 +456,23 @@ func addXcEvent(wv *edge.WebView) {
 		if wv.CoreWebView == nil {
 			return 0
 		}
-		stream, err := edge.NewStreamMem(nil)
+		fileName := time.Now().Format("WebView_2006-01-02_15-04-05") + ".png"
+		absPath, _ := filepath.Abs(fileName)
+		// 创建流
+		stream, err := edge.NewStreamOnFileEx(absPath, wapi.STGM_READWRITE|wapi.STGM_CREATE, wapi.FILE_ATTRIBUTE_NORMAL, true)
 		if err != nil {
 			w.MessageBox("提示", "创建截图流失败:"+err.Error(), xcc.MessageBox_Flag_Ok|xcc.MessageBox_Flag_Icon_Error, xcc.Window_Style_Default)
 			return 0
 		}
 		err = wv.CapturePreview(edge.COREWEBVIEW2_CAPTURE_PREVIEW_IMAGE_FORMAT_PNG, stream, func(errorCode syscall.Errno) uintptr {
+			defer stream.Release()
 			if !wapi.IsOK(errorCode) {
 				w.MessageBox("提示", "截图失败: "+errorCode.Error(), xcc.MessageBox_Flag_Ok|xcc.MessageBox_Flag_Icon_Error, xcc.Window_Style_Default)
 				return 0
 			}
-			data, err := stream.GetBytesAndRelease()
-			if err != nil {
-				w.MessageBox("提示", "截图失败: "+err.Error(), xcc.MessageBox_Flag_Ok|xcc.MessageBox_Flag_Icon_Error, xcc.Window_Style_Default)
-				return 0
+			if w.MessageBox("提示", "截图保存成功: "+absPath+"\n是否打开?", xcc.MessageBox_Flag_Ok|xcc.MessageBox_Flag_Cancel, xcc.Window_Style_Default) == xcc.MessageBox_Flag_Ok {
+				wapi.ShellExecuteW(0, "open", absPath, "", "", xcc.SW_SHOW)
 			}
-			if len(data) == 0 { // todo: 不知道为什么图片大小为0
-				w.MessageBox("提示", "截图失败: 图片大小为0", xcc.MessageBox_Flag_Ok|xcc.MessageBox_Flag_Icon_Error, xcc.Window_Style_Default)
-				return 0
-			}
-			_ = os.WriteFile("WebView2_Screenshot.png", data, 0777)
-			w.MessageBox("提示", "截图保存成功", xcc.MessageBox_Flag_Ok, xcc.Window_Style_Default)
 			return 0
 		})
 		if err != nil {
@@ -1385,7 +1382,7 @@ func CheckWebView2() {
 	fmt.Println("本机安装的 WebView2 运行时版本号:", localVersion)
 
 	// 判断本机 WebView2 运行时版本是否低于本库使用的 WebView2 运行时版本
-	if ret, _ := edge.CompareBrowserVersions(edge.GetVersion(), localVersion); ret == -1 {
+	if ret, _ := edge.CompareBrowserVersions(localVersion, edge.GetVersion()); ret == -1 {
 		log.Println("本机 WebView2 运行时版本低于本库使用的 WebView2 运行时版本!")
 	}
 }

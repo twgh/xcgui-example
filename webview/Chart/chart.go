@@ -207,7 +207,7 @@ func checkWebView2() {
 	fmt.Println("本机安装的 WebView2 运行时版本号:", localVersion)
 
 	// 判断本机 WebView2 运行时版本是否低于本库使用的 WebView2 运行时版本
-	if ret, _ := edge.CompareBrowserVersions(edge.GetVersion(), localVersion); ret == -1 {
+	if ret, _ := edge.CompareBrowserVersions(localVersion, edge.GetVersion()); ret == -1 {
 		log.Println("本机 WebView2 运行时版本低于本库使用的 WebView2 运行时版本!")
 	}
 }
