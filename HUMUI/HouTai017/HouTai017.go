@@ -187,9 +187,9 @@ func setDateTimeAttr(dt *widget.DateTime) {
 		shapeRect.SetFillColor(bgColor)
 		bkm := bkmanager.NewByHandle(mc.GetBkManager())
 		bkm.AddFill(xcc.Element_State_Flag_Leave, bgColor, 0)
-		bkm.AddFill(MonthCal_State_Flag_Item_Last_Month|xcc.MonthCal_State_Flag_Item_Select_No|xcc.MonthCal_State_Flag_Item_Leave, xc.RGBA(81, 167, 255, 20), 0)
-		bkm.AddFill(MonthCal_State_Flag_Item_Next_Month|xcc.MonthCal_State_Flag_Item_Select_No|xcc.MonthCal_State_Flag_Item_Leave, xc.RGBA(81, 167, 255, 20), 0)
-		bkm.AddFill(MonthCal_State_Flag_Item_Cur_Month|xcc.MonthCal_State_Flag_Item_Select_No|xcc.MonthCal_State_Flag_Item_Leave, xc.RGBA(81, 167, 255, 5), 0)
+		bkm.AddFill(xcc.MonthCal_State_Flag_Item_Last_Month|xcc.MonthCal_State_Flag_Item_Select_No|xcc.MonthCal_State_Flag_Item_Leave, xc.RGBA(81, 167, 255, 20), 0)
+		bkm.AddFill(xcc.MonthCal_State_Flag_Item_Next_Month|xcc.MonthCal_State_Flag_Item_Select_No|xcc.MonthCal_State_Flag_Item_Leave, xc.RGBA(81, 167, 255, 20), 0)
+		bkm.AddFill(xcc.MonthCal_State_Flag_Item_Cur_Month|xcc.MonthCal_State_Flag_Item_Select_No|xcc.MonthCal_State_Flag_Item_Leave, xc.RGBA(81, 167, 255, 5), 0)
 		bkm.AddFill(xcc.MonthCal_State_Flag_Item_Select|xcc.MonthCal_State_Flag_Leave|xcc.MonthCal_State_Flag_Item_Leave, xc.RGBA(96, 191, 255, 255), 0)
 		bkm.AddFill(xcc.MonthCal_State_Flag_Item_Select|xcc.MonthCal_State_Flag_Item_Stay, xc.RGBA(50, 149, 225, 255), 0)
 		bkm.AddFill(xcc.MonthCal_State_Flag_Item_Stay|xcc.MonthCal_State_Flag_Item_Select_No, xc.RGBA(81, 167, 255, 80), 0)
@@ -215,13 +215,6 @@ func setDateTimeAttr(dt *widget.DateTime) {
 		return 0
 	})
 }
-
-// todo: 这些常量临时使用, 因为v1.3.395及以下这三个常量值的定义不对, 所以在这里临时定义, 下个版本会修正
-const (
-	MonthCal_State_Flag_Item_Last_Month xcc.CombinedState = 0x2000 // 项-上月
-	MonthCal_State_Flag_Item_Cur_Month  xcc.CombinedState = 0x4000 // 项-当月
-	MonthCal_State_Flag_Item_Next_Month xcc.CombinedState = 0x8000 // 项-下月
-)
 
 // 销毁日期时间图标
 func destroyDTIcons() {
@@ -368,7 +361,7 @@ func setListAttr(ls *widget.List) {
 	})
 
 	// 运行中, 暂停中, 已停止, 未运行
-	listStateColors := []int{xc.RGBA(75, 198, 121, 255), xc.RGBA(252, 189, 80, 255), xc.RGBA(253, 138, 138, 255), xc.RGBA(121, 121, 123, 255)}
+	listStateColors := []uint32{xc.RGBA(75, 198, 121, 255), xc.RGBA(252, 189, 80, 255), xc.RGBA(253, 138, 138, 255), xc.RGBA(121, 121, 123, 255)}
 
 	// 列表项模板创建完成事件
 	ls.AddEvent_List_Temp_Create_End(func(hEle int, pItem *xc.List_Item_, nFlag int32, pbHandled *bool) int {
