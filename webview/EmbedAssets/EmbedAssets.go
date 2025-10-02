@@ -101,7 +101,6 @@ func (m *MainWindow) main() {
 			// 然后才会加载出网页, 表现出来就是有一瞬间的闪烁, 所以等加载完再显示窗口
 			if firstLoad {
 				firstLoad = false
-				w.AdjustLayout()
 				w.Show(true)
 			}
 		}
@@ -112,6 +111,7 @@ func (m *MainWindow) main() {
 	m.bindBasicFuncs()
 	// 导航到首页
 	m.wv.Navigate(edge.JoinUrlHeader(hostName) + "/EmbedAssets.html")
+	w.AdjustLayout()
 }
 
 // bindBasicFuncs 绑定基本函数.

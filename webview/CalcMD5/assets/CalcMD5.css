@@ -112,15 +112,6 @@ button {
     background: #e0e0e0;
 }
 
-#calcMd5 {
-    background: #0078d4;
-    color: white;
-}
-
-#calcMd5:hover {
-    background: #006cbd;
-}
-
 #result {
     margin-top: 20px;
     padding: 16px;

@@ -4,12 +4,13 @@ package main
 
 import (
 	"crypto/md5"
+	"embed"
 	_ "embed"
 	"encoding/hex"
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
+	"strings"
 	"unsafe"
 
 	"github.com/twgh/xcgui/app"
@@ -22,10 +23,15 @@ import (
 )
 
 var (
-	//go:embed assets/CalcMD5.xml
-	xmlStr  string
+	//go:embed res/CalcMD5.xml
+	xmlStr string
+	//go:embed assets/**
+	embedAssets embed.FS // 嵌入 assets 目录以及子目录下的文件, 不包括隐藏文件
+
 	isDebug = true
 )
+
+const hostName = "app.example"
 
 type MainWindow struct {
 	edg *edge.Edge
@@ -66,16 +72,10 @@ func (m *MainWindow) main() {
 		os.Exit(1)
 	}
 
-	folderPath, _ := filepath.Abs("webview\\CalcMD5\\assets")
-	fmt.Println("要映射的文件夹路径:", folderPath)
-
-	// 将本地文件夹映射为虚拟域名, 比直接使用file:///访问本地文件更好.
-	const hostName = "app.example"
-	err = m.wv.SetVirtualHostNameToFolderMapping(hostName, folderPath, edge.COREWEBVIEW2_HOST_RESOURCE_ACCESS_KIND_ALLOW)
-	if err != nil {
-		wapi.MessageBoxW(0, "SetVirtualHostNameToFolderMapping 失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
-		os.Exit(3)
-	}
+	// 设置虚拟主机名和嵌入文件系统之间的映射
+	edge.SetVirtualHostNameToEmbedFSMapping(hostName, embedAssets)
+	// 启用虚拟主机名和嵌入文件系统之间的映射
+	m.wv.EnableVirtualHostNameToEmbedFSMapping(true)
 
 	// 注册事件
 	m.regEvent()
@@ -86,13 +86,30 @@ func (m *MainWindow) main() {
 
 	// 访问 HTML
 	m.wv.Navigate(edge.JoinUrlHeader(hostName) + "/CalcMD5.html")
-	// 显示窗口
+	// 调整窗口布局
 	w.AdjustLayout()
-	w.Show(true)
 }
 
 // 注册事件
 func (m *MainWindow) regEvent() {
+	var firstLoad = true
+	// 导航完成事件
+	m.wv.Event_NavigationCompleted(func(sender *edge.ICoreWebView2, args *edge.ICoreWebView2NavigationCompletedEventArgs) uintptr {
+		uri := sender.MustGetSource()
+		fmt.Println("导航完成:", uri)
+		switch uri {
+		case edge.JoinUrlHeader(hostName) + "/CalcMD5.html":
+			// 在导航完成事件里判断第一次加载完毕时才显示窗口,
+			// 这是因为采用嵌入文件系统的方式时, 网页还没加载出来的时候, 会显示 webview 白色的背景,
+			// 然后才会加载出网页, 表现出来就是有一瞬间的闪烁, 所以等加载完再显示窗口
+			if firstLoad {
+				firstLoad = false
+				m.w.Show(true)
+			}
+		}
+		return 0
+	})
+
 	// 网页消息事件
 	m.wv.Event_WebMessageReceived(func(sender *edge.ICoreWebView2, args *edge.ICoreWebView2WebMessageReceivedEventArgs) uintptr {
 		// 获取网页消息
@@ -149,8 +166,10 @@ func (m *MainWindow) regEvent() {
 				log.Println("GetPath 失败: " + err.Error())
 				continue
 			}
-
-			fmt.Println("文件路径:", filePath)
+			fmt.Println("文件:", filePath)
+			// 将路径传进 js 函数
+			m.wv.Eval("calculate('" + strings.ReplaceAll(filePath, "\\", "\\\\") + "');")
+			break // 目前只处理第一个文件
 		}
 		return 0
 	})
