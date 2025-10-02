@@ -97,9 +97,48 @@ func main() {
 		}
 	})
 
+	// 创建 WebView2 环境选项.
+	envOpts, err := edge.CreateEnvironmentOptions()
+	if err != nil {
+		log.Println("创建 WebView2 环境选项失败: " + err.Error())
+	} else {
+		defer envOpts.Release()
+		// 构建浏览器命令行参数
+		sb := strings.Builder{}
+		// 允许无需用户交互的自动播放
+		sb.WriteString("--autoplay-policy=no-user-gesture-required ")
+		// 禁用媒体参与度检查，绕过自动播放策略
+		sb.WriteString("--disable-features=PreloadMediaEngagementData,MediaEngagementBypassAutoplayPolicies ")
+		// 忽略 Web Audio 的自动播放限制
+		sb.WriteString("--enable-features=AutoplayIgnoreWebAudio")
+		// 设置创建 WebView2 环境时要传递给浏览器进程的其它命令行参数。
+		envOpts.SetAdditionalBrowserArguments(sb.String())
+
+		// 获取 WebView2 环境选项2
+		envOpts2, err := envOpts.GetICoreWebView2EnvironmentOptions2()
+		if err != nil {
+			log.Println("获取环境选项2失败: " + err.Error())
+		} else {
+			// 设置其他进程可以从使用相同用户数据文件夹创建的 WebView2 环境创建 WebView2
+			envOpts2.SetExclusiveUserDataFolderAccess(true)
+			envOpts2.Release()
+		}
+
+		// 获取 WebView2 环境选项8
+		envOpts8, err := envOpts.GetICoreWebView2EnvironmentOptions8()
+		if err != nil {
+			log.Println("获取环境选项8失败: " + err.Error())
+		} else {
+			// 设置滚动条样式
+			envOpts8.SetScrollBarStyle(edge.COREWEBVIEW2_SCROLLBAR_STYLE_FLUENT_OVERLAY)
+			envOpts8.Release()
+		}
+	}
+
 	//  Edge 在整个应用程序的生命周期里应该只创建一次.
 	edg, err := edge.New(edge.Option{
-		UserDataFolder: os.TempDir(), // 自己的软件应该在固定位置创建一个自己的目录, 而不是用临时目录
+		UserDataFolder:     os.TempDir(), // 自己的软件应该在固定位置创建一个自己的目录, 而不是用临时目录
+		EnvironmentOptions: envOpts,
 	})
 	if err != nil {
 		wapi.MessageBoxW(0, "创建 webview 环境失败: "+err.Error(), "错误", wapi.MB_IconError)
@@ -614,8 +653,6 @@ func addXcEvent(wv *edge.WebView) {
 			return 0
 		}
 		html := strings.Replace(playerHTML, `<source src=""`, `<source src="https://local.video/1.mp4"`, 1)
-		// todo 目前想要自动播放的话要注册导航完成事件, 用js来触发播放.
-		//  创建环境时传入命令行参数也可以, 但在go里怎么传还有待测试.
 		wv.NavigateToString(html)
 		return 0
 	})

@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"unsafe"
 
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/edge"
@@ -23,7 +24,7 @@ import (
 var (
 	//go:embed assets/CalcMD5.xml
 	xmlStr  string
-	isDebug = false
+	isDebug = true
 )
 
 type MainWindow struct {
@@ -76,6 +77,9 @@ func (m *MainWindow) main() {
 		os.Exit(3)
 	}
 
+	// 注册事件
+	m.regEvent()
+
 	// 绑定函数, 最好在导航之前绑定
 	m.bindBasicFuncs()
 	m.bindFuncs()
@@ -85,6 +89,71 @@ func (m *MainWindow) main() {
 	// 显示窗口
 	w.AdjustLayout()
 	w.Show(true)
+}
+
+// 注册事件
+func (m *MainWindow) regEvent() {
+	// 网页消息事件
+	m.wv.Event_WebMessageReceived(func(sender *edge.ICoreWebView2, args *edge.ICoreWebView2WebMessageReceivedEventArgs) uintptr {
+		// 获取网页消息
+		webMessage, err := args.TryGetWebMessageAsString()
+		if err != nil {
+			log.Println("TryGetWebMessageAsString 获取失败: " + err.Error())
+			return 0
+		}
+		if webMessage != "drag_files" { // 这是前端传过来的
+			return 0
+		}
+
+		args2, err := args.GetICoreWebView2WebMessageReceivedEventArgs2()
+		if err != nil {
+			log.Println("GetICoreWebView2WebMessageReceivedEventArgs2 失败: " + err.Error())
+			return 0
+		}
+		defer args2.Release()
+
+		// 获取包含随 Web 消息一起发送的附加对象的对象集合视图
+		objs, err := args2.GetAdditionalObjects()
+		if err != nil {
+			log.Println("GetAdditionalObjects 失败: " + err.Error())
+			return 0
+		}
+		defer objs.Release()
+
+		// 获取集合中的对象数量
+		objCount, err := objs.GetCount()
+		if err != nil {
+			log.Println("GetCount 失败: " + err.Error())
+			return 0
+		}
+
+		// 遍历集合，查找 File 对象
+		for i := uint32(0); i < objCount; i++ {
+			obj, err := objs.GetValueAtIndex(i)
+			if err != nil {
+				log.Println("GetValueAtIndex 失败: " + err.Error())
+				continue
+			}
+
+			file := new(edge.ICoreWebView2File)
+			err = obj.QueryInterface(wapi.NewGUIDPointer(edge.IID_ICoreWebView2File), unsafe.Pointer(&file))
+			if err != nil {
+				log.Println("QueryInterface 失败: " + err.Error())
+				continue
+			}
+			defer file.Release()
+
+			// 获取文件路径
+			filePath, err := file.GetPath()
+			if err != nil {
+				log.Println("GetPath 失败: " + err.Error())
+				continue
+			}
+
+			fmt.Println("文件路径:", filePath)
+		}
+		return 0
+	})
 }
 
 // bindBasicFuncs 绑定基本函数.
@@ -152,9 +221,38 @@ func main() {
 	checkWebView2()
 	app.InitOrExit()
 
+	// 创建 WebView2 环境选项.
+	envOpts, err := edge.CreateEnvironmentOptions()
+	if err != nil {
+		log.Println("创建 WebView2 环境选项失败: " + err.Error())
+	} else {
+		defer envOpts.Release()
+		// 获取 WebView2 环境选项5
+		envOpts5, err := envOpts.GetICoreWebView2EnvironmentOptions5()
+		if err != nil {
+			log.Println("获取环境选项5失败: " + err.Error())
+		} else {
+			// 禁用 WebView2 中的跟踪防护功能以提高运行时性能, 仅在 WebView2 中呈现已知安全的内容时可以这样做.
+			// 如果 WebView2 被用作具有任意导航功能的“完整浏览器”且需要保护最终用户隐私，那么不应禁用此属性。
+			envOpts5.SetEnableTrackingPrevention(false)
+			envOpts5.Release()
+		}
+
+		// 获取 WebView2 环境选项8
+		envOpts8, err := envOpts.GetICoreWebView2EnvironmentOptions8()
+		if err != nil {
+			log.Println("获取环境选项8失败: " + err.Error())
+		} else {
+			// 设置滚动条样式
+			envOpts8.SetScrollBarStyle(edge.COREWEBVIEW2_SCROLLBAR_STYLE_FLUENT_OVERLAY)
+			envOpts8.Release()
+		}
+	}
+
 	// 创建 webview 环境
 	edg, err := edge.New(edge.Option{
-		UserDataFolder: os.TempDir(), // 自己的软件应该在固定位置创建一个自己的目录, 而不是用临时目录
+		UserDataFolder:     os.TempDir(), // 自己的软件应该在固定位置创建一个自己的目录, 而不是用临时目录
+		EnvironmentOptions: envOpts,
 	})
 	if err != nil {
 		wapi.MessageBoxW(0, "创建 webview 环境失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
