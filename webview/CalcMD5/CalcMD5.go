@@ -5,7 +5,6 @@ package main
 import (
 	"crypto/md5"
 	"embed"
-	_ "embed"
 	"encoding/hex"
 	"fmt"
 	"log"
@@ -28,7 +27,7 @@ var (
 	//go:embed assets/**
 	embedAssets embed.FS // 嵌入 assets 目录以及子目录下的文件, 不包括隐藏文件
 
-	isDebug = true
+	isDebug = false
 )
 
 const hostName = "app.example"
@@ -48,9 +47,9 @@ func NewMainWindow(edg *edge.Edge) *MainWindow {
 func (m *MainWindow) main() {
 	var err error
 	// 创建窗口
-	// 这个窗口是有特殊设计的, 它是透明的, 这是为了规避一个问题:
-	// 当窗口最小化或最大化时会有一瞬间漏出 webview 后面的炫彩窗口, 表现出来是闪烁了一下, 所以设计为透明就看不到后面的窗口了.
-	// 这个xml是通用的, 打开稍微修改下即可, content: 标题, rect: 后两个是宽高. 在设计器里打开的话会更直观.
+	// 这个窗口是有特殊设计的, 它是透明的, 这是为了规避当窗口类型为[透明窗口阴影]时的一个问题:
+	// 当窗口最小化或最大化时会有一瞬间漏出 webview 后面的炫彩窗口, 表现出来是闪烁了一下, 所以设计为透明就看不到后面的窗口了. 只有网页颜色和炫彩窗口颜色相差很大时才会容易看出此问题, 这是很追求细节的才会注意到的.
+	// 这个xml是通用的, 打开稍微修改下即可, content: 标题, rect: 后两个是宽高, 用窗口函数来设置也行. 在设计器里打开的话会更直观.
 	w := window.NewByLayoutStringW(xmlStr, 0, 0)
 	m.w = w
 	// 炫彩窗口圆角8px
@@ -110,12 +109,11 @@ func (m *MainWindow) regEvent() {
 		return 0
 	})
 
-	// 网页消息事件
+	// 网页消息事件, 用于获取拖拽的文件路径
 	m.wv.Event_WebMessageReceived(func(sender *edge.ICoreWebView2, args *edge.ICoreWebView2WebMessageReceivedEventArgs) uintptr {
 		// 获取网页消息
 		webMessage, err := args.TryGetWebMessageAsString()
 		if err != nil {
-			log.Println("TryGetWebMessageAsString 获取失败: " + err.Error())
 			return 0
 		}
 		if webMessage != "drag_files" { // 这是前端传过来的

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>共享缓冲区例子</title>
+</head>
+<body>
+    <p id="text"></p>
+    <img id="img" alt="共享缓冲区里的图片"/>
+</body>
+<script>
+    const img = document.getElementById("img");
+    const text = document.getElementById("text");
+
+    // 启动时向 Go 后端发送请求
+    PostMessage("RequestImg");
+    PostMessage("RequestText");
+
+    // 接收共享缓冲区
+    window.chrome.webview.addEventListener("sharedbufferreceived", e => {
+        // getBuffer 返回一个 ArrayBuffer 对象，其中包含来自共享缓冲区的内容
+        const buf = e.getBuffer();
+
+        // additionalData：一个对象，是将 additionalDataAsJson 作为 JSON 字符串解析的结果。
+        // 如果 additionalDataAsJson 为 nullptr 或空字符串，此属性将为 undefined。
+        if (e.additionalData) {
+            switch (e.additionalData.type) {
+                case "img":
+                    img.src = GetImgUrl(buf);
+                    break;
+                case "text":
+                    text.innerText = BufferToString(buf);
+                    ReleaseBuffer(buf);
+                    break;
+            }
+        }
+
+        // 脚本代码应在不再需要访问共享缓冲区时，立即调用 chrome.webview.releaseBuffer，并将共享缓冲区作为参数，以释放底层资源。
+        // ReleaseBuffer(buf);
+        // Go 里面要调用缓冲区的 Close 方法, 只有两边都释放了, 操作系统才会释放底层的共享内存。
+    });
+
+    // 获取图片数据的 URL
+    function GetImgUrl(buffer) {
+        // 前4个字节是数据长度, 这个是在 SharedBufferSender.Send 方法里自己定义的规则, 或者说协议.
+        const len = GetDataLength(buffer);
+        // 从第5个字节开始读取指定长度的数据
+        const imgData = new Uint8Array(buffer, 4, len);
+        return URL.createObjectURL(new Blob([imgData]));
+    }
+
+    // 获取缓冲区数据长度, 读取前4个字节.
+    function GetDataLength(buffer) {
+        return new DataView(buffer).getUint32(0, true);
+    }
+
+    // 将 ArrayBuffer 转换为字符串
+    function BufferToString(buffer) {
+        return new TextDecoder().decode(new Uint8Array(buffer));
+    }
+    
+    // 释放缓冲区
+    function ReleaseBuffer(buffer) {
+        window.chrome.webview.releaseBuffer(buffer);
+    }
+
+    // 发送消息
+    function PostMessage(message) {
+        window.chrome.webview.postMessage(message);
+    }
+</script>
+</html>

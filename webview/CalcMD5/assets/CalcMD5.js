@@ -1,12 +1,7 @@
 
 // 选择文件
 async function selectFile() {
-    const path = await go.openFile();
-    if (path === "") {
-        return;
-    }
-    document.getElementById('filePath').value = path;
-    await calculate(path);
+    await calculate(await go.openFile());
 }
 
 // 计算MD5
@@ -14,13 +9,16 @@ async function calculate(path) {
     if (path === "") {
         return;
     }
+    document.getElementById('filePath').value = path;
 
     const btnSelectFile = document.getElementById('selectFile');
     btnSelectFile.disabled = true;
     btnSelectFile.textContent = '计算中...'
+    const result =  document.getElementById('result');
+    result.textContent='';
 
     try {
-        document.getElementById('result').textContent = await go.calculateMD5(path)
+        result.textContent = await go.calculateMD5(path)
     } catch (error) {
         showError(error.message);
     } finally {
