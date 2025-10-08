@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--炫彩界面库-窗口布局文件-->
-<head />
-<windowUI center="true" content="使用xml创建窗口-任务栏不显示图标" rect="0,0,600,400" windowStyle="2031" showT="true" />
