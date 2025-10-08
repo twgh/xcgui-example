@@ -29,7 +29,7 @@ cd SimpleWindow && go run .
 
 #### Visualization UI Designer
 
-[![uidesigner](https://z3.ax1x.com/2021/09/15/4Vmh9S.png)](https://github.com/twgh/xcgui-example/blob/main/uidesigner/uidesigner.png)
+[![uidesigner](https://z3.ax1x.com/2021/09/15/4Vmh9S.png)](https://github.com/twgh/xcgui-example/blob/main/Basic/uidesigner)
 
 ### UI Show
 

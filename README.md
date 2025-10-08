@@ -29,7 +29,7 @@ cd SimpleWindow && go run .
 
 ### 可视化 UI 设计器
 
-[![uidesigner](https://z3.ax1x.com/2021/09/15/4Vmh9S.png)](https://github.com/twgh/xcgui-example/tree/main/uidesigner)
+[![uidesigner](https://z3.ax1x.com/2021/09/15/4Vmh9S.png)](https://github.com/twgh/xcgui-example/tree/main/Basic/uidesigner)
 
 ### UI 展示
 
