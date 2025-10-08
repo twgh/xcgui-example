@@ -229,11 +229,11 @@ func loadList() {
 	widget.NewLayoutEleByLayoutZipMemEx(resData, "布局文件\\list.xml", "", "home", hParent, 0, 0)
 
 	ls := widget.NewListByUID(10001)
-	// 设置两遍, 一遍列表头, 一遍列表项
-	hTmp := tmpl.NewByZipMem(xcc.ListItemTemp_Type_List_Head, resData, "布局文件\\listTemp.xml", "").Handle
-	ls.SetItemTemplate(hTmp) // 列表_置项模板, 列表头
-	hTmp = tmpl.NewByZipMem(xcc.ListItemTemp_Type_List_Item, resData, "布局文件\\listTemp.xml", "").Handle
-	ls.SetItemTemplate(hTmp) // 列表_置项模板, 列表项
+	// 设置两遍, 一遍列表项, 一遍列表头
+	var hTemp1, hTemp2 int
+	tmpl.LoadZipMemEx(xcc.ListItemTemp_Type_List, resData, "布局文件\\listTemp.xml", "", &hTemp1, &hTemp2)
+	ls.SetItemTemplate(hTemp1) // 列表_置项模板, 列表项
+	ls.SetItemTemplate(hTemp2) // 列表_置项模板, 列表头
 
 	setListAttr(ls) // 设置列表属性
 	addListData(ls) // 列表加载默认数据
