@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--炫彩界面库-列表元素项模板文件-->
+<head>
+	<bindJsFile value="" />
+</head>
+<xc_template_list showT="true">
+	<listHeader_item showT="true" expandT="true">
+		<layoutEleUI bkInfoM="@ID_bkInfo_1" drawBorder="false" enableCanvas="false" heightT="30" layout.alignBaseline="center" layout.alignH="center" layout.alignV="center" layout.height="fill" layout.horizon="true" layout.space="2" layout.width="fill" mouseThrough="true" showT="true" widthT="300" expandT="true">
+			<shapeText content="{binding field=name1}" font="@ID_FONT_wyyh" itemID="0" layout.height="fill" layout.width="auto" showT="true" textAlign="DT_CENTER,DT_VCENTER,DT_SINGLELINE" textColor="#FFFFFFFF" expandT="true" />
+		</layoutEleUI>
+		<layoutEleUI bkInfoM="{99:1.9.9;98:16();}" drawBorder="false" enableCanvas="false" heightT="30" layout.alignBaseline="center" layout.alignH="left" layout.alignV="center" layout.height="fill" layout.horizon="true" layout.space="2" layout.width="fill" mouseThrough="true" padding="1,0,0,0" showT="true" widthT="300" expandT="true">
+			<layoutEleUI bkInfoM="@ID_bkInfo_1" layout.alignBaseline="center" layout.alignH="center" layout.alignV="center" layout.height="fill" layout.horizon="true" layout.width=":1" rect="105,14,100,100" showT="true" expandT="true">
+				<shapeText content="{binding field=name2}" font="@ID_FONT_wyyh" itemID="0" layout.height="fill" layout.width="auto" showT="true" textAlign="DT_CENTER,DT_VCENTER,DT_SINGLELINE" textColor="#FFFFFFFF" expandT="true" />
+			</layoutEleUI>
+		</layoutEleUI>
+	</listHeader_item>
+	<list_Item showT="true" expandT="true">
+		<layoutEleUI drawBorder="false" enableCanvas="false" heightT="30" layout.alignBaseline="center" layout.alignH="center" layout.alignV="center" layout.height="fill" layout.horizon="true" layout.space="2" layout.width="fill" mouseThrough="true" showT="true" widthT="300" expandT="true">
+			<shapeText content="{binding field=name1}" itemID="1" layout.height="fill" layout.width="auto" showT="true" expandT="true" />
+			<buttonUI bkInfoM="{99:1.9.9;98:16(0,1);5:2(15)20(1)21(3)26(0)22(-7891333)23(255)9(2,2,2,2);5:2(15)3(1,1,1,1)20(1)21(3)26(0)22(-1)23(255);}" content="运行中" cursor="IDC_HAND" font="@ID_FONT_wyyh" itemID="2" name="btn_run" rect="101,33,60,25" showT="true" textColor="#FF7B9687" expandT="true" />
+		</layoutEleUI>
+		<layoutEleUI drawBorder="false" enableCanvas="false" heightT="30" layout.alignBaseline="center" layout.alignH="center" layout.alignV="center" layout.height="fill" layout.horizon="true" layout.space="2" layout.width="fill" mouseThrough="true" showT="true" widthT="300" expandT="true">
+			<shapeText content="{binding field=name2}" itemID="1" layout.height="fill" layout.width="auto" showT="true" expandT="true" />
+			<buttonUI bkInfoM="{99:1.9.9;98:16(0)32(1)64(2);5:2(15)20(1)21(3)26(0)22(-2577861)23(255)9(2,2,2,2);5:2(15)20(1)21(3)26(0)22(-1262001)23(255)9(2,2,2,2);5:2(15)20(1)21(3)26(0)22(-3893721)23(255)9(2,2,2,2);}" content="日志" cursor="IDC_HAND" font="@ID_FONT_wyyh" itemID="2" name="btn_log" rect="81,13,60,25" showT="true" textColor="#FFFFFFFF" expandT="true" />
+			<buttonUI bkInfoM="{99:1.9.9;98:16(0)32(1)64(2);5:2(15)20(1)21(3)26(0)22(-12272647)23(255)9(2,2,2,2);5:2(15)20(1)21(3)26(0)22(-11877889)23(255);5:2(15)20(1)21(3)26(0)22(-14509609)23(255)9(2,2,2,2);}" content="复制" cursor="IDC_HAND" font="@ID_FONT_wyyh" itemID="3" name="btn_copy" rect="101,33,60,25" showT="true" textColor="#FFFFFFFF" expandT="true" />
+			<buttonUI bkInfoM="{99:1.9.9;98:16(0)32(1)64(2);5:2(15)20(1)21(3)26(0)22(-11840524)23(255)9(2,2,2,2);5:2(15)20(1)21(3)26(0)22(-11116801)23(255)9(2,2,2,2);5:2(15)20(1)21(3)26(0)22(-13156384)23(255)9(2,2,2,2);}" content="删除" font="@ID_FONT_wyyh" itemID="4" name="btn_del" rect="121,53,60,25" showT="true" textColor="#FFFFFFFF" expandT="true" />
+		</layoutEleUI>
+	</list_Item>
+</xc_template_list>
