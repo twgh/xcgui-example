@@ -1,5 +1,7 @@
 # EnvironmentOptions - WebView2环境选项配置示例
 
+> 本文由 AI 生成
+
 ## 项目简介
 
 EnvironmentOptions 是一个专门演示如何配置 WebView2 环境选项的示例。该示例详细展示了 WebView2 的各种高级配置选项，包括语言设置、浏览器参数、多进程管理、扩展功能、滚动条样式等，为开发者提供了完整的环境配置参考。
