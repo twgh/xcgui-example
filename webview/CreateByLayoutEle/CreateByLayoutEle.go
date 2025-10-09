@@ -28,7 +28,7 @@ import (
 )
 
 var (
-	//go:embed res/main.xml
+	//go:embed res/CreateByLayoutEle.xml
 	xmlStr string
 	//go:embed res/title.png
 	png_title []byte
