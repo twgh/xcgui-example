@@ -18,3 +18,4 @@ go.work.sum
 # Folder
 .idea/
 test/
+scripts/

@@ -22,7 +22,7 @@ git clone https://github.com/twgh/xcgui-example
 
 ```bash
 go mod tidy
-cd SimpleWindow && go run .
+go run .\Basic\SimpleWindow\
 ```
 
 ## 示例图片
