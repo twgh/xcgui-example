@@ -10,7 +10,7 @@ import (
 	"github.com/twgh/xcgui/xcc"
 )
 
-//go:embed main.xml
+//go:embed HideTaskbarIcon2.xml
 var xmlStr string
 
 func main() {
