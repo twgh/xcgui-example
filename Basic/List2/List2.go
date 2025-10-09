@@ -17,7 +17,6 @@ var (
 	//go:embed res/list2.zip
 	zipData []byte
 
-	a  *app.App
 	w  *window.Window
 	ls *widget.List
 )
@@ -25,7 +24,7 @@ var (
 func main() {
 	// 初始化界面库
 	app.InitOrExit()
-	a = app.New(true)
+	a := app.New(true)
 	a.EnableAutoDPI(true).EnableDPI(true)
 
 	// 从内存zip加载资源文件
