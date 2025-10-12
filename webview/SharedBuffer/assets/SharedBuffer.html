@@ -29,6 +29,9 @@
                 case "img":
                     img.src = GetImgUrl(buf);
                     break;
+                case "close": // 接到消息后释放共享缓冲区
+                    ReleaseBuffer(buf);
+                    break;
                 case "text":
                     text.innerText = BufferToString(buf);
                     ReleaseBuffer(buf);

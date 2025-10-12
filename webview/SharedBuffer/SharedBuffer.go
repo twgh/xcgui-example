@@ -60,20 +60,10 @@ func main() {
 	layoutWV.LayoutItem_SetHeight(xcc.Layout_Size_Weight, 1) // 高度占据剩余空间
 
 	// 创建 WebView
-	wv := createWebView(layoutWV.Handle)
-
-	var err error
-	// 创建图片的共享缓冲区发送者, 这个不是一次性的缓冲区
-	imgSender, err = NewSharedBufferSender(wv, 20*1024*1024) // 20MB
-	if err != nil {
-		log.Println("创建图片的共享缓冲区发送者失败: " + err.Error())
-	} else {
-		defer imgSender.Close()
-		imgSender.SetAdditionalDataAsJson(`{"type":"img"}`)
-	}
+	wv := createWebView(layoutWV)
 
 	// 注册炫彩事件
-	regXcEvent(w, wv, layoutTop.Handle)
+	regXcEvent(w, wv, layoutTop)
 
 	// 显示窗口并运行应用
 	w.Show(true)
@@ -82,9 +72,9 @@ func main() {
 }
 
 // 注册炫彩事件
-func regXcEvent(w *window.Window, wv *edge.WebView, hParent int) {
+func regXcEvent(w *window.Window, wv *edge.WebView, layout *widget.LayoutEle) {
 	// 按钮_选择图片
-	btnSelectImg := widget.NewButton(0, 0, 100, 30, "选择图片", hParent)
+	btnSelectImg := widget.NewButton(0, 0, 100, 30, "选择图片", layout.Handle)
 	btnSelectImg.AddEvent_BnClick(func(hEle int, pbHandled *bool) int {
 		if wv.CoreWebView == nil {
 			return 0
@@ -123,7 +113,7 @@ func regXcEvent(w *window.Window, wv *edge.WebView, hParent int) {
 	})
 
 	// 按钮_发送文本
-	btnSendText := widget.NewButton(0, 0, 100, 30, "发送文本", hParent)
+	btnSendText := widget.NewButton(0, 0, 100, 30, "发送文本", layout.Handle)
 	btnSendText.AddEvent_BnClick(func(hEle int, pbHandled *bool) int {
 		if wv.CoreWebView == nil {
 			return 0
@@ -142,7 +132,7 @@ func regXcEvent(w *window.Window, wv *edge.WebView, hParent int) {
 }
 
 // 创建 WebView
-func createWebView(hParent int) *edge.WebView {
+func createWebView(layout *widget.LayoutEle) *edge.WebView {
 	// 创建 WebView2 环境选项.
 	envOpts, err := edge.CreateEnvironmentOptions()
 	if err != nil {
@@ -174,7 +164,7 @@ func createWebView(hParent int) *edge.WebView {
 	edge.SetVirtualHostNameToEmbedFSMapping(hostName, embedAssets)
 
 	// 创建 webview
-	wv, err := edg.NewWebView(hParent,
+	wv, err := edg.NewWebView(layout.Handle,
 		edge.WithFillParent(true),
 		edge.WithDebug(true),
 	)
@@ -182,6 +172,22 @@ func createWebView(hParent int) *edge.WebView {
 		wapi.MessageBoxW(0, "创建 webview 失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
 		os.Exit(2)
 	}
+
+	// 创建图片的共享缓冲区发送者, 这个不是一次性的缓冲区
+	imgSender, err = NewSharedBufferSender(wv, 20*1024*1024) // 20MB
+	if err != nil {
+		log.Println("创建图片的共享缓冲区发送者失败: " + err.Error())
+	} else {
+		imgSender.SetAdditionalDataAsJson(`{"type":"img"}`)
+	}
+
+	// 在宿主原生窗口销毁时释放图片缓冲区.
+	// 因为 WebView2 并没有销毁事件, 所以只能用宿主原生窗口的销毁事件来释放图片缓冲区.
+	wv.Event_Destroy(func(wv *edge.WebView) {
+		if imgSender != nil {
+			imgSender.Close()
+		}
+	})
 
 	// 注册 WebView 事件
 	regWebViewEvent(wv)
@@ -292,6 +298,15 @@ func (s *SharedBufferSender) GetBufferSize() uint64 {
 //   - 不填时使用 SetAdditionalDataAsJson 方法设置的 json 文本, 没设置过的话是空字符串.
 //   - 填了就相当于本次临时使用的 json 文本, 不会改变使用 SetAdditionalDataAsJson 方法设置的 json 文本.
 func (s *SharedBufferSender) Send(data []byte, additionalDataAsJson ...string) error {
+	jsonStr := s.additionalDataAsJson
+	if len(additionalDataAsJson) > 0 {
+		jsonStr = additionalDataAsJson[0]
+	}
+
+	if data == nil {
+		return s.wv2_17.PostSharedBufferToScript(s.buf, s.access, jsonStr)
+	}
+
 	dataLength := len(data)
 	// 数据长度+4个字节不能超过缓冲区大小
 	if dataLength+4 > int(s.bufSize) {
@@ -311,11 +326,6 @@ func (s *SharedBufferSender) Send(data []byte, additionalDataAsJson ...string) e
 	_, err = s.stream.Write(data)
 	if err != nil {
 		return errors.New("缓冲区写入数据失败: " + err.Error())
-	}
-
-	jsonStr := s.additionalDataAsJson
-	if len(additionalDataAsJson) > 0 {
-		jsonStr = additionalDataAsJson[0]
 	}
 	return s.wv2_17.PostSharedBufferToScript(s.buf, s.access, jsonStr)
 }
@@ -345,14 +355,19 @@ func (s *SharedBufferSender) GetAdditionalDataAsJson() string {
 // Close 关闭缓冲区, 无法再使用.
 func (s *SharedBufferSender) Close() {
 	if s.wv2_17 != nil {
+		// 发送释放缓冲区的消息给 js
+		s.Send(nil, `{"type":"close"}`)
 		s.wv2_17.Release()
+		s.wv2_17 = nil
 	}
 	if s.stream != nil {
 		s.stream.Release()
+		s.stream = nil
 	}
 	if s.buf != nil {
 		s.buf.Close()
 		s.buf.Release()
+		s.buf = nil
 	}
 }
 
