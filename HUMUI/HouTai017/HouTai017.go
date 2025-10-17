@@ -72,8 +72,6 @@ func setWindowEvent() {
 	// 窗口消息处理
 	w.AddEvent_WindProc(func(hWindow int, message uint32, wParam, lParam uintptr, pbHandled *bool) int {
 		switch message {
-		case wapi.WM_CLOSE: // 窗口关闭时，释放图片
-			destroyDTIcons()
 		case wapi.WM_SIZE:
 			rc := w.GetRectEx()
 			btnNavAdj.SetPosition(16, rc.Bottom-rc.Top-44, false, 0, 0)
@@ -95,6 +93,14 @@ func setNavAdjAttr() {
 	svg_show := svg.NewByZipMem(resData, "资源文件\\nav_show.svg", "").SetSize(20, 20)
 	img_hide := imagex.NewBySvg(svg_hide.Handle).AddRef()
 	img_show := imagex.NewBySvg(svg_show.Handle).AddRef()
+
+	// 窗口销毁时释放图片
+	w.AddEvent_Destroy(func(hWindow int, pbHandled *bool) int {
+		img_hide.Release()
+		img_hide.Release()
+		return 0
+	}, true) // 因为有多个地方添加了此事件, 所以填 true, 以添加多个事件回调函数
+
 	// 获取左侧导航布局元素
 	navLayout := widget.NewLayoutEleByName("nav")
 	// 获取左侧导航-展开收缩按钮, 设置图标
@@ -126,15 +132,19 @@ var m_DTIcons []int // 日期时间图标句柄
 func setDateTimeUI() {
 	// 加载日期时间图标
 	m_DTIcons = append(m_DTIcons,
-		imagex.NewByZipMem(resData, "资源文件\\ll.png", "").Handle,
-		imagex.NewByZipMem(resData, "资源文件\\rr.png", "").Handle,
-		imagex.NewByZipMem(resData, "资源文件\\l.png", "").Handle,
-		imagex.NewByZipMem(resData, "资源文件\\r.png", "").Handle,
+		imagex.NewByZipMem(resData, "资源文件\\ll.png", "").AddRef().Handle,
+		imagex.NewByZipMem(resData, "资源文件\\rr.png", "").AddRef().Handle,
+		imagex.NewByZipMem(resData, "资源文件\\l.png", "").AddRef().Handle,
+		imagex.NewByZipMem(resData, "资源文件\\r.png", "").AddRef().Handle,
 	)
-	// 禁止自动销毁日期时间图标
-	for i := 0; i < len(m_DTIcons); i++ {
-		xc.XImage_EnableAutoDestroy(m_DTIcons[i], false)
-	}
+
+	// 窗口销毁时释放图标
+	w.AddEvent_Destroy(func(hWindow int, pbHandled *bool) int {
+		for _, v := range m_DTIcons {
+			xc.XImage_Release(v)
+		}
+		return 0
+	}, true) // 因为有多个地方添加了此事件, 所以填 true, 以添加多个事件回调函数
 
 	for i := 1; i <= 4; i++ {
 		// 获取日期时间元素
@@ -216,13 +226,6 @@ func setDateTimeAttr(dt *widget.DateTime) {
 	})
 }
 
-// 销毁日期时间图标
-func destroyDTIcons() {
-	for i := 0; i < len(m_DTIcons); i++ {
-		xc.XImage_Destroy(m_DTIcons[i])
-	}
-}
-
 // 加载列表
 func loadList() {
 	hParent := app.GetObjectByName("home_listBox")
@@ -252,7 +255,7 @@ func setListAttr(ls *widget.List) {
 	ls.CreateAdapter(0)
 	// 列表自适应窗口宽度
 	w.AddEvent_WindProc(func(hWindow int, message uint32, wParam, lParam uintptr, pbHandled *bool) int {
-		if message == 0x0047 { // WM_WINDOWPOSCHANGED 窗口位置改变
+		if message == wapi.WM_WINDOWPOSCHANGED { // 窗口位置改变
 			hParentObj := ls.GetParentEle()
 			if hParentObj < 1 {
 				return 0
