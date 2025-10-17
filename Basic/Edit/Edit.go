@@ -36,8 +36,8 @@ func main() {
 	eyeBtn := widget.NewButton(165, 75, 30, 30, "", w.Handle)
 	eyeBtn.EnableBkTransparent(true)
 	// 加载图片, 禁止自动销毁
-	imgShow := imagex.NewBySvgStringW(eye_show).EnableAutoDestroy(false)
-	imgHide := imagex.NewBySvgStringW(eye_hide).EnableAutoDestroy(false)
+	imgShow := imagex.NewBySvgStringW(eye_show).AddRef()
+	imgHide := imagex.NewBySvgStringW(eye_hide).AddRef()
 	eyeBtn.SetIcon(imgHide.Handle)
 	// 按钮事件, 控制是否显示密码
 	eyeBtn.Event_BnClick(func(pbHandled *bool) int {
@@ -53,6 +53,13 @@ func main() {
 		}
 		editPwd.Redraw(true)
 		eyeBtn.Redraw(true)
+		return 0
+	})
+
+	// 在窗口销毁时, 释放图片, 如果你其他窗口还在用, 那不要释放
+	w.AddEvent_Destroy(func(hWindow int, pbHandled *bool) int {
+		imgShow.Release()
+		imgHide.Release()
 		return 0
 	})
 
