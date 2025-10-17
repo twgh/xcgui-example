@@ -44,8 +44,8 @@ func main() {
 
 	widget.NewShapeText(0, 0, 400, 30, "点击鼠标右键显示菜单", w.Handle).SetFont(app.NewFont(16).Handle).LayoutItem_SetWidth(xcc.Layout_Size_Auto, 0)
 
-	// 窗口鼠标右键按下事件
-	w.AddEvent_RButtonDown(onWindowRButtonDown)
+	// 窗口鼠标右键弹起事件
+	w.AddEvent_RButtonUp(onWindowRButtonUp)
 
 	// 注册菜单被选择事件
 	w.Event_MENU_SELECT(onMenuSelect)
@@ -62,8 +62,8 @@ func main() {
 	a.Exit()
 }
 
-// 按钮被单击事件
-func onWindowRButtonDown(hWindow int, nFlags uint, pPt *xc.POINT, pbHandled *bool) int {
+// 窗口鼠标右键弹起事件
+func onWindowRButtonUp(hWindow int, nFlags uint, pPt *xc.POINT, pbHandled *bool) int {
 	// 创建菜单
 	menu := widget.NewMenu()
 	// 一级菜单
