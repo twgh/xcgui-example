@@ -17,5 +17,10 @@ go.work.sum
 
 # Folder
 .idea/
+.codebuddy/
+.vscode/
+.qoder/
+.lingma/
 test/
 scripts/
+library/
