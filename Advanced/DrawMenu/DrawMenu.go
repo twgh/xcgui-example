@@ -44,11 +44,18 @@ func loadAllSvg() {
 	svgMap[menuid_item_disable] = loadSvg(svg_disable)
 }
 
-// 加载svg图片, 并禁止自动销毁
+// 加载svg图片
 func loadSvg(svgText string) int {
 	hSvg := xc.XImage_LoadSvgStringW(svgText)
-	xc.XImage_EnableAutoDestroy(hSvg, false)
+	xc.XImage_AddRef(hSvg) // 添加引用计数防止自动销毁
 	return hSvg
+}
+
+// 释放所有svg图片
+func releaseAllSvg() {
+	for _, v := range svgMap {
+		xc.XImage_Release(v)
+	}
 }
 
 func main() {
@@ -67,11 +74,17 @@ func main() {
 
 	// 加载所有的svg图片
 	loadAllSvg()
+	// 在窗口销毁的时候释放所有已加载的svg图片, 如果你其他窗口还在用的话, 那不要释放
+	w.AddEvent_Destroy(func(hWindow int, pbHandled *bool) int {
+		// 销毁所有svg图片
+		releaseAllSvg()
+		return 0
+	})
 
 	widget.NewShapeText(0, 0, 400, 30, "点击鼠标右键显示菜单", w.Handle).SetFont(app.NewFont(16).Handle).LayoutItem_SetWidth(xcc.Layout_Size_Auto, 0)
 
-	// 窗口鼠标右键按下事件
-	w.Event_RBUTTONDOWN(onWindowRButtonDown)
+	// 窗口鼠标右键弹起事件
+	w.Event_RBUTTONUP(onWindowRButtonUp)
 
 	// 注册菜单背景绘制事件
 	w.Event_MENU_DRAW_BACKGROUND(onMenuDrawBackground)
@@ -87,8 +100,8 @@ func main() {
 	a.Exit()
 }
 
-// 窗口鼠标右键按下事件
-func onWindowRButtonDown(nFlags uint, pPt *xc.POINT, pbHandled *bool) int {
+// 窗口鼠标右键弹起事件
+func onWindowRButtonUp(nFlags uint, pPt *xc.POINT, pbHandled *bool) int {
 	// 创建菜单
 	menu = widget.NewMenu()
 	menu.SetItemHeight(30)          // 设置菜单项高度
