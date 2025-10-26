@@ -16,7 +16,6 @@ import (
 )
 
 var (
-	a *app.App
 	w *window.Window
 
 	list_svg       []int
@@ -69,10 +68,9 @@ var (
 func main() {
 	// 初始化界面库
 	app.InitOrExit()
-	a = app.New(true)
+	a := app.New(true)
 	// 启用自适应DPI
-	a.EnableDPI(true)
-	a.EnableAutoDPI(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
 	// 设置UI的最小重绘频率
 	a.SetPaintFrequency(10)
 	// a.ShowLayoutFrame(true).ShowSvgFrame(true)
@@ -115,9 +113,13 @@ func main() {
 	CreateButtonRadio(left, &top, "27.背景管理器").AddEvent_BnClick(OnBtnClick19)*/
 
 	w.AddEvent_Paint(OnWndDrawWindow)
+	w.AddEvent_Destroy(func(hWindow int, pbHandled *bool) int {
+		ReleaseAnimation()
+		return 0
+	})
+
 	w.ShowWindow(xcc.SW_SHOW)
 	a.Run()
-	ReleaseAnimation()
 	a.Exit()
 }
 
