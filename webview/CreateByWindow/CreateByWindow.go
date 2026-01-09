@@ -1,4 +1,4 @@
-// 在窗口中创建 webview, 仍然使用炫彩窗口的标题栏
+// 在窗口中创建 WebView, 仍然使用炫彩窗口的标题栏.
 package main
 
 import (
@@ -10,12 +10,7 @@ import (
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/edge"
 	"github.com/twgh/xcgui/wapi"
-	"github.com/twgh/xcgui/window"
-)
-
-var (
-	//go:embed res/CreateByWindow.xml
-	xmlStr string
+	"github.com/twgh/xcgui/xc"
 )
 
 func main() {
@@ -26,34 +21,38 @@ func main() {
 	a := app.New(true)
 	a.EnableAutoDPI(true).EnableDPI(true)
 
-	// 创建窗口从布局文件
-	// 这个窗口是有特殊设计的, 它的主体是透明的, 这是为了规避当窗口类型为[透明窗口阴影]时的一个问题:
-	// 当窗口最小化或最大化时会有一瞬间漏出 webview 后面的炫彩窗口, 表现出来是闪烁了一下, 所以设计为透明就看不到后面的窗口了. 只有网页颜色和炫彩窗口颜色相差很大时才会容易看出此问题, 这是很追求细节的才会注意到的.
-	w := window.NewByLayoutStringW(xmlStr, 0, 0)
-
-	// 创建 webview 环境
+	// 创建 WebView 环境
 	edg, err := edge.New(edge.Option{
-		UserDataFolder: os.TempDir(), // 自己的软件应该在固定位置创建一个自己的目录, 而不是用临时目录
+		UserDataFolder: os.TempDir(), // 自己的软件应该在固定位置创建一个自己的目录
 	})
 	if err != nil {
-		wapi.MessageBoxW(0, "创建 webview 环境失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
+		wapi.MessageBoxW(0, "创建 WebView 环境失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
 		os.Exit(1)
 	}
 
-	// 创建 webview
-	wv, err := edg.NewWebView(w.Handle,
+	// 创建 WebView
+	w, wv, err := edg.NewWebViewWithWindow(
+		edge.WithXmlWindowTitle("在窗口中创建 WebView, 仍然使用炫彩窗口的标题栏"),
+		// 设置炫彩 XML 窗口是否启用标题栏.
+		edge.WithXmlWindowTitleBar(true),
+		// 设置炫彩 XML 窗口标题栏背景颜色.
+		edge.WithXmlWindowTitleBarBgColor(xc.RGBA(17, 17, 26, 255)),
+		edge.WithXmlWindowSize(1400, 900),
 		edge.WithFillParent(true),
 		edge.WithDebug(true),
+		edge.WithAutoFocus(true),
 	)
 	if err != nil {
-		wapi.MessageBoxW(0, "创建 webview 失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
+		wapi.MessageBoxW(0, "创建 WebView 失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
 		os.Exit(2)
 	}
+
+	// 设置炫彩 XML 窗口标题栏背景颜色.
+	// wv.SetXmlWindowTitleBarBgColor(xc.RGBA(87, 161, 162, 255))
 
 	// 导航到指定网页
 	wv.Navigate("https://www.vben.pro/")
 
-	w.AdjustLayout()
 	w.Show(true)
 	a.Run()
 	a.Exit()
