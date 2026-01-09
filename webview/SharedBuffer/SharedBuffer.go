@@ -34,71 +34,76 @@ var (
 
 const hostName = "app.example"
 
-func main() {
-	checkWebView2()
+type MainWindow struct {
+	edg          *edge.Edge
+	w            *window.Window
+	wv           *edge.WebView
+	btnSelectImg *widget.Button
+	btnSendText  *widget.Button
+}
 
-	// 初始化界面库
-	app.InitOrExit()
-	a := app.New(true)
-	a.EnableAutoDPI(true).EnableDPI(true)
+func NewMainWindow(edg *edge.Edge) *MainWindow {
+	m := &MainWindow{edg: edg}
 
 	// 创建窗口
-	w := window.New(0, 0, 1200, 900, "共享缓冲区例子", 0, xcc.Window_Style_Default)
-	w.EnableLayout(true)         // 窗口启用布局
-	w.SetBorderSize(2, 30, 2, 2) // 设置窗口边框大小
+	m.w = window.New(0, 0, 1200, 900, "共享缓冲区例子", 0, xcc.Window_Style_Default)
+	m.w.EnableLayout(true)         // 窗口启用布局
+	m.w.SetBorderSize(2, 30, 2, 2) // 设置窗口边框大小
 
 	// 创建放置顶部按钮的布局
-	layoutTop := widget.NewLayoutEle(0, 0, 0, 34, w.Handle)
+	layoutTop := widget.NewLayoutEle(0, 0, 0, 34, m.w.Handle)
 	layoutTop.LayoutItem_SetWidth(xcc.Layout_Size_Fill, 0) // 宽度填充父
 	layoutTop.SetSpace(2)                                  // 子项间距
 	layoutTop.SetPadding(2, 1, 2, 1)                       // 内填充
 	layoutTop.AddBkBorder(xcc.Element_State_Flag_Leave, xc.RGBA(224, 224, 224, 255), 1)
 
+	// 按钮_选择图片
+	m.btnSelectImg = widget.NewButton(0, 0, 100, 30, "选择图片", layoutTop.Handle)
+	// 按钮_发送文本
+	m.btnSendText = widget.NewButton(0, 0, 100, 30, "发送文本", layoutTop.Handle)
+
 	// 创建放置 WebView 的布局
-	layoutWV := widget.NewLayoutEle(0, 0, 0, 0, w.Handle)
+	layoutWV := widget.NewLayoutEle(0, 0, 0, 0, m.w.Handle)
 	layoutWV.LayoutItem_SetWidth(xcc.Layout_Size_Fill, 0)    // 宽度填充父
 	layoutWV.LayoutItem_SetHeight(xcc.Layout_Size_Weight, 1) // 高度占据剩余空间
 
 	// 创建 WebView
-	wv := createWebView(layoutWV)
+	m.createWebView(layoutWV.Handle)
 
 	// 注册炫彩事件
-	regXcEvent(w, wv, layoutTop)
+	m.regXcEvents()
 
-	// 显示窗口并运行应用
-	w.Show(true)
-	a.Run()
-	a.Exit()
+	// 显示窗口
+	m.w.Show(true)
+	return m
 }
 
 // 注册炫彩事件
-func regXcEvent(w *window.Window, wv *edge.WebView, layout *widget.LayoutEle) {
-	// 按钮_选择图片
-	btnSelectImg := widget.NewButton(0, 0, 100, 30, "选择图片", layout.Handle)
-	btnSelectImg.AddEvent_BnClick(func(hEle int, pbHandled *bool) int {
-		if wv.CoreWebView == nil {
+func (m *MainWindow) regXcEvents() {
+	m.btnSelectImg.AddEvent_BnClick(func(hEle int, pbHandled *bool) int {
+		if m.wv.CoreWebView == nil {
 			return 0
 		}
 		if imgSender == nil {
-			w.MessageBox("提示", "图片缓冲区发送者没有创建成功", xcc.MessageBox_Flag_Ok, xcc.Window_Style_Default)
+			m.w.MessageBox("提示", "图片缓冲区发送者没有创建成功", xcc.MessageBox_Flag_Ok, xcc.Window_Style_Default)
 			return 0
 		}
 
 		// 选择文件
-		filePath := wutil.OpenFile(w.Handle, []string{"图片文件 (*.png;*.jpg;*.jpeg;*.bmp;*.gif)", "*.png;*.jpg;*.jpeg;*.bmp;*.gif"}, "")
+		filePath := wutil.OpenFile(m.w.Handle, []string{"图片文件 (*.png;*.jpg;*.jpeg;*.bmp;*.gif)", "*.png;*.jpg;*.jpeg;*.bmp;*.gif"}, "")
 		if filePath == "" {
 			return 0
 		}
 		// 读取文件
 		data, err := os.ReadFile(filePath)
 		if err != nil {
-			w.MessageBox("提示", "读取图片失败: "+err.Error(), xcc.MessageBox_Flag_Ok, xcc.Window_Style_Default)
+			m.w.MessageBox("提示", "读取图片失败: "+err.Error(), xcc.MessageBox_Flag_Ok, xcc.Window_Style_Default)
 			return 0
 		}
 		// 发送数据给 WebView
 		err = imgSender.Send(data)
 		if err != nil {
-			w.MessageBox("提示", "发送图片给 WebView 失败: "+err.Error(), xcc.MessageBox_Flag_Ok, xcc.Window_Style_Default)
+			m.w.MessageBox("提示", "发送图片给 WebView 失败: "+err.Error(), xcc.MessageBox_Flag_Ok, xcc.Window_Style_Default)
 			return 0
 		}
 		return 0
@@ -112,19 +117,17 @@ func regXcEvent(w *window.Window, wv *edge.WebView, layout *widget.LayoutEle) {
 		return 0 */
 	})
 
-	// 按钮_发送文本
-	btnSendText := widget.NewButton(0, 0, 100, 30, "发送文本", layout.Handle)
-	btnSendText.AddEvent_BnClick(func(hEle int, pbHandled *bool) int {
-		if wv.CoreWebView == nil {
+	m.btnSendText.AddEvent_BnClick(func(hEle int, pbHandled *bool) int {
+		if m.wv.CoreWebView == nil {
 			return 0
 		}
 		// 生成随机字符串
 		data := []byte(generateRandomString(100))
 
 		// 发送数据给 WebView
-		err := sendData(wv, data, "text")
+		err := sendData(m.wv, data, "text")
 		if err != nil {
-			w.MessageBox("提示", "发送文本给 WebView 失败: "+err.Error(), xcc.MessageBox_Flag_Ok, xcc.Window_Style_Default)
+			m.w.MessageBox("提示", "发送文本给 WebView 失败: "+err.Error(), xcc.MessageBox_Flag_Ok, xcc.Window_Style_Default)
 			return 0
 		}
 		return 0
@@ -132,49 +135,23 @@ func regXcEvent(w *window.Window, wv *edge.WebView, layout *widget.LayoutEle) {
 }
 
 // 创建 WebView
-func createWebView(layout *widget.LayoutEle) *edge.WebView {
-	// 创建 WebView2 环境选项.
-	envOpts, err := edge.CreateEnvironmentOptions()
-	if err != nil {
-		log.Println("创建 WebView2 环境选项失败: " + err.Error())
-	} else {
-		defer envOpts.Release()
-		// 获取 WebView2 环境选项5
-		envOpts5, err := envOpts.GetICoreWebView2EnvironmentOptions5()
-		if err != nil {
-			log.Println("获取环境选项5失败: " + err.Error())
-		} else {
-			// 禁用 WebView2 中的跟踪防护功能以提高运行时性能, 仅在 WebView2 中呈现已知安全的内容时可以这样做.
-			// 如果 WebView2 被用作具有任意导航功能的“完整浏览器”且需要保护最终用户隐私，那么不应禁用此属性。
-			envOpts5.SetEnableTrackingPrevention(false)
-			envOpts5.Release()
-		}
-	}
-
-	// 创建 webview 环境
-	edg, err := edge.New(edge.Option{
-		UserDataFolder:     os.TempDir(), // 实际应用中应使用自己创建的固定目录
-		EnvironmentOptions: envOpts,
-	})
-	if err != nil {
-		wapi.MessageBoxW(0, "创建 webview 环境失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
-		os.Exit(1)
-	}
+func (m *MainWindow) createWebView(hParent int) {
+	var err error
 	// 设置虚拟主机名和嵌入文件系统之间的映射
 	edge.SetVirtualHostNameToEmbedFSMapping(hostName, embedAssets)
 
-	// 创建 webview
-	wv, err := edg.NewWebView(layout.Handle,
+	// 创建 WebView
+	m.wv, err = m.edg.NewWebView(hParent,
 		edge.WithFillParent(true),
 		edge.WithDebug(true),
 	)
 	if err != nil {
-		wapi.MessageBoxW(0, "创建 webview 失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
+		wapi.MessageBoxW(0, "创建 WebView 失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
 		os.Exit(2)
 	}
 
 	// 创建图片的共享缓冲区发送者, 这个不是一次性的缓冲区
-	imgSender, err = NewSharedBufferSender(wv, 20*1024*1024) // 20MB
+	imgSender, err = NewSharedBufferSender(m.wv, 20*1024*1024) // 20MB
 	if err != nil {
 		log.Println("创建图片的共享缓冲区发送者失败: " + err.Error())
 	} else {
@@ -182,30 +159,30 @@ func createWebView(layout *widget.LayoutEle) *edge.WebView {
 	}
 
 	// 在宿主原生窗口销毁时释放图片缓冲区.
-	// 因为 WebView2 并没有销毁事件, 所以只能用宿主原生窗口的销毁事件来释放图片缓冲区.
-	wv.Event_Destroy(func(wv *edge.WebView) {
+	// 因为 WebView2 并没有销毁事件, 所以用宿主原生窗口的销毁事件来释放图片缓冲区.
+	m.wv.Event_Destroy(func(wv *edge.WebView) {
 		if imgSender != nil {
 			imgSender.Close()
 		}
 	})
 
 	// 注册 WebView 事件
-	regWebViewEvent(wv)
+	m.regWebViewEvents()
 
 	// 启用虚拟主机名和嵌入文件系统之间的映射
-	wv.EnableVirtualHostNameToEmbedFSMapping(true)
+	m.wv.EnableVirtualHostNameToEmbedFSMapping(true)
 
 	// 导航
-	wv.Navigate(edge.JoinUrlHeader(hostName) + "/SharedBuffer.html")
-	return wv
+	m.wv.Navigate(edge.JoinUrlHeader(hostName) + "/SharedBuffer.html")
 }
 
 // 注册 WebView 事件
-func regWebViewEvent(wv *edge.WebView) {
+func (m *MainWindow) regWebViewEvents() {
 	// 网页消息事件
-	wv.Event_WebMessageReceived(func(sender *edge.ICoreWebView2, args *edge.ICoreWebView2WebMessageReceivedEventArgs) uintptr {
+	m.wv.Event_WebMessageReceived(func(sender *edge.ICoreWebView2, args *edge.ICoreWebView2WebMessageReceivedEventArgs) uintptr {
 		msg, err := args.TryGetWebMessageAsString()
 		if err != nil {
+			log.Println("Event_WebMessageReceived, TryGetWebMessageAsString: " + err.Error())
 			return 0
 		}
 
@@ -219,7 +196,7 @@ func regWebViewEvent(wv *edge.WebView) {
 				log.Println("发送图片给 WebView 失败: " + err.Error())
 			} */
 		case "RequestText": // 收到前端的文本请求, 通过共享缓冲区发送文本给 WebView
-			err = sendData(wv, []byte(generateRandomString(100)), "text")
+			err = sendData(m.wv, []byte(generateRandomString(100)), "text")
 			if err != nil {
 				log.Println("发送文本给 WebView 失败: " + err.Error())
 			}
@@ -341,13 +318,13 @@ func (s *SharedBufferSender) GetAccess() edge.COREWEBVIEW2_SHARED_BUFFER_ACCESS 
 	return s.access
 }
 
-// SetAdditionalDataAsJson 设置附加 json 数据.
+// SetAdditionalDataAsJson 设置附加 JSON 数据.
 func (s *SharedBufferSender) SetAdditionalDataAsJson(json string) *SharedBufferSender {
 	s.additionalDataAsJson = json
 	return s
 }
 
-// GetAdditionalDataAsJson 获取附加 json 数据.
+// GetAdditionalDataAsJson 获取附加 JSON 数据.
 func (s *SharedBufferSender) GetAdditionalDataAsJson() string {
 	return s.additionalDataAsJson
 }
@@ -417,6 +394,55 @@ func sendData(wv *edge.WebView, data []byte, typeStr string) error {
 		return errors.New("发送缓冲区给 WebView2 失败: " + err.Error())
 	}
 	return nil
+}
+
+func main() {
+	checkWebView2()
+	edg := createEdge()
+
+	// 初始化界面库
+	app.InitOrExit()
+	a := app.New(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+
+	NewMainWindow(edg)
+
+	a.Run()
+	a.Exit()
+}
+
+func createEdge() *edge.Edge {
+	// 创建 WebView2 环境选项.
+	envOpts, err := edge.CreateEnvironmentOptions()
+	if err != nil {
+		log.Println("创建 WebView2 环境选项失败: " + err.Error())
+	} else {
+		// 获取 WebView2 环境选项5
+		envOpts5, err := envOpts.GetICoreWebView2EnvironmentOptions5()
+		if err != nil {
+			log.Println("获取环境选项5失败: " + err.Error())
+		} else {
+			// 禁用 WebView2 中的跟踪防护功能以提高运行时性能, 仅在 WebView2 中呈现已知安全的内容时可以这样做.
+			// 如果 WebView2 被用作具有任意导航功能的“完整浏览器”且需要保护最终用户隐私，那么不应禁用此属性。
+			envOpts5.SetEnableTrackingPrevention(false)
+			envOpts5.Release()
+		}
+	}
+
+	// 创建 WebView 环境
+	edg, err := edge.New(edge.Option{
+		UserDataFolder:     os.TempDir(), // 实际应用中应使用自己创建的固定目录
+		EnvironmentOptions: envOpts,
+	})
+	if err != nil {
+		wapi.MessageBoxW(0, "创建 WebView 环境失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
+		os.Exit(1)
+	}
+
+	if envOpts != nil { // 没用了, 直接释放
+		envOpts.Release()
+	}
+	return edg
 }
 
 func checkWebView2() {
