@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	isDebug = false // 是否为调试模式
+	isDebug = true // 是否为调试模式
 	host    string
 
 	//go:embed dist/**
