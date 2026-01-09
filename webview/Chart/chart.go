@@ -1,4 +1,4 @@
-// 在窗口中创建多个 webview 元素, 显示图表, Go发送数据到前端以更新图标
+// 在窗口中创建多个 webview 元素, 显示图表, Go发送数据到前端以更新图表
 package main
 
 import (
@@ -22,13 +22,15 @@ var (
 	xmlStr string
 	//go:embed assets/**
 	embedAssets embed.FS // 嵌入 assets 目录以及子目录下的文件, 不包括隐藏文件
-	isDebug     = true   // 是否为调试版
+
+	isDebug = false // 是否为调试版
 )
 
 const hostName = "app.example"
 
 func main() {
 	checkWebView2()
+	edg := createEdge()
 
 	// 初始化界面库
 	app.InitOrExit()
@@ -37,12 +39,39 @@ func main() {
 	// 创建窗口从布局文件
 	w := window.NewByLayoutStringW(xmlStr, 0, 0)
 
+	// 设置虚拟主机名和嵌入文件系统之间的映射.
+	// 这个映射是全局可用的, 所有的 WebView 都可访问, 只需 EnableVirtualHostNameToEmbedFSMapping(true)
+	// 如果想要删除映射关系, 请使用 edge.DeleteVirtualHostNameToEmbedFSMapping(hostName)
+	edge.SetVirtualHostNameToEmbedFSMapping(hostName, embedAssets)
+
+	// 创建 webview 选项
+	wvOption := []edge.WebViewOption{
+		edge.WithFillParent(true),
+		edge.WithStatusBar(false),
+		edge.WithDefaultContextMenus(isDebug),
+		edge.WithBrowserAcceleratorKeys(isDebug),
+		edge.WithDebug(isDebug),
+	}
+
+	// 创建 webview1
+	createWebView1(edg, wvOption)
+	// 创建 webview2
+	createWebView2(edg, wvOption)
+	// 创建 webview3
+	createWebView3(edg, wvOption)
+
+	w.AdjustLayout()
+	w.Show(true)
+	a.Run()
+	a.Exit()
+}
+
+func createEdge() *edge.Edge {
 	// 创建 WebView2 环境选项.
 	envOpts, err := edge.CreateEnvironmentOptions()
 	if err != nil {
 		log.Println("创建 WebView2 环境选项失败: " + err.Error())
 	} else {
-		defer envOpts.Release()
 		// 获取 WebView2 环境选项5
 		envOpts5, err := envOpts.GetICoreWebView2EnvironmentOptions5()
 		if err != nil {
@@ -75,31 +104,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	// 设置虚拟主机名和嵌入文件系统之间的映射.
-	// 这个映射是全局可用的, 所有的 WebView 都可访问, 只需 EnableVirtualHostNameToEmbedFSMapping(true)
-	// 如果想要删除映射关系, 请使用 edge.DeleteVirtualHostNameToEmbedFSMapping(hostName)
-	edge.SetVirtualHostNameToEmbedFSMapping(hostName, embedAssets)
-
-	// 创建 webview 选项
-	wvOption := []edge.WebViewOption{
-		edge.WithFillParent(true),
-		edge.WithStatusBar(false),
-		edge.WithDefaultContextMenus(isDebug),
-		edge.WithBrowserAcceleratorKeys(isDebug),
-		edge.WithDebug(isDebug),
+	if envOpts != nil { // 没用了, 直接释放
+		envOpts.Release()
 	}
-
-	// 创建 webview1
-	createWebView1(edg, wvOption)
-	// 创建 webview2
-	createWebView2(edg, wvOption)
-	// 创建 webview3
-	createWebView3(edg, wvOption)
-
-	w.AdjustLayout()
-	w.Show(true)
-	a.Run()
-	a.Exit()
+	return edg
 }
 
 func createWebView1(edg *edge.Edge, wvOption []edge.WebViewOption) {
