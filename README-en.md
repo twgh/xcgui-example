@@ -43,4 +43,7 @@ go run .\Basic\SimpleWindow\
 
 [![EmbedAssets](https://gitee.com/twgh/image/raw/master/xcgui-example/EmbedAssets.jpg)](https://github.com/twgh/xcgui-example/tree/main/webview/EmbedAssets)
 
-[![](https://gitee.com/twgh/image/raw/master/xcgui-example/CreateByLayoutEle.jpg)](https://github.com/twgh/xcgui-example/tree/main/webview/CreateByLayoutEle)
+[![CreateByLayoutEle](https://gitee.com/twgh/image/raw/master/xcgui-example/CreateByLayoutEle.jpg)](https://github.com/twgh/xcgui-example/tree/main/webview/CreateByLayoutEle)
+
+[![VueAndVite](https://gitee.com/twgh/image/raw/master/xcgui-example/VueAndVite.png)](https://github.com/twgh/xcgui-example/tree/main/webview/VueAndVite)
+
