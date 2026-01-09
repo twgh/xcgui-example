@@ -21,7 +21,7 @@ func main() {
 	w := window.New(0, 0, 350, 200, "svg绘制", 0, xcc.Window_Style_Default)
 
 	// SVG_加载从字符串
-	svg1 = svg.NewByStringW(svgStr)
+	svg1 = svg.NewByString(svgStr)
 	if svg1.Handle == 0 {
 		panic("svg1.Handle = 0")
 	}
