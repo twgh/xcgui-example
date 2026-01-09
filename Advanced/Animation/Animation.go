@@ -191,12 +191,12 @@ func OnBtnClick1(hEle int, pbHandled *bool) int {
 
 	// 加载svg图片
 	list_svg = append(list_svg,
-		xc.XSvg_LoadStringW(svg1),
-		xc.XSvg_LoadStringW(svg2),
-		xc.XSvg_LoadStringW(svg3),
-		xc.XSvg_LoadStringW(svg4),
-		xc.XSvg_LoadStringW(svg5),
-		xc.XSvg_LoadStringW(svg6),
+		xc.XSvg_LoadString(svg1),
+		xc.XSvg_LoadString(svg2),
+		xc.XSvg_LoadString(svg3),
+		xc.XSvg_LoadString(svg4),
+		xc.XSvg_LoadString(svg5),
+		xc.XSvg_LoadString(svg6),
 	)
 
 	// 创建动画组
@@ -246,7 +246,7 @@ func OnBtnClick2(hEle int, pbHandled *bool) int {
 	var top int32 = 22
 
 	// 加载svg图片
-	list_svg = append(list_svg, xc.XSvg_LoadStringW(svg1))
+	list_svg = append(list_svg, xc.XSvg_LoadString(svg1))
 	// 设置svg图片大小和位置
 	xc.XSvg_SetSize(list_svg[0], 100, 100)
 	xc.XSvg_SetPosition(list_svg[0], left, top)
@@ -309,7 +309,7 @@ func OnBtnClick3(hEle int, pbHandled *bool) int {
 	var top int32 = 150
 
 	// 加载svg图片
-	list_svg = append(list_svg, xc.XSvg_LoadStringW(svg1))
+	list_svg = append(list_svg, xc.XSvg_LoadString(svg1))
 	// 设置svg图片大小和位置
 	xc.XSvg_SetSize(list_svg[0], 300, 300)
 	xc.XSvg_SetPosition(list_svg[0], left, top)
@@ -342,9 +342,9 @@ func OnBtnClick4(hEle int, pbHandled *bool) int {
 
 	// 加载svg图片
 	list_svg = append(list_svg,
-		xc.XSvg_LoadStringW(svg1),
-		xc.XSvg_LoadStringW(svg1),
-		xc.XSvg_LoadStringW(svg1),
+		xc.XSvg_LoadString(svg1),
+		xc.XSvg_LoadString(svg1),
+		xc.XSvg_LoadString(svg1),
 	)
 
 	// 设置svg图片大小和位置
@@ -371,7 +371,7 @@ func OnBtnClick4(hEle int, pbHandled *bool) int {
 
 	{
 		top = 100
-		m_hSvg = xc.XSvg_LoadStringW(svg7)
+		m_hSvg = xc.XSvg_LoadString(svg7)
 		list_svg = append(list_svg, m_hSvg)
 		xc.XSvg_SetPosition(m_hSvg, left, top)
 
@@ -383,7 +383,7 @@ func OnBtnClick4(hEle int, pbHandled *bool) int {
 	}
 	{
 		top += 150
-		m_hSvg = xc.XSvg_LoadStringW(svg7)
+		m_hSvg = xc.XSvg_LoadString(svg7)
 		list_svg = append(list_svg, m_hSvg)
 		xc.XSvg_SetPosition(m_hSvg, left, top)
 
@@ -395,7 +395,7 @@ func OnBtnClick4(hEle int, pbHandled *bool) int {
 	}
 	{
 		top += 150
-		m_hSvg = xc.XSvg_LoadStringW(svg7)
+		m_hSvg = xc.XSvg_LoadString(svg7)
 		list_svg = append(list_svg, m_hSvg)
 		xc.XSvg_SetPosition(m_hSvg, left, top)
 
@@ -416,9 +416,9 @@ func OnBtnClick5(hEle int, pbHandled *bool) int {
 
 	// 加载svg图片
 	list_svg = append(list_svg,
-		xc.XSvg_LoadStringW(svg1),
-		xc.XSvg_LoadStringW(svg2),
-		xc.XSvg_LoadStringW(svg3),
+		xc.XSvg_LoadString(svg1),
+		xc.XSvg_LoadString(svg2),
+		xc.XSvg_LoadString(svg3),
 	)
 
 	// 设置svg图片大小和位置
@@ -875,7 +875,7 @@ func OnBtnClick11(hEle int, pbHandled *bool) int {
 
 	// 两个球型交替移动
 	{
-		hSvg := xc.XSvg_LoadStringW(svg11)
+		hSvg := xc.XSvg_LoadString(svg11)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 
@@ -888,7 +888,7 @@ func OnBtnClick11(hEle int, pbHandled *bool) int {
 		xc.XAnima_Move(hAnimation, 1000, float32(left)+50, float32(top), 1, xcc.Ease_Flag_Sine|xcc.Ease_Flag_InOut, false)
 		xc.XAnima_Move(hAnimation, 1000, float32(left), float32(top), 1, xcc.Ease_Flag_Sine|xcc.Ease_Flag_InOut, false)
 
-		hSvg = xc.XSvg_LoadStringW(svg12)
+		hSvg = xc.XSvg_LoadString(svg12)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left+50, top)
 
@@ -910,7 +910,7 @@ func OnBtnClick11(hEle int, pbHandled *bool) int {
 		xc.XAnima_Run(hGroup, w.Handle)
 
 		for i := 0; i < 10; i++ {
-			hSvg = xc.XSvg_LoadStringW(svg13)
+			hSvg = xc.XSvg_LoadString(svg13)
 			list_svg = append(list_svg, hSvg)
 			xc.XSvg_SetPosition(hSvg, left+int32(i)*50, top)
 
@@ -930,7 +930,7 @@ func OnBtnClick11(hEle int, pbHandled *bool) int {
 		xc.XAnima_Run(hGroup, w.Handle)
 
 		for i := 0; i < 10; i++ {
-			hSvg = xc.XSvg_LoadStringW(svg13)
+			hSvg = xc.XSvg_LoadString(svg13)
 			list_svg = append(list_svg, hSvg)
 			xc.XSvg_SetPosition(hSvg, left+int32(i)*50, top)
 
@@ -947,7 +947,7 @@ func OnBtnClick11(hEle int, pbHandled *bool) int {
 		left = 150
 		top = 200
 		for i := 0; i < 10; i++ {
-			hSvg = xc.XSvg_LoadStringW(svg13)
+			hSvg = xc.XSvg_LoadString(svg13)
 			list_svg = append(list_svg, hSvg)
 			x := left + int32(i)*35
 			xc.XSvg_SetPosition(hSvg, x, top)
@@ -965,7 +965,7 @@ func OnBtnClick11(hEle int, pbHandled *bool) int {
 	{
 		left = 550
 		for i := 0; i < 10; i++ {
-			hSvg = xc.XSvg_LoadStringW(svg13)
+			hSvg = xc.XSvg_LoadString(svg13)
 			list_svg = append(list_svg, hSvg)
 			x := left + int32(i)*35
 			xc.XSvg_SetPosition(hSvg, x, top)
@@ -984,7 +984,7 @@ func OnBtnClick11(hEle int, pbHandled *bool) int {
 		left = 150
 		top = 350
 		for i := 0; i < 10; i++ {
-			hSvg = xc.XSvg_LoadStringW(svg13)
+			hSvg = xc.XSvg_LoadString(svg13)
 			list_svg = append(list_svg, hSvg)
 			x := left + int32(i)*35
 			xc.XSvg_SetPosition(hSvg, x, top)
@@ -1004,7 +1004,7 @@ func OnBtnClick11(hEle int, pbHandled *bool) int {
 		left = 220
 		top = 600
 		for i := 5; i >= 0; i-- {
-			hSvg = xc.XSvg_LoadStringW(svg14)
+			hSvg = xc.XSvg_LoadString(svg14)
 			list_svg = append(list_svg, hSvg)
 			xc.XSvg_SetPosition(hSvg, 100-int32(i)*25, top)
 			xc.XSvg_SetAlpha(hSvg, 0)
@@ -1045,7 +1045,7 @@ func OnBtnClick12(hEle int, pbHandled *bool) int {
 
 	// 移动 360度旋转
 	{
-		hSvg := xc.XSvg_LoadStringW(svg7)
+		hSvg := xc.XSvg_LoadString(svg7)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		xc.XSvg_SetRotateAngle(hSvg, 0)
@@ -1064,7 +1064,7 @@ func OnBtnClick12(hEle int, pbHandled *bool) int {
 	// 移动 往返旋转
 	{
 		top = 350
-		hSvg = xc.XSvg_LoadStringW(svg7)
+		hSvg = xc.XSvg_LoadString(svg7)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		xc.XSvg_SetRotateAngle(hSvg, -45)
@@ -1093,7 +1093,7 @@ func OnBtnClick13(hEle int, pbHandled *bool) int {
 
 	// 自身 摇摆 往返
 	{
-		hSvg := xc.XSvg_LoadStringW(svg7)
+		hSvg := xc.XSvg_LoadString(svg7)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		xc.XSvg_SetRotateAngle(hSvg, -45)
@@ -1107,7 +1107,7 @@ func OnBtnClick13(hEle int, pbHandled *bool) int {
 	// 自身 旋转
 	{
 		left = 500
-		hSvg = xc.XSvg_LoadStringW(svg7)
+		hSvg = xc.XSvg_LoadString(svg7)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 
@@ -1122,7 +1122,7 @@ func OnBtnClick13(hEle int, pbHandled *bool) int {
 	{
 		left = 300
 		top = 250
-		hSvg = xc.XSvg_LoadStringW(svg7)
+		hSvg = xc.XSvg_LoadString(svg7)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		xc.XSvg_SetRotateAngle(hSvg, 45)
@@ -1133,7 +1133,7 @@ func OnBtnClick13(hEle int, pbHandled *bool) int {
 		xc.XAnimaRotate_SetCenter(hRotate, float32(left)+10, float32(top)+50, false)
 		xc.XAnima_Run(hAnimation, w.Handle)
 
-		hSvg = xc.XSvg_LoadStringW(svg7)
+		hSvg = xc.XSvg_LoadString(svg7)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		xc.XSvg_SetRotateAngle(hSvg, 45)
@@ -1150,7 +1150,7 @@ func OnBtnClick13(hEle int, pbHandled *bool) int {
 	{
 		left = 500
 		top = 400
-		hSvg = xc.XSvg_LoadStringW(svg7)
+		hSvg = xc.XSvg_LoadString(svg7)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		xc.XSvg_SetRotateAngle(hSvg, -45)
@@ -1172,7 +1172,7 @@ func OnBtnClick14(hEle int, pbHandled *bool) int {
 	var top int32 = 50
 
 	// 加载svg, 设置大小和填充颜色
-	hSvg := xc.XSvg_LoadStringW(svg7)
+	hSvg := xc.XSvg_LoadString(svg7)
 	list_svg = append(list_svg, hSvg)
 	xc.XSvg_SetSize(hSvg, 50, 50)
 	xc.XSvg_SetUserFillColor(hSvg, xc.RGBA(255, 0, 0, 255), true)
@@ -1217,7 +1217,7 @@ func OnBtnClick15(hEle int, pbHandled *bool) int {
 
 	// 砍东西效果
 	{
-		hSvg := xc.XSvg_LoadStringW(svg7)
+		hSvg := xc.XSvg_LoadString(svg7)
 		list_svg = append(list_svg, hSvg)
 		height = xc.XSvg_GetHeight(hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
@@ -1233,7 +1233,7 @@ func OnBtnClick15(hEle int, pbHandled *bool) int {
 	// 砍东西效果
 	{
 		top = 300
-		hSvg = xc.XSvg_LoadStringW(svg7)
+		hSvg = xc.XSvg_LoadString(svg7)
 		list_svg = append(list_svg, hSvg)
 		height = xc.XSvg_GetHeight(hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
@@ -1250,7 +1250,7 @@ func OnBtnClick15(hEle int, pbHandled *bool) int {
 	{
 		left = 500
 		top = 200
-		hSvg = xc.XSvg_LoadStringW(svg7)
+		hSvg = xc.XSvg_LoadString(svg7)
 		list_svg = append(list_svg, hSvg)
 		width = xc.XSvg_GetWidth(hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
@@ -1267,7 +1267,7 @@ func OnBtnClick15(hEle int, pbHandled *bool) int {
 	// 砍东西效果
 	{
 		top = 300
-		hSvg = xc.XSvg_LoadStringW(svg7)
+		hSvg = xc.XSvg_LoadString(svg7)
 		list_svg = append(list_svg, hSvg)
 		width = xc.XSvg_GetWidth(hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
@@ -1291,7 +1291,7 @@ func OnBtnClick16(hEle int, pbHandled *bool) int {
 	var hSvg, hAnimation int
 
 	{
-		hSvg = xc.XSvg_LoadStringW(svg7)
+		hSvg = xc.XSvg_LoadString(svg7)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		xc.XSvg_SetUserFillColor(hSvg, xc.RGBA(255, 0, 0, 255), true)
@@ -1303,7 +1303,7 @@ func OnBtnClick16(hEle int, pbHandled *bool) int {
 	}
 	{
 		top = 225
-		hSvg = xc.XSvg_LoadStringW(svg7)
+		hSvg = xc.XSvg_LoadString(svg7)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		xc.XSvg_SetUserFillColor(hSvg, xc.RGBA(0, 255, 0, 255), true)
@@ -1315,7 +1315,7 @@ func OnBtnClick16(hEle int, pbHandled *bool) int {
 	}
 	{
 		top = 400
-		hSvg = xc.XSvg_LoadStringW(svg7)
+		hSvg = xc.XSvg_LoadString(svg7)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		xc.XSvg_SetUserFillColor(hSvg, xc.RGBA(255, 255, 0, 255), true)
@@ -1370,7 +1370,7 @@ func OnBtnClick17(hEle int, pbHandled *bool) int {
 	var hSvg, hAnimation, hScale int
 
 	{
-		hSvg = xc.XSvg_LoadStringW(svg5)
+		hSvg = xc.XSvg_LoadString(svg5)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_leftTop", w.Handle))
@@ -1383,7 +1383,7 @@ func OnBtnClick17(hEle int, pbHandled *bool) int {
 	}
 	{
 		top += 150
-		hSvg = xc.XSvg_LoadStringW(svg5)
+		hSvg = xc.XSvg_LoadString(svg5)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_left", w.Handle))
@@ -1396,7 +1396,7 @@ func OnBtnClick17(hEle int, pbHandled *bool) int {
 	}
 	{
 		top += 150
-		hSvg = xc.XSvg_LoadStringW(svg5)
+		hSvg = xc.XSvg_LoadString(svg5)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_leftBottom", w.Handle))
@@ -1410,7 +1410,7 @@ func OnBtnClick17(hEle int, pbHandled *bool) int {
 	{
 		top = 50
 		left += 150
-		hSvg = xc.XSvg_LoadStringW(svg5)
+		hSvg = xc.XSvg_LoadString(svg5)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_top", w.Handle))
@@ -1423,7 +1423,7 @@ func OnBtnClick17(hEle int, pbHandled *bool) int {
 	}
 	{
 		top += 150
-		hSvg = xc.XSvg_LoadStringW(svg5)
+		hSvg = xc.XSvg_LoadString(svg5)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_center", w.Handle))
@@ -1436,7 +1436,7 @@ func OnBtnClick17(hEle int, pbHandled *bool) int {
 	}
 	{
 		top += 150
-		hSvg = xc.XSvg_LoadStringW(svg5)
+		hSvg = xc.XSvg_LoadString(svg5)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_bottom", w.Handle))
@@ -1450,7 +1450,7 @@ func OnBtnClick17(hEle int, pbHandled *bool) int {
 	{
 		left += 150
 		top = 50
-		hSvg = xc.XSvg_LoadStringW(svg5)
+		hSvg = xc.XSvg_LoadString(svg5)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_rightTop", w.Handle))
@@ -1463,7 +1463,7 @@ func OnBtnClick17(hEle int, pbHandled *bool) int {
 	}
 	{
 		top += 150
-		hSvg = xc.XSvg_LoadStringW(svg5)
+		hSvg = xc.XSvg_LoadString(svg5)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_right", w.Handle))
@@ -1476,7 +1476,7 @@ func OnBtnClick17(hEle int, pbHandled *bool) int {
 	}
 	{
 		top += 150
-		hSvg = xc.XSvg_LoadStringW(svg5)
+		hSvg = xc.XSvg_LoadString(svg5)
 		list_svg = append(list_svg, hSvg)
 		xc.XSvg_SetPosition(hSvg, left, top)
 		list_xcgui = append(list_xcgui, xc.XShapeText_Create(left, top+65, 150, 20, "position_flag_rightBottom", w.Handle))
@@ -1782,8 +1782,8 @@ func OnBtnClick20_4(hEle int, pbHandled *bool) int {
 	const str = `<svg x="0" y="0" width="25" height="25" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#ee6362" /></svg>`
 	const str2 = `<svg x="0" y="0" width="25" height="25" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#2cb0b2" /></svg>`
 
-	hSvg1 = xc.XSvg_LoadStringW(str)
-	hSvg2 = xc.XSvg_LoadStringW(str2)
+	hSvg1 = xc.XSvg_LoadString(str)
+	hSvg2 = xc.XSvg_LoadString(str2)
 
 	var rect xc.RECT
 	w.GetBodyRect(&rect)
