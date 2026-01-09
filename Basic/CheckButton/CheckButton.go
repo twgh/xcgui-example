@@ -6,8 +6,6 @@ import (
 	"sync"
 
 	"github.com/twgh/xcgui/app"
-	"github.com/twgh/xcgui/bkmanager"
-	"github.com/twgh/xcgui/bkobj"
 	"github.com/twgh/xcgui/imagex"
 	"github.com/twgh/xcgui/svg"
 	"github.com/twgh/xcgui/widget"
@@ -48,15 +46,15 @@ func main() {
 	// 反正没必要抵触设计器, 可视化设计熟练后很省事, xml也方便复用.
 	{
 		// 获取按钮的背景管理器
-		bkm := bkmanager.NewByHandle(Check2.GetBkManager())
+		bkm := Check2.GetBkManagerObj()
 		// 背景_清空
 		bkm.Clear()
 
 		// 图片宽高
 		var imgWidth int32 = 18
 		// 加载svg图片
-		imgUnSelect := imagex.NewBySvg(svg.NewByStringW(svg_unselect).SetSize(imgWidth, imgWidth).Handle)
-		imgSelect := imagex.NewBySvg(svg.NewByStringW(svg_select).SetSize(imgWidth, imgWidth).Handle)
+		imgUnSelect := imagex.NewBySvg(svg.NewByString(svg_unselect).SetSize(imgWidth, imgWidth).Handle)
+		imgSelect := imagex.NewBySvg(svg.NewByString(svg_select).SetSize(imgWidth, imgWidth).Handle)
 
 		// 给背景管理器按钮不同状态添加图片背景对象
 		bkm.AddImage(xcc.Button_State_Flag_Check_No, imgUnSelect.Handle, 1)
@@ -64,7 +62,7 @@ func main() {
 
 		for i := int32(1); i <= 2; i++ {
 			// 获取上面添加的图片背景对象根据设置的id
-			_bkobj := bkobj.NewByHandle(bkm.GetObject(i))
+			_bkobj := bkm.GetObjectObj(i)
 			// 设置对齐方式为左对齐
 			_bkobj.SetAlign(xcc.BkObject_Align_Flag_Left)
 			// 设置外边距
@@ -100,8 +98,8 @@ func NewSwitchButton(x, y, cx, cy int32, hParent int) *widget.Button {
 	btn.EnableBkTransparent(true)
 	// 加载svg图片, 只加载一次
 	once.Do(func() {
-		imgOff = imagex.NewBySvgStringW(svg_off)
-		imgOn = imagex.NewBySvgStringW(svg_on)
+		imgOff = imagex.NewBySvgString(svg_off)
+		imgOn = imagex.NewBySvgString(svg_on)
 		// 设置图片绘制类型为拉伸
 		imgOff.SetDrawType(xcc.Image_Draw_Type_Stretch)
 		imgOn.SetDrawType(xcc.Image_Draw_Type_Stretch)
