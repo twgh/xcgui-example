@@ -21,7 +21,7 @@ func main() {
 	// 设置窗口边框大小
 	w.SetBorderSize(0, 30, 0, 0)
 	// 设置窗口图标
-	a.SetWindowIcon(imagex.NewBySvgStringW(svgIcon).Handle)
+	a.SetWindowIcon(imagex.NewBySvgString(svgIcon).Handle)
 	// 设置窗口透明类型
 	w.SetTransparentType(xcc.Window_Transparent_Shadow)
 	// 设置窗口阴影
