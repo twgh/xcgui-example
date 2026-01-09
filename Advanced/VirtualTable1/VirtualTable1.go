@@ -38,7 +38,7 @@ func main() {
 	// 按钮_应用虚表行数
 	btn = widget.NewButton(200, 35, 100, 30, "应用虚表行数", w.Handle)
 	btn.Event_BnClick1(func(hEle int, pbHandled *bool) int {
-		go initListItems(xc.Atoi(edit.GetTextEx()))
+		go initListItems(xc.Atoi(edit.GetText()))
 		return 0
 	})
 
@@ -115,7 +115,7 @@ func main() {
 	list.AddColumnText2(150, "字段3")
 
 	// 初始化数据
-	go initListItems(xc.Atoi(edit.GetTextEx()))
+	go initListItems(xc.Atoi(edit.GetText()))
 
 	// 列表项模板创建完成事件.
 	list.Event_LIST_TEMP_CREATE_END1(func(hList int, pItem *xc.List_Item_, nFlag int32, pbHandled *bool) int {
