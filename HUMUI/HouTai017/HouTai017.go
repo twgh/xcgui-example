@@ -10,7 +10,6 @@ import (
 
 	"github.com/twgh/xcgui/ani"
 	"github.com/twgh/xcgui/app"
-	"github.com/twgh/xcgui/bkmanager"
 	"github.com/twgh/xcgui/common"
 	"github.com/twgh/xcgui/drawx"
 	"github.com/twgh/xcgui/font"
@@ -97,7 +96,7 @@ func setNavAdjAttr() {
 	// 窗口销毁时释放图片
 	w.AddEvent_Destroy(func(hWindow int, pbHandled *bool) int {
 		img_hide.Release()
-		img_hide.Release()
+		img_show.Release()
 		return 0
 	}, true) // 因为有多个地方添加了此事件, 所以填 true, 以添加多个事件回调函数
 
@@ -120,7 +119,7 @@ func setNavAdjAttr() {
 		}
 		// 展开收缩动画
 		ani1 := ani.NewAnima(navLayout.Handle, 1)
-		ani1.LayoutWidth(300, xcc.Layout_Size_Fixed, width2, 1, xcc.Ease_Flag_Expo, false)
+		ani1.LayoutWidth(500, xcc.Layout_Size_Fixed, width2, 1, xcc.Ease_Flag_Expo, false)
 		ani1.Run(w.Handle)
 		return 0
 	})
@@ -195,7 +194,7 @@ func setDateTimeAttr(dt *widget.DateTime) {
 		shapeRect := widget.NewShapeRect(0, 0, rc.Right-rc.Left, rc.Bottom-rc.Top, hMonthCalWnd)
 		shapeRect.SetRoundAngle(10, 10)
 		shapeRect.SetFillColor(bgColor)
-		bkm := bkmanager.NewByHandle(mc.GetBkManager())
+		bkm := mc.GetBkManagerObj()
 		bkm.AddFill(xcc.Element_State_Flag_Leave, bgColor, 0)
 		bkm.AddFill(xcc.MonthCal_State_Flag_Item_Last_Month|xcc.MonthCal_State_Flag_Item_Select_No|xcc.MonthCal_State_Flag_Item_Leave, xc.RGBA(81, 167, 255, 20), 0)
 		bkm.AddFill(xcc.MonthCal_State_Flag_Item_Next_Month|xcc.MonthCal_State_Flag_Item_Select_No|xcc.MonthCal_State_Flag_Item_Leave, xc.RGBA(81, 167, 255, 20), 0)
