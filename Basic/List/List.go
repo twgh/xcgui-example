@@ -73,7 +73,7 @@ func onBnClick(hEle int, pbHandled *bool) int {
 		list.DeleteRowAll()
 		list.Redraw(true)
 	case btnJump.Handle:
-		row := xc.Atoi(editLine.GetTextEx()) - 1
+		row := xc.Atoi(editLine.GetText()) - 1
 		if row > -1 && row < list.GetCount_AD() {
 			list.VisibleRow(row)
 			list.Redraw(true)
