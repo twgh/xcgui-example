@@ -22,8 +22,6 @@ import (
 )
 
 var (
-	//go:embed res/CalcMD5.xml
-	xmlStr string
 	//go:embed assets/**
 	embedAssets embed.FS // 嵌入 assets 目录以及子目录下的文件, 不包括隐藏文件
 
@@ -40,31 +38,25 @@ type MainWindow struct {
 
 func NewMainWindow(edg *edge.Edge) *MainWindow {
 	m := &MainWindow{edg: edg}
-	m.main()
-	return m
-}
-
-func (m *MainWindow) main() {
 	var err error
-	// 创建窗口
-	// 这个窗口是有特殊设计的, 它是透明的, 这是为了规避当窗口类型为[透明窗口阴影]时的一个问题:
-	// 当窗口最小化或最大化时会有一瞬间漏出 webview 后面的炫彩窗口, 表现出来是闪烁了一下, 所以设计为透明就看不到后面的窗口了. 只有网页颜色和炫彩窗口颜色相差很大时才会容易看出此问题, 这是很追求细节的才会注意到的.
-	// 这个xml是通用的, 打开稍微修改下即可, content: 标题, rect: 后两个是宽高, 用窗口函数来设置也行. 在设计器里打开的话会更直观.
-	w := window.NewByLayoutStringW(xmlStr, 0, 0)
-	m.w = w
-	// 炫彩窗口圆角8px
-	w.SetShadowInfo(8, 255, 8, false, 0)
 
-	// 创建 webview
-	m.wv, err = m.edg.NewWebView(w.Handle,
-		edge.WithFillParent(true),
-		edge.WithAppDrag(true),
-		edge.WithStatusBar(false),
-		edge.WithZoomControl(false),
-		edge.WithDebug(isDebug),
-		edge.WithDefaultContextMenus(isDebug),
-		edge.WithBrowserAcceleratorKeys(isDebug),
-		edge.WithRoundRadius(8), // 圆角8px
+	// 创建 WebView
+	m.w, m.wv, err = m.edg.NewWebViewWithWindow(
+		edge.WithXmlWindowTitle("计算文件MD5"),       // 炫彩 XML 窗口标题
+		edge.WithXmlWindowClassName("CalcMD5"),   // 炫彩 XML 窗口类名
+		edge.WithXmlWindowSize(550, 500),         // 炫彩 XML 窗口大小
+		edge.WithXmlWindowShadowAngleSize(8),     // 炫彩 XML 窗口阴影圆角大小, 设置后会使窗口变为圆角
+		edge.WithFillParent(true),                // 填充父
+		edge.WithAppDrag(true),                   // 启用非客户区域支持
+		edge.WithStatusBar(false),                // 禁用状态栏
+		edge.WithZoomControl(false),              // 禁用缩放控件
+		edge.WithDebug(isDebug),                  // 开发者工具
+		edge.WithDefaultContextMenus(isDebug),    // 上下文菜单
+		edge.WithBrowserAcceleratorKeys(isDebug), // 浏览器快捷键
+		edge.WithRoundRadius(8),                  // WebView 圆角8px
+		edge.WithAutoFocus(true),                 // 在窗口获得焦点时尝试保持 WebView 的焦点
+		// 设置默认背景色为透明
+		edge.WithDefaultBackgroundColor(edge.NewColor(255, 255, 255, 0)),
 	)
 	if err != nil {
 		wapi.MessageBoxW(0, "创建 webview 失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
@@ -77,7 +69,7 @@ func (m *MainWindow) main() {
 	m.wv.EnableVirtualHostNameToEmbedFSMapping(true)
 
 	// 注册事件
-	m.regEvent()
+	m.regEvents()
 
 	// 绑定函数, 最好在导航之前绑定
 	m.bindBasicFuncs()
@@ -85,17 +77,17 @@ func (m *MainWindow) main() {
 
 	// 访问 HTML
 	m.wv.Navigate(edge.JoinUrlHeader(hostName) + "/CalcMD5.html")
-	// 调整窗口布局
-	w.AdjustLayout()
+	return m
 }
 
 // 注册事件
-func (m *MainWindow) regEvent() {
+func (m *MainWindow) regEvents() {
 	var firstLoad = true
 	// 导航完成事件
 	m.wv.Event_NavigationCompleted(func(sender *edge.ICoreWebView2, args *edge.ICoreWebView2NavigationCompletedEventArgs) uintptr {
 		uri := sender.MustGetSource()
 		fmt.Println("导航完成:", uri)
+
 		switch uri {
 		case edge.JoinUrlHeader(hostName) + "/CalcMD5.html":
 			// 在导航完成事件里判断第一次加载完毕时才显示窗口,
@@ -104,6 +96,8 @@ func (m *MainWindow) regEvent() {
 			if firstLoad {
 				firstLoad = false
 				m.w.Show(true)
+				// 使 html 中的输入框获取焦点, 当然你也可以在前端文件中设置焦点
+				m.wv.Eval(`document.getElementById('filePath').focus()`)
 			}
 		}
 		return 0
@@ -142,6 +136,11 @@ func (m *MainWindow) regEvent() {
 			return 0
 		}
 
+		if objCount == 0 {
+			return 0
+		}
+
+		var files []*edge.ICoreWebView2File
 		// 遍历集合，查找 File 对象
 		for i := uint32(0); i < objCount; i++ {
 			obj, err := objs.GetValueAtIndex(i)
@@ -156,18 +155,28 @@ func (m *MainWindow) regEvent() {
 				log.Println("QueryInterface 失败: " + err.Error())
 				continue
 			}
-			defer file.Release()
 
-			// 获取文件路径
-			filePath, err := file.GetPath()
-			if err != nil {
-				log.Println("GetPath 失败: " + err.Error())
-				continue
-			}
-			fmt.Println("文件:", filePath)
-			// 将路径传进 js 函数
-			m.wv.Eval("calculate('" + strings.ReplaceAll(filePath, "\\", "\\\\") + "');")
-			break // 目前只处理第一个文件
+			files = append(files, file)
+		}
+
+		if len(files) == 0 {
+			return 0
+		}
+
+		// 获取文件路径, 目前只处理第一个文件
+		filePath, err := files[0].GetPath()
+		if err != nil {
+			log.Println("GetPath 失败: " + err.Error())
+			return 0
+		}
+		fmt.Println("文件路径:", filePath)
+
+		// 将路径传进 js 函数, 这个路径中的 \ 得转义
+		m.wv.Eval(`calculate('` + strings.ReplaceAll(filePath, `\`, `\\`) + `');`)
+
+		// 释放文件对象
+		for i := range files {
+			files[i].Release()
 		}
 		return 0
 	})
@@ -236,14 +245,25 @@ func (m *MainWindow) bindFuncs() {
 
 func main() {
 	checkWebView2()
-	app.InitOrExit()
+	edg := createEdge()
 
+	// 初始化界面库
+	app.InitOrExit()
+	a := app.New(true)
+	a.EnableAutoDPI(true).EnableDPI(true)
+
+	NewMainWindow(edg)
+
+	a.Run()
+	a.Exit()
+}
+
+func createEdge() *edge.Edge {
 	// 创建 WebView2 环境选项.
 	envOpts, err := edge.CreateEnvironmentOptions()
 	if err != nil {
 		log.Println("创建 WebView2 环境选项失败: " + err.Error())
 	} else {
-		defer envOpts.Release()
 		// 获取 WebView2 环境选项5
 		envOpts5, err := envOpts.GetICoreWebView2EnvironmentOptions5()
 		if err != nil {
@@ -276,15 +296,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	// 初始化界面库
-	a := app.New(true)
-	// 启用自适应DPI
-	a.EnableAutoDPI(true).EnableDPI(true)
-
-	NewMainWindow(edg)
-
-	a.Run()
-	a.Exit()
+	if envOpts != nil { // 没用了, 直接释放
+		envOpts.Release()
+	}
+	return edg
 }
 
 func checkWebView2() {
