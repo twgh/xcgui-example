@@ -46,7 +46,7 @@ func loadAllSvg() {
 
 // 加载svg图片
 func loadSvg(svgText string) int {
-	hSvg := xc.XImage_LoadSvgStringW(svgText)
+	hSvg := xc.XImage_LoadSvgString(svgText)
 	xc.XImage_AddRef(hSvg) // 添加引用计数防止自动销毁
 	return hSvg
 }
