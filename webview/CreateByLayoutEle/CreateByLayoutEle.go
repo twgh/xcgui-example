@@ -1,4 +1,4 @@
-// 在布局元素中创建 WebView
+// WebView 综合例子
 package main
 
 import (
@@ -74,6 +74,8 @@ func saveConfig() {
 
 func main() {
 	CheckWebView2()
+	edg := createEdge()
+
 	app.InitOrExit()
 	loadConfig()
 
@@ -97,12 +99,28 @@ func main() {
 		}
 	})
 
+	// 创建 WebView
+	wv, err := createWebView(edg, layoutWV.Handle)
+	if err != nil {
+		wapi.MessageBoxW(0, "创建 webview 失败: "+err.Error(), "错误", wapi.MB_IconError)
+		os.Exit(3)
+	}
+
+	addXcEvent(wv)
+
+	// 窗口_调整布局, 只要是从布局文件创建窗口, 显示前都要调用, 否则布局会错乱
+	w.AdjustLayout()
+	w.Show(true)
+	a.Run()
+	a.Exit()
+}
+
+func createEdge() *edge.Edge {
 	// 创建 WebView2 环境选项.
 	envOpts, err := edge.CreateEnvironmentOptions()
 	if err != nil {
 		log.Println("创建 WebView2 环境选项失败: " + err.Error())
 	} else {
-		defer envOpts.Release()
 		// 构建浏览器命令行参数
 		sb := strings.Builder{}
 		// 允许无需用户交互的自动播放
@@ -145,20 +163,10 @@ func main() {
 		os.Exit(3)
 	}
 
-	// 创建 WebView
-	wv, err := createWebView(edg, layoutWV.Handle)
-	if err != nil {
-		wapi.MessageBoxW(0, "创建 webview 失败: "+err.Error(), "错误", wapi.MB_IconError)
-		os.Exit(3)
+	if envOpts != nil { // 没用了, 直接释放
+		envOpts.Release()
 	}
-
-	addXcEvent(wv)
-
-	// 窗口_调整布局, 只要是从布局文件创建窗口, 显示前都要调用, 否则布局会错乱
-	w.AdjustLayout()
-	w.Show(true)
-	a.Run()
-	a.Exit()
+	return edg
 }
 
 func addXcEvent(wv *edge.WebView) {
@@ -226,7 +234,7 @@ func addXcEvent(wv *edge.WebView) {
 		if wv.CoreWebView == nil {
 			return
 		}
-		addr := strings.TrimSpace(editUrl.GetTextEx())
+		addr := strings.TrimSpace(editUrl.GetText())
 		if addr != "" {
 			wv.Navigate(addr)
 		}
@@ -282,7 +290,7 @@ func addXcEvent(wv *edge.WebView) {
 		btn.LayoutItem_SetWidth(xcc.Layout_Size_Fill, -1)
 		btn.LayoutItem_SetHeight(xcc.Layout_Size_Percent, 12)
 		btn.AddEvent_BnClick(func(hEle int, pbHandled *bool) int {
-			code := strings.TrimSpace(codeEdit.GetTextEx())
+			code := strings.TrimSpace(codeEdit.GetText())
 			if code != "" {
 				btn.Enable(false).Redraw(false)
 				if checkBox.IsCheck() { // 获取返回值
@@ -355,8 +363,8 @@ func addXcEvent(wv *edge.WebView) {
 		return 0
 	})
 
-	// 按钮_执行Go函数
-	btnGoFunc := widget.NewButtonByName("按钮_执行Go函数")
+	// 按钮_前端执行Go函数
+	btnGoFunc := widget.NewButtonByName("按钮_前端执行Go函数")
 	btnGoFunc.AddEvent_BnClick(func(hEle int, pbHandled *bool) int {
 		if wv.CoreWebView == nil {
 			return 0
@@ -377,16 +385,6 @@ func addXcEvent(wv *edge.WebView) {
 			return 0
 		}
 		wv.CoreWebView.Reload()
-		return 0
-	})
-
-	// 按钮_打开vea
-	btnOpenVea := widget.NewButtonByName("按钮_打开vea")
-	btnOpenVea.AddEvent_BnClick(func(hEle int, pbHandled *bool) int {
-		if wv.CoreWebView == nil {
-			return 0
-		}
-		wv.Navigate("https://panjiachen.github.io/vue-element-admin/")
 		return 0
 	})
 
@@ -437,7 +435,11 @@ func addXcEvent(wv *edge.WebView) {
 		*pbHandled = true // 创建新窗口时需要这个拦截
 		w2 := window.New(0, 0, 1000, 800, "新建窗口", 0, xcc.Window_Style_Default)
 
-		wv2, err := wv.Edge.NewWebView(w2.Handle, edge.WithFillParent(true))
+		wv2, err := wv.Edge.NewWebView(w2.Handle,
+			edge.WithFillParent(true),
+			edge.WithDebug(true),
+			edge.WithAutoFocus(true),
+		)
 		if err != nil {
 			w2.CloseWindow()
 			w.MessageBox("提示", "新建 webview 窗口失败:"+err.Error(), xcc.MessageBox_Flag_Ok|xcc.MessageBox_Flag_Icon_Error, xcc.Window_Style_Default)
@@ -842,7 +844,7 @@ func addWebviewEvent(wv *edge.WebView) {
 		}
 
 		// 从前端发来的json消息: {"type":"alert","data":"前端来json消息了"} 解析出参数
-		if strings.HasPrefix(message, "{\"type\":\"") {
+		if strings.HasPrefix(message, `{"type":"`) {
 			var data map[string]string
 			if err := json.Unmarshal([]byte(message), &data); err != nil {
 				log.Println("解析json消息失败:", err.Error())
@@ -890,7 +892,13 @@ func addWebviewEvent(wv *edge.WebView) {
 		if !eventSwitch["网络资源请求事件"] {
 			return 0
 		}
-		request, _ := args.GetRequest()
+		request, err := args.GetRequest()
+		if err != nil {
+			log.Println("获取请求失败:", err.Error())
+			return 0
+		}
+		defer request.Release()
+
 		method := request.MustGetMethod()
 		if method == http.MethodPost {
 			uri := request.MustGetUri()
@@ -1209,13 +1217,13 @@ func addWebviewEvent(wv *edge.WebView) {
 		defer env9.Release()
 		iconStream, err := edge.NewStreamMem(png_title)
 		if err != nil {
-			log.Println("创建自定义菜单项的图标流失败:", err.Error())
+			log.Fatalln("创建自定义菜单项的图标流失败:", err.Error())
 		}
 		defer iconStream.Release()
 		// 创建自定义菜单项: 显示文档标题
 		menuItemShowTitle, err = env9.CreateContextMenuItem("显示文档标题", iconStream, edge.COREWEBVIEW2_CONTEXT_MENU_ITEM_KIND_COMMAND)
 		if err != nil {
-			log.Println("创建自定义菜单项失败:", err.Error())
+			log.Fatalln("创建自定义菜单项失败:", err.Error())
 		}
 		CommandId := menuItemShowTitle.MustGetCommandId()
 		// 自定义菜单项选中事件

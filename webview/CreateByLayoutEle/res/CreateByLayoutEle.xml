@@ -13,12 +13,11 @@
 		<buttonUI content="隐藏" expandT="true" name="按钮_隐藏" rect="321,14,60,25" showT="true" />
 		<buttonUI content="销毁" expandT="true" name="按钮_销毁" rect="638,36,60,25" showT="true" />
 		<buttonUI content="JS测试" expandT="true" name="按钮_JS测试" rect="618,16,60,25" showT="true" />
-		<buttonUI content="执行Go函数" expandT="true" layout.width="auto" name="按钮_执行Go函数" rect="553,3,115,25" showT="true" />
+		<buttonUI content="前端执行Go函数" expandT="true" layout.width="auto" name="按钮_前端执行Go函数" rect="553,3,115,25" showT="true" />
 		<buttonUI content="前端发消息到后端" expandT="true" layout.width="auto" name="按钮_前端发消息到后端" rect="36,12,86,25" showT="true" />
 		<buttonUI content="打开百度" expandT="true" layout.width="auto" name="按钮_打开百度" rect="321,23,86,25" showT="true" />
 		<buttonUI content="设置搜索关键词" expandT="true" layout.width="auto" name="按钮_设置搜索关键词" rect="95,6,113,25" showT="true" />
 		<buttonUI content="点击搜索" expandT="true" name="按钮_点击搜索" rect="79,26,60,25" showT="true" />
-		<buttonUI content="打开vue-element-admin" expandT="true" layout.width="auto" name="按钮_打开vea" rect="301,3,86,25" showT="true" />
 		<buttonUI content="打开vben.pro" expandT="true" layout.width="auto" name="按钮_打开vben" rect="301,3,86,25" showT="true" />
 		<buttonUI content="浏览器内核" expandT="true" layout.width="auto" name="按钮_浏览器内核" rect="301,3,86,25" showT="true" />
 		<buttonUI content="新建窗口" expandT="true" layout.width="auto" name="按钮_新建窗口" rect="1528,12,86,25" showT="true" />
