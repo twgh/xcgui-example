@@ -9,8 +9,6 @@ import (
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/edge"
 	"github.com/twgh/xcgui/wapi"
-	"github.com/twgh/xcgui/window"
-	"github.com/twgh/xcgui/xcc"
 )
 
 func main() {
@@ -21,25 +19,26 @@ func main() {
 	a := app.New(true)
 	a.EnableAutoDPI(true).EnableDPI(true)
 
-	// 创建窗口
-	w := window.New(0, 0, 1400, 900, "简单 WebView 例子", 0, xcc.Window_Style_Default)
-
-	// 创建 webview 环境
+	// 创建 WebView 环境
 	edg, err := edge.New(edge.Option{
 		UserDataFolder: os.TempDir(), // 实际应用中应使用自己创建的固定目录，这里用临时目录示例
 	})
 	if err != nil {
-		wapi.MessageBoxW(0, "创建 webview 环境失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
+		wapi.MessageBoxW(0, "创建 WebView 环境失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
 		os.Exit(1)
 	}
 
-	// 创建 webview
-	wv, err := edg.NewWebView(w.Handle,
-		edge.WithFillParent(true), // WebView 填充窗口
-		edge.WithDebug(true),      // 可打开开发者工具
+	// 创建 WebView
+	w, wv, err := edg.NewWebViewWithWindow(
+		edge.WithXmlWindowTitle("简单 WebView 例子"), // 窗口标题
+		edge.WithXmlWindowSize(1400, 900),        // 窗口大小
+		edge.WithXmlWindowTitleBar(true),         // 使用炫彩窗口标题栏
+		edge.WithFillParent(true),                // WebView 填充窗口
+		edge.WithDebug(true),                     // 可打开开发者工具
+		edge.WithAutoFocus(true),                 // 在窗口获得焦点时尝试保持 WebView 的焦点
 	)
 	if err != nil {
-		wapi.MessageBoxW(0, "创建 webview 失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
+		wapi.MessageBoxW(0, "创建 WebView 失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
 		os.Exit(2)
 	}
 

@@ -4,7 +4,7 @@
 
 ## 项目简介
 
-Simple 是最基础的 WebView2 集成示例(纯代码, 没有使用窗口布局文件xml)，展示了如何用最少的代码创建一个功能完整的 WebView 桌面应用。该示例专注于演示 WebView2 的核心功能，去除了复杂的配置和高级特性，是初学者学习 XCGUI + WebView2 开发的最佳入门示例。
+Simple 是最基础的 WebView2 示例，展示了如何用最少的代码创建一个功能完整的 WebView 桌面应用。该示例使用了 `NewWebViewWithWindow()` 便捷方法，一步完成窗口和 WebView 的创建，专注于演示 WebView2 的核心功能，去除了复杂的配置和高级特性，是初学者学习 XCGUI + WebView2 开发的最佳入门示例。
 
 ## 功能特性
 
@@ -16,7 +16,7 @@ Simple 是最基础的 WebView2 集成示例(纯代码, 没有使用窗口布局
 ### 界面特性
 - **极简界面**: 纯WebView界面，无额外UI元素
 - **填充窗口**: WebView完全填充整个窗口区域
-- **标准窗口**: 使用系统标准窗口样式
+- **炫彩窗口**: 使用炫彩窗口标题栏，提供更好的视觉体验
 
 ### 技术特性
 - **版本检测**: 包含完整的WebView2版本检测机制
@@ -26,9 +26,9 @@ Simple 是最基础的 WebView2 集成示例(纯代码, 没有使用窗口布局
 ## 项目结构
 
 ```
-Simple/
-├── simple.go      # 主程序文件（仅78行代码）
-└── README.md      # 本文档
+SimpleWebView/
+├── SimpleWebView.go      # 主程序文件
+└── README.md           # 本文档
 ```
 
 ## 技术实现
@@ -37,6 +37,7 @@ Simple/
 - **Go 语言**: 主要编程语言
 - **XCGUI**: 炫彩界面库，提供窗口框架
 - **WebView2**: Microsoft Edge 内核的嵌入式浏览器
+- **便捷API**: 使用 `NewWebViewWithWindow()` 方法一步创建窗口和 WebView
 
 ### 核心代码解析
 
@@ -48,36 +49,36 @@ a := app.New(true)
 a.EnableAutoDPI(true).EnableDPI(true)
 ```
 
-#### 2. 窗口创建
+#### 2. WebView环境创建
 ```go
-// 创建窗口
-w := window.New(0, 0, 1400, 900, "简单 WebView 例子", 0, xcc.Window_Style_Default)
-```
-
-#### 3. WebView环境创建
-```go
-// 创建 webview 环境
+// 创建 WebView 环境
 edg, err := edge.New(edge.Option{
     UserDataFolder: os.TempDir(), // 实际应用中应使用固定目录
 })
 ```
 
-#### 4. WebView实例创建
+#### 3. WebView和窗口创建（使用便捷方法）
+
+**注意**: 本示例使用了 `NewWebViewWithWindow()` 便捷方法，该方法一步完成窗口和 WebView 的创建。如果需要在现有窗口中嵌入 WebView，可以使用 `NewWebView()` 方法。
 ```go
-// 创建 webview
-wv, err := edg.NewWebView(w.Handle,
-    edge.WithFillParent(true), // WebView 填充窗口
-    edge.WithDebug(true),      // 可打开开发者工具
+// 创建 WebView 和窗口（一步完成）
+w, wv, err := edg.NewWebViewWithWindow(
+    edge.WithXmlWindowTitle("简单 WebView 例子"), // 窗口标题
+    edge.WithXmlWindowSize(1400, 900),           // 窗口大小
+    edge.WithXmlWindowTitleBar(true),            // 使用炫彩窗口标题栏
+    edge.WithFillParent(true),                   // WebView 填充窗口
+    edge.WithDebug(true),                        // 可打开开发者工具
+    edge.WithAutoFocus(true),                    // 自动聚焦
 )
 ```
 
-#### 5. 导航到网页
+#### 4. 导航到网页
 ```go
 // 导航到百度首页
 wv.Navigate("https://www.baidu.com")
 ```
 
-#### 6. 显示窗口并运行
+#### 5. 显示窗口并运行
 ```go
 // 显示窗口并运行应用
 w.Show(true)
@@ -116,7 +117,7 @@ func checkWebView2() {
 
 2. 运行程序：
    ```bash
-   go run simple.go
+   go run SimpleWebView.go
    ```
 
 ### 开发者工具使用
@@ -150,7 +151,7 @@ wv.Navigate("https://www.github.com")
 ## 代码特点
 
 ### 简洁性
-- 仅78行代码实现完整功能
+- 仅77行代码实现完整功能
 - 无复杂配置和高级特性
 - 专注核心功能演示
 
@@ -197,6 +198,7 @@ wv.Navigate("https://your-web-app.com")
 ```go
 // 结合XCGUI控件和WebView
 // 实现桌面UI和Web内容的混合应用
+// 也可以使用 NewWebView() 在现有窗口中嵌入WebView
 ```
 
 ## 最佳实践
