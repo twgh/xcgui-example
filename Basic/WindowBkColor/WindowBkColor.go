@@ -20,7 +20,7 @@ func main() {
 	// 设置窗口边框大小
 	w.SetBorderSize(1, 30, 1, 1)
 	// 设置窗口图标
-	a.SetWindowIcon(imagex.NewBySvgStringW(svgIcon).Handle)
+	a.SetWindowIcon(imagex.NewBySvgString(svgIcon).Handle)
 
 	// 设置窗口主体颜色
 	w.AddBkFill(xcc.Window_State_Flag_Body_Leave, xc.RGBA(248, 249, 251, 255))
