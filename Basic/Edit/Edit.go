@@ -36,8 +36,8 @@ func main() {
 	eyeBtn := widget.NewButton(165, 75, 30, 30, "", w.Handle)
 	eyeBtn.EnableBkTransparent(true)
 	// 加载图片, 禁止自动销毁
-	imgShow := imagex.NewBySvgStringW(eye_show).AddRef()
-	imgHide := imagex.NewBySvgStringW(eye_hide).AddRef()
+	imgShow := imagex.NewBySvgString(eye_show).AddRef()
+	imgHide := imagex.NewBySvgString(eye_hide).AddRef()
 	eyeBtn.SetIcon(imgHide.Handle)
 	// 按钮事件, 控制是否显示密码
 	eyeBtn.Event_BnClick(func(pbHandled *bool) int {
@@ -74,13 +74,13 @@ func main() {
 	// 添加带样式的文本
 	editMultiLine.AddTextEx("\nhello world, I am styled text!", style1)
 	// 获取编辑框文本
-	fmt.Println("获取编辑框文本:", editMultiLine.GetTextEx())
+	fmt.Println("获取编辑框文本:", editMultiLine.GetText())
 
 	// 设置定时器, 循环获取多行编辑框鼠标选中的文本
 	editMultiLine.SetXCTimer(111, 1000)
 	editMultiLine.Event_XC_TIMER(func(nTimerID int, pbHandled *bool) int {
 		if nTimerID == 111 {
-			text := editMultiLine.GetSelectTextEx()
+			text := editMultiLine.GetSelectText()
 			if text != "" {
 				fmt.Println("选中的文本:", text)
 			}
