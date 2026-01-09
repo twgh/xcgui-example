@@ -19,7 +19,7 @@ func main() {
 	w := window.New(0, 0, 400, 300, "给按钮设置Svg图标", 0, xcc.Window_Style_Default)
 
 	// 加载图片从svg string
-	img1 := imagex.NewBySvgStringW(svgStr1)
+	img1 := imagex.NewBySvgString(svgStr1)
 	// 设置图片的大小
 	xc.XSvg_SetSize(img1.GetSvg(), 24, 24)
 
@@ -29,7 +29,7 @@ func main() {
 	btn1.SetIcon(img1.Handle)
 
 	// 加载图片从svg string
-	img2 := imagex.NewBySvgStringW(svgStr2)
+	img2 := imagex.NewBySvgString(svgStr2)
 	// 设置图片的大小
 	xc.XSvg_SetSize(img2.GetSvg(), 100, 100)
 
