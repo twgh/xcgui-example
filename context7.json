@@ -1,10 +1,4 @@
 {
-  "$schema": "https://context7.com/schema/context7.json",
-  "projectTitle": "xcgui-example",
-  "description": "Example of using the Go GUI library XCGUI. 炫彩界面库Go语言版例子",
-  "branch": "main",
-  "excludeFolders": [
-    ".github"
-  ],
-  "excludeFiles": []
+  "url": "https://context7.com/twgh/xcgui-example",
+  "public_key": "pk_H6uWoxCPZjdJvpNQx4QaP"
 }
