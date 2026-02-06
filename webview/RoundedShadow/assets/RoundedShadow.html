@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>圆角+阴影窗口</title>
+  <style>
+    /* 【关键1】清除默认样式 */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden; /* 禁止滚动条 */
+    }
+
+    /*
+      【关键2】整个 body 作为"透明画布"
+      它的背景必须是透明的（由后端保证）
+    */
+    body {
+      background: transparent !important;
+    }
+
+    /*
+      【关键3】用 padding 而不是 margin 来留出阴影空间！
+      padding 是"内部留白"，不会影响 body 占满 100vw/vh，
+      同时为内部容器提供安全边界。
+    */
+    #shadow-container {
+      width: 100%;
+      height: 100%;
+      padding: 12px;
+      box-sizing: border-box; /* 确保 padding 不撑大容器 */
+      position: relative; /* 让热区相对于此定位 */
+    }
+
+    /*
+      【关键4】真正的"窗口内容区"
+      它会自动填满 #shadow-container 的剩余空间
+    */
+    #content {
+      width: 100%;
+      height: 100%;
+      background: white;
+      border-radius: 8px;
+
+      /* 【关键5】阴影画在这里 */
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+
+      /* 【关键6】防止内容溢出圆角 */
+      overflow: hidden;
+
+      border: 1.5px solid #abadaf;
+
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+
+      display: flex;
+      flex-direction: column;
+
+      /* 关键：设置相对定位，让热区相对于 content 定位 */
+      position: relative;
+    }
+
+    /* 最大化状态：移除阴影和圆角 */
+    #shadow-container.maximized {
+      padding: 0;
+    }
+    /* 最大化状态：移除阴影和圆角 */
+    #shadow-container.maximized #content {
+      border-radius: 0;
+      box-shadow: none;
+      border: none;
+    }
+
+    /* 标题栏样式 */
+    #titlebar {
+      height: 36px;
+      background: #f5f5f5;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      user-select: none;
+      app-region: drag; /* 可拖动 */
+      position: relative;
+      z-index: 1;
+    }
+
+    #titlebar span {
+      font-size: 13px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    #window-controls {
+      display: flex;
+      gap: 8px;
+      app-region: no-drag; /* 不可拖动 */
+    }
+
+    #window-controls button {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    #window-controls button:hover {
+      opacity: 0.8;
+    }
+
+    #btn-minimize {
+      background: #ffbd2e;
+    }
+
+    #btn-maximize {
+      background: #28c840;
+    }
+
+    #btn-close {
+      background: #ff5f57;
+    }
+
+    /* 内容区 */
+    #main-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    /* 1.【边框调整热区】因为透明窗口没有边框可拖拽, 
+      所以在边框区域添加热区, 用 js 调用后端 API 来调整窗口大小.
+      2.所有热区都往边框外的阴影区域延伸了6px, 边框内也是6px, 总共12px.
+      3.往阴影区域延伸 6px 是因为 app-region: drag 样式让标题栏变成了非客户区, 鼠标放在标题栏边缘拖动窗口时, 调整窗口大小的那个鼠标双向箭头光标一直在闪烁, 往边框外延伸就多出一片区域可以拖动, 就不会闪烁了. 如果你不让标题栏成为非客户区, 就不会有这个问题. 不让标题栏成为非客户区还想移动窗口, 用 js 调用后端 API 来调整窗口位置就可以, 下面有实现.*/
+    .resize-edge {
+      position: absolute;
+      background: transparent;
+      z-index: 10000; /* 确保热区在最上层 */
+    }
+
+    /* 上边缘 */
+    .resize-edge.top {
+      top: 6px;
+      left: 12px;
+      right: 12px;
+      height: 12px;
+      cursor: ns-resize;
+    }
+
+    /* 右边缘 */
+    .resize-edge.right {
+      top: 12px;
+      right: 6px;
+      bottom: 12px;
+      width: 12px;
+      cursor: ew-resize;
+    }
+
+    /* 下边缘 */
+    .resize-edge.bottom {
+      bottom: 6px;
+      left: 12px;
+      right: 12px;
+      height: 12px;
+      cursor: ns-resize;
+    }
+
+    /* 左边缘 */
+    .resize-edge.left {
+      top: 12px;
+      left: 6px;
+      bottom: 12px;
+      width: 12px;
+      cursor: ew-resize;
+    }
+
+    /* 右上角 */
+    .resize-edge.top-right {
+      top: 6px;
+      right: 6px;
+      width: 12px;
+      height: 12px;
+      cursor: nesw-resize;
+    }
+
+    /* 右下角 */
+    .resize-edge.bottom-right {
+      bottom: 6px;
+      right: 6px;
+      width: 12px;
+      height: 12px;
+      cursor: nwse-resize;
+    }
+
+    /* 左下角 */
+    .resize-edge.bottom-left {
+      bottom: 6px;
+      left: 6px;
+      width: 12px;
+      height: 12px;
+      cursor: nesw-resize;
+    }
+
+    /* 左上角 */
+    .resize-edge.top-left {
+      top: 6px;
+      left: 6px;
+      width: 12px;
+      height: 12px;
+      cursor: nwse-resize;
+    }
+
+    /* 最大化状态下隐藏所有边框拖拽的热区 */
+    #shadow-container.maximized .resize-edge {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="shadow-container">
+    <!-- 边框调整热区 - 放在content外面，避免被overflow:hidden裁剪 -->
+    <div class="resize-edge top" data-edge="top"></div>
+    <div class="resize-edge right" data-edge="right"></div>
+    <div class="resize-edge bottom" data-edge="bottom"></div>
+    <div class="resize-edge left" data-edge="left"></div>
+    <div class="resize-edge top-right" data-corner="top-right"></div>
+    <div class="resize-edge bottom-right" data-corner="bottom-right"></div>
+    <div class="resize-edge bottom-left" data-corner="bottom-left"></div>
+    <div class="resize-edge top-left" data-corner="top-left"></div>
+
+    <div id="content">
+      <div id="titlebar">
+        <span>✨ 圆角+阴影窗口</span>
+        <div id="window-controls">
+          <button id="btn-minimize" title="最小化" onclick="wnd.minimize()"></button>
+          <button id="btn-maximize" title="最大化" onclick="wnd.toggleMaximize()"></button>
+          <button id="btn-close" title="关闭" onclick="wnd.close()"></button>
+        </div>
+      </div>
+
+      <div id="main-content">
+        <h2>圆角+阴影窗口</h2>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * 启用窗口阴影和圆角显示, 还会影响所有边框拖拽的热区是否隐藏
+     * @param {boolean} show - 是否显示阴影和圆角
+     */
+    function enableWindowShadow(show) {
+      const container = document.getElementById('shadow-container');
+      if (show) {
+        container.classList.remove('maximized');
+      } else {
+        container.classList.add('maximized');
+      }
+    }
+  </script>
+
+  <script>
+    // 不在 css 中使用 app-region: drag; 拖动窗口的方法
+
+    let isDragging = false;
+    let offsetX, offsetY;
+    const mainContent = document.getElementById('main-content');
+
+    // 监听 mainContent 的鼠标按下事件
+    mainContent.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        // 获取鼠标在窗口内的相对位置
+        offsetX = e.clientX;
+        offsetY = e.clientY;
+    });
+
+    // 监听鼠标移动事件
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        // 计算新位置
+        let newX = e.screenX - offsetX;
+        let newY = e.screenY - offsetY;
+        // 调用后端移动窗口
+        wnd.setPos(newX, newY);
+    });
+
+    // 监听鼠标抬起事件
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+  </script>
+
+  <script>
+    // 拖动边框调整窗口大小
+    let isResizing = false;
+    let resizeEdge = null; // 'top', 'right', 'bottom', 'left'
+    let resizeCorner = null; // 'top-right', 'bottom-right', 'bottom-left', 'top-left'
+    let startX, startY; // 鼠标起始位置
+    let startWidth, startHeight; // 窗口起始尺寸
+    let startLeft, startTop; // 窗口起始位置
+    const minSize = 400;// 窗口最小尺寸
+
+    // 获取所有热区
+    const resizeEdges = document.querySelectorAll('.resize-edge');
+
+    // 监听热区的鼠标按下事件
+    resizeEdges.forEach(edge => {
+      edge.addEventListener('mousedown', async (e) => {
+        e.preventDefault(); // 防止选中文本
+        isResizing = true;
+        resizeEdge = edge.dataset.edge;
+        resizeCorner = edge.dataset.corner;
+        startX = e.screenX;
+        startY = e.screenY;
+
+        // 获取窗口矩形
+        const rc = await wnd.getRect();
+        startLeft = rc.Left;
+        startTop = rc.Top;
+        startWidth = rc.Right-rc.Left;
+        startHeight = rc.Bottom-rc.Top;
+      });
+    });
+
+    // 监听鼠标移动事件
+    document.addEventListener('mousemove', async (e) => {
+      if (!isResizing) return;
+
+      const deltaX = e.screenX - startX;
+      const deltaY = e.screenY - startY;
+
+      let newWidth = startWidth;
+      let newHeight = startHeight;
+
+      // 根据边缘或角落计算新尺寸
+      if (resizeEdge === 'right' || resizeCorner === 'top-right' || resizeCorner === 'bottom-right') {
+        newWidth = startWidth + deltaX;
+      }
+      if (resizeEdge === 'bottom' || resizeCorner === 'bottom-right' || resizeCorner === 'bottom-left') {
+        newHeight = startHeight + deltaY;
+      }
+      if (resizeEdge === 'left' || resizeCorner === 'top-left' || resizeCorner === 'bottom-left') {
+        newWidth = startWidth - deltaX;
+      }
+      if (resizeEdge === 'top' || resizeCorner === 'top-left' || resizeCorner === 'top-right') {
+        newHeight = startHeight - deltaY;
+      }
+
+      // 确保最小窗口尺寸
+      const limitedWidth = Math.max(newWidth, minSize);
+      const limitedHeight = Math.max(newHeight, minSize);
+
+      // 计算新的窗口位置
+      let newX = null;
+      let newY = null;
+
+      // 处理左侧边缘（包括角落）
+      if (resizeEdge === 'left' || resizeCorner === 'top-left' || resizeCorner === 'bottom-left') {
+        if (newWidth > minSize) {
+          newX = startLeft + deltaX;
+        }
+      }
+
+      // 处理上侧边缘（包括角落）
+      if (resizeEdge === 'top' || resizeCorner === 'top-left' || resizeCorner === 'top-right') {
+        if (newHeight > minSize) {
+          newY = startTop + deltaY;
+        }
+      }
+
+      // 设置窗口尺寸
+      await wnd.setSize(limitedWidth, limitedHeight);
+
+      // 设置窗口位置
+      if (newX !== null || newY !== null) {
+        const finalX = newX !== null ? newX : startLeft;
+        const finalY = newY !== null ? newY : startTop;
+        await wnd.setPos(finalX, finalY);
+      }
+    });
+
+    // 监听鼠标抬起事件
+    document.addEventListener('mouseup', () => {
+      isResizing = false;
+      resizeEdge = null;
+      resizeCorner = null;
+    });
+  </script>
+</body>
+</html>
