@@ -126,13 +126,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      user-select: none;
     }
 
     /* 1.【边框调整热区】因为透明窗口没有边框可拖拽, 
       所以在边框区域添加热区, 用 js 调用后端 API 来调整窗口大小.
-      2.所有热区都往边框外的阴影区域延伸了6px, 边框内也是6px, 总共12px.
-      3.往阴影区域延伸 6px 是因为 app-region: drag 样式让标题栏变成了非客户区, 鼠标放在标题栏边缘拖动窗口时, 调整窗口大小的那个鼠标双向箭头光标一直在闪烁, 往边框外延伸就多出一片区域可以拖动, 就不会闪烁了. 如果你不让标题栏成为非客户区, 就不会有这个问题. 不让标题栏成为非客户区还想移动窗口, 用 js 调用后端 API 来调整窗口位置就可以, 下面有实现.*/
+      2.所有热区都往边框外的阴影区域延伸了6px, 边框内也是6px, 总共12px, 可让 AI 调整热区大小.
+      3.热区往阴影区域延伸 6px 是因为 app-region: drag 样式让标题栏变成了非客户区, 鼠标放在标题栏边缘拖动窗口时, 调整窗口大小的那个鼠标双向箭头光标一直在闪烁, 往边框外延伸就多出一片区域可以拖动, 就不会闪烁了. 如果你不让标题栏成为非客户区, 就不会有这个问题. 不让标题栏成为非客户区还想拖动窗口, 用 window-drag.js 来拖动窗口就可以, 下面有实现.那样的话还得自己实现双击标题栏切换最大化状态; 最大化时往下拖动标题栏得实现还原回原本大小; 所以想省事的话还是使用 app-region: drag 样式.
+      */
     .resize-edge {
       position: absolute;
       background: transparent;
@@ -219,7 +219,7 @@
 </head>
 <body>
   <div id="shadow-container">
-    <!-- 边框调整热区 - 放在content外面，避免被overflow:hidden裁剪 -->
+    <!-- 边框调整热区 - 放在 content 外面，避免被 overflow:hidden 裁剪 -->
     <div class="resize-edge top" data-edge="top"></div>
     <div class="resize-edge right" data-edge="right"></div>
     <div class="resize-edge bottom" data-edge="bottom"></div>
@@ -260,35 +260,12 @@
     }
   </script>
 
+  <!-- 引入窗口拖动工具 -->
+  <script src="js/window-drag.js"></script>
   <script>
-    // 不在 css 中使用 app-region: drag; 拖动窗口的方法
-
-    let isDragging = false;
-    let offsetX, offsetY;
-    const mainContent = document.getElementById('main-content');
-
-    // 监听 mainContent 的鼠标按下事件
-    mainContent.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        // 获取鼠标在窗口内的相对位置
-        offsetX = e.clientX;
-        offsetY = e.clientY;
-    });
-
-    // 监听鼠标移动事件
-    document.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        // 计算新位置
-        let newX = e.screenX - offsetX;
-        let newY = e.screenY - offsetY;
-        // 调用后端移动窗口
-        wnd.setPos(newX, newY);
-    });
-
-    // 监听鼠标抬起事件
-    document.addEventListener('mouseup', () => {
-        isDragging = false;
-    });
+    // 使用 WindowDrag 工具启用窗口拖动
+    // 内容区
+    WindowDrag.enable('#main-content');
   </script>
 
   <script>
