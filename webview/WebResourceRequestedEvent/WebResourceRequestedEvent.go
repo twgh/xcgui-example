@@ -83,7 +83,7 @@ func main() {
 func createEdge() *edge.Edge {
 	// 创建 WebView 环境
 	edg, err := edge.New(edge.Option{
-		UserDataFolder: os.TempDir(), // 实际应用中应使用自己创建的固定目录，这里用临时目录示例
+		UserDataFolder: os.TempDir(), // 实际应用中应使用自己创建的固定目录
 	})
 	if err != nil {
 		wapi.MessageBoxW(0, "创建 WebView 环境失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
@@ -239,7 +239,7 @@ func saveFile(resStr string, resType string) {
 		log.Println("保存文件失败:", err.Error())
 		return
 	}
-	
+
 	log.Println("保存文件成功:", prefixPath+resType+`.json`)
 }
 

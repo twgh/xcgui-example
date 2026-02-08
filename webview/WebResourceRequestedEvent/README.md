@@ -1,6 +1,6 @@
 # WebResourceRequestedEvent 示例
 
-> 本文由 
+> 本文由 AI 生成
 
 ## 功能介绍
 
