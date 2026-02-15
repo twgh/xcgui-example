@@ -121,20 +121,20 @@ const setActiveMenu = (id) => {
 
 // 窗口控制函数
 const minimizeWindow = () => {
-  if (window.go && window.go.minimizeWindow) {
-    window.go.minimizeWindow()
+  if (window.wnd && window.wnd.minimize) {
+    window.wnd.minimize()
   }
 }
 
 const toggleMaximize = () => {
-  if (window.go && window.go.toggleMaximize) {
-    window.go.toggleMaximize()
+  if (window.wnd && window.wnd.toggleMaximize) {
+    window.wnd.toggleMaximize()
   }
 }
 
 const closeWindow = () => {
-  if (window.go && window.go.closeWindow) {
-    window.go.closeWindow()
+  if (window.wnd && window.wnd.close) {
+    window.wnd.close()
   }
 }
 </script>
