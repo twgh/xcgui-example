@@ -1,5 +1,5 @@
 // 计算文件MD5.
-// 不使用炫彩元素, 直接使用html文件作为窗口内容, 圆角窗口.
+// 不使用炫彩元素, 直接使用html文件作为窗口内容.
 package main
 
 import (
@@ -45,18 +45,16 @@ func NewMainWindow(edg *edge.Edge) *MainWindow {
 		edge.WithXmlWindowTitle("计算文件MD5"),       // 炫彩 XML 窗口标题
 		edge.WithXmlWindowClassName("CalcMD5"),   // 炫彩 XML 窗口类名
 		edge.WithXmlWindowSize(550, 500),         // 炫彩 XML 窗口大小
-		edge.WithXmlWindowShadowAngleSize(8),     // 炫彩 XML 窗口阴影圆角大小, 设置后会使窗口变为圆角
-		edge.WithFillParent(true),                // 填充父
+		edge.WithFillParent(true),                // WebView 填充父
 		edge.WithAppDrag(true),                   // 启用非客户区域支持
 		edge.WithStatusBar(false),                // 禁用状态栏
 		edge.WithZoomControl(false),              // 禁用缩放控件
 		edge.WithDebug(isDebug),                  // 开发者工具
 		edge.WithDefaultContextMenus(isDebug),    // 上下文菜单
 		edge.WithBrowserAcceleratorKeys(isDebug), // 浏览器快捷键
-		edge.WithRoundRadius(8),                  // WebView 圆角8px
 		edge.WithAutoFocus(true),                 // 在窗口获得焦点时尝试保持 WebView 的焦点
-		// 设置默认背景色为透明
-		edge.WithDefaultBackgroundColor(edge.NewColor(255, 255, 255, 0)),
+		// 设置 WebView 默认背景色为透明
+		edge.WithDefaultBackgroundColor(edge.NewColor(0, 0, 0, 0)),
 	)
 	if err != nil {
 		wapi.MessageBoxW(0, "创建 webview 失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
@@ -68,8 +66,8 @@ func NewMainWindow(edg *edge.Edge) *MainWindow {
 	// 启用虚拟主机名和嵌入文件系统之间的映射
 	m.wv.EnableVirtualHostNameToEmbedFSMapping(true)
 
-	// 注册事件
-	m.regEvents()
+	// 注册 WebView 事件
+	m.regWebViewEvents()
 
 	// 绑定函数, 最好在导航之前绑定
 	m.bindBasicFuncs()
@@ -80,18 +78,22 @@ func NewMainWindow(edg *edge.Edge) *MainWindow {
 	return m
 }
 
-// 注册事件
-func (m *MainWindow) regEvents() {
+// 注册 WebView 事件
+func (m *MainWindow) regWebViewEvents() {
 	var firstLoad = true
 	// 导航完成事件
 	m.wv.Event_NavigationCompleted(func(sender *edge.ICoreWebView2, args *edge.ICoreWebView2NavigationCompletedEventArgs) uintptr {
-		uri := sender.MustGetSource()
+		uri, err := sender.GetSource()
+		if err != nil {
+			log.Println("GetSource 失败: " + err.Error())
+			return 0
+		}
 		fmt.Println("导航完成:", uri)
 
 		switch uri {
 		case edge.JoinUrlHeader(hostName) + "/CalcMD5.html":
 			// 在导航完成事件里判断第一次加载完毕时才显示窗口,
-			// 这是因为采用嵌入文件系统的方式时, 网页还没加载出来的时候, 会显示 webview 白色的背景,
+			// 这是因为采用嵌入文件系统的方式时, 网页还没加载出来的时候, 会显示 WebView 白色的背景,
 			// 然后才会加载出网页, 表现出来就是有一瞬间的闪烁, 所以等加载完再显示窗口
 			if firstLoad {
 				firstLoad = false
@@ -110,7 +112,7 @@ func (m *MainWindow) regEvents() {
 		if err != nil {
 			return 0
 		}
-		if webMessage != "drag_files" { // 这是前端传过来的
+		if webMessage != "drag_files" { // 这是前端传过来的自定义的消息
 			return 0
 		}
 
@@ -185,17 +187,17 @@ func (m *MainWindow) regEvents() {
 // bindBasicFuncs 绑定基本函数.
 func (m *MainWindow) bindBasicFuncs() {
 	// 绑定 最小化窗口函数
-	m.wv.Bind("go.minimizeWindow", func() {
+	m.wv.Bind("wnd.minimize", func() {
 		m.w.ShowWindow(xcc.SW_MINIMIZE)
 	})
 
 	// 绑定 切换最大化窗口函数
-	m.wv.Bind("go.toggleMaximize", func() {
+	m.wv.Bind("wnd.toggleMaximize", func() {
 		m.w.MaxWindow(!m.w.IsMaxWindow())
 	})
 
 	// 绑定 关闭窗口函数
-	m.wv.Bind("go.closeWindow", func() {
+	m.wv.Bind("wnd.close", func() {
 		m.w.CloseWindow()
 	})
 }
@@ -259,45 +261,18 @@ func main() {
 }
 
 func createEdge() *edge.Edge {
-	// 创建 WebView2 环境选项.
-	envOpts, err := edge.CreateEnvironmentOptions()
-	if err != nil {
-		log.Println("创建 WebView2 环境选项失败: " + err.Error())
-	} else {
-		// 获取 WebView2 环境选项5
-		envOpts5, err := envOpts.GetICoreWebView2EnvironmentOptions5()
-		if err != nil {
-			log.Println("获取环境选项5失败: " + err.Error())
-		} else {
-			// 禁用 WebView2 中的跟踪防护功能以提高运行时性能, 仅在 WebView2 中呈现已知安全的内容时可以这样做.
-			// 如果 WebView2 被用作具有任意导航功能的“完整浏览器”且需要保护最终用户隐私，那么不应禁用此属性。
-			envOpts5.SetEnableTrackingPrevention(false)
-			envOpts5.Release()
-		}
-
-		// 获取 WebView2 环境选项8
-		envOpts8, err := envOpts.GetICoreWebView2EnvironmentOptions8()
-		if err != nil {
-			log.Println("获取环境选项8失败: " + err.Error())
-		} else {
-			// 设置滚动条样式
-			envOpts8.SetScrollBarStyle(edge.COREWEBVIEW2_SCROLLBAR_STYLE_FLUENT_OVERLAY)
-			envOpts8.Release()
-		}
-	}
-
-	// 创建 webview 环境
+	// 创建 WebView 环境
 	edg, err := edge.New(edge.Option{
-		UserDataFolder:     os.TempDir(), // 自己的软件应该在固定位置创建一个自己的目录, 而不是用临时目录
-		EnvironmentOptions: envOpts,
+		UserDataFolder: os.TempDir(), // 自己的软件应该在固定位置创建一个自己的目录
+		EnvOptions: &edge.EnvOptions{
+			DisableTrackingPrevention: true, // 禁用 WebView2 中的跟踪防护功能
+			// Fluent 风格的覆盖式滚动条
+			ScrollBarStyle: edge.COREWEBVIEW2_SCROLLBAR_STYLE_FLUENT_OVERLAY,
+		},
 	})
 	if err != nil {
 		wapi.MessageBoxW(0, "创建 webview 环境失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
 		os.Exit(1)
-	}
-
-	if envOpts != nil { // 没用了, 直接释放
-		envOpts.Release()
 	}
 	return edg
 }

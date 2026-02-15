@@ -4,7 +4,7 @@
 
 ## 项目简介
 
-CalcMD5 是一个基于 XCGUI 和 WebView2 技术的文件 MD5 哈希值计算工具。这个示例演示了如何使用 Go 语言创建一个现代化的桌面应用程序，结合 Web 前端技术实现用户界面，展示圆角窗口、文件拖拽、异步计算等高级特性。
+CalcMD5 是一个基于 XCGUI 和 WebView2 技术的文件 MD5 哈希值计算工具。这个示例演示了如何使用 Go 语言创建一个现代化的桌面应用程序，结合 Web 前端技术实现用户界面，展示文件拖拽、异步计算、透明背景等高级特性。
 
 ## 功能特性
 
@@ -15,18 +15,18 @@ CalcMD5 是一个基于 XCGUI 和 WebView2 技术的文件 MD5 哈希值计算�
 - **实时显示**：在界面上实时显示计算结果和进度
 
 ### 界面特性
-- **圆角窗口**：8px 圆角的现代化窗口设计
 - **自定义标题栏**：完全自定义的 HTML 标题栏，包含窗口控制按钮
 - **紧凑设计**：550x500 的紧凑窗口大小
 - **美观界面**：使用 HTML/CSS 实现的现代化用户界面
 - **自动焦点**：首次加载完成后自动聚焦输入框
+- **透明背景**：WebView 背景透明，防止首次加载时闪烁
 
 ### 技术特性
 - **异步处理**：MD5 计算在后台协程中执行，不阻塞界面
 - **消息循环等待**：通过消息循环机制等待协程完成，保持界面响应
 - **嵌入式资源**：前端资源（HTML、CSS、JS）嵌入到可执行文件中
 - **虚拟主机映射**：使用虚拟主机名访问嵌入的文件系统
-- **环境选项优化**：禁用跟踪防护、现代化滚动条样式
+- **环境选项优化**：禁用跟踪防护、Fluent 风格滚动条
 
 ## 项目结构
 
@@ -47,7 +47,6 @@ CalcMD5/
 - **Go 语言**：主要编程语言
 - **XCGUI**：GUI 框架，提供窗口和 UI 组件
 - **WebView2**：嵌入式浏览器组件
-- **embed**：Go 1.16+ 的文件嵌入功能
 
 ### 前端技术栈
 - **HTML5**：页面结构
@@ -73,23 +72,22 @@ embedAssets embed.FS // 嵌入 assets 目录及其所有子目录文件，不包
 ```go
 const hostName = "app.example"
 
-// 启用虚拟主机名和嵌入文件系统之间的映射
-m.wv.EnableVirtualHostNameToEmbedFSMapping(true)
-
 // 设置虚拟主机名和嵌入文件系统之间的映射
 edge.SetVirtualHostNameToEmbedFSMapping(hostName, embedAssets)
+
+// 启用虚拟主机名和嵌入文件系统之间的映射
+m.wv.EnableVirtualHostNameToEmbedFSMapping(true)
 ```
 
-#### 3. 圆角窗口
+#### 3. 透明背景
 
-通过两个配置实现 8px 圆角窗口：
+设置 WebView 默认背景色为透明：
 
 ```go
-// 炫彩 XML 窗口阴影圆角大小，设置后会使窗口变为圆角
-edge.WithXmlWindowShadowAngleSize(8)
-
-// WebView 圆角 8px
-edge.WithRoundRadius(8)
+m.w, m.wv, err = m.edg.NewWebViewWithWindow(
+    // ... 其他选项
+    edge.WithDefaultBackgroundColor(edge.NewColor(0, 0, 0, 0)),
+)
 ```
 
 #### 4. 自定义标题栏
@@ -100,24 +98,24 @@ edge.WithRoundRadius(8)
 <div id="title-bar">
     <div>MD5 计算器</div>
     <div id="window-controls">
-        <button class="window-btn" onclick="go.minimizeWindow()">−</button>
-        <button class="window-btn" onclick="go.toggleMaximize()">□</button>
-        <button class="window-btn close" onclick="go.closeWindow()">×</button>
+        <button class="window-btn" onclick="wnd.minimize()">−</button>
+        <button class="window-btn" onclick="wnd.toggleMaximize()">□</button>
+        <button class="window-btn close" onclick="wnd.close()">×</button>
     </div>
 </div>
 ```
 
 Go 端绑定函数：
 ```go
-m.wv.Bind("go.minimizeWindow", func() {
+m.wv.Bind("wnd.minimize", func() {
     m.w.ShowWindow(xcc.SW_MINIMIZE)
 })
 
-m.wv.Bind("go.toggleMaximize", func() {
+m.wv.Bind("wnd.toggleMaximize", func() {
     m.w.MaxWindow(!m.w.IsMaxWindow())
 })
 
-m.wv.Bind("go.closeWindow", func() {
+m.wv.Bind("wnd.close", func() {
     m.w.CloseWindow()
 })
 ```
@@ -157,30 +155,68 @@ dragArea.addEventListener('drop', (e) => {
 Go 端处理：
 ```go
 m.wv.Event_WebMessageReceived(func(sender *edge.ICoreWebView2, args *edge.ICoreWebView2WebMessageReceivedEventArgs) uintptr {
-    webMessage, _ := args.TryGetWebMessageAsString()
+    // 获取网页消息
+    webMessage, err := args.TryGetWebMessageAsString()
+    if err != nil {
+        return 0
+    }
     if webMessage != "drag_files" {
         return 0
     }
 
-    args2, _ := args.GetICoreWebView2WebMessageReceivedEventArgs2()
+    args2, err := args.GetICoreWebView2WebMessageReceivedEventArgs2()
+    if err != nil {
+        log.Println("GetICoreWebView2WebMessageReceivedEventArgs2 失败: " + err.Error())
+        return 0
+    }
     defer args2.Release()
 
-    // 获取附加对象集合
-    objs, _ := args2.GetAdditionalObjects()
+    // 获取包含随 Web 消息一起发送的附加对象的对象集合视图
+    objs, err := args2.GetAdditionalObjects()
+    if err != nil {
+        log.Println("GetAdditionalObjects 失败: " + err.Error())
+        return 0
+    }
     defer objs.Release()
 
-    objCount, _ := objs.GetCount()
+    // 获取集合中的对象数量
+    objCount, err := objs.GetCount()
+    if err != nil || objCount == 0 {
+        return 0
+    }
+
+    var files []*edge.ICoreWebView2File
+    // 遍历集合，查找 File 对象
     for i := uint32(0); i < objCount; i++ {
-        obj, _ := objs.GetValueAtIndex(i)
+        obj, err := objs.GetValueAtIndex(i)
+        if err != nil {
+            continue
+        }
 
         file := new(edge.ICoreWebView2File)
-        obj.QueryInterface(wapi.NewGUIDPointer(edge.IID_ICoreWebView2File), unsafe.Pointer(&file))
-        defer file.Release()
+        err = obj.QueryInterface(wapi.NewGUIDPointer(edge.IID_ICoreWebView2File), unsafe.Pointer(&file))
+        if err != nil {
+            continue
+        }
+        files = append(files, file)
+    }
 
-        // 获取文件路径并计算 MD5
-        filePath, _ := file.GetPath()
-        m.wv.Eval(`calculate('` + strings.ReplaceAll(filePath, `\`, `\\`) + `');`)
-        break // 目前只处理第一个文件
+    if len(files) == 0 {
+        return 0
+    }
+
+    // 获取文件路径，目前只处理第一个文件
+    filePath, err := files[0].GetPath()
+    if err != nil {
+        return 0
+    }
+
+    // 将路径传进 js 函数，这个路径中的 \ 得转义
+    m.wv.Eval(`calculate('` + strings.ReplaceAll(filePath, `\`, `\\`) + `');`)
+
+    // 释放文件对象
+    for i := range files {
+        files[i].Release()
     }
     return 0
 })
@@ -232,7 +268,12 @@ m.wv.Bind("go.calculateMD5", func(filePath string) string {
 var firstLoad = true
 
 m.wv.Event_NavigationCompleted(func(sender *edge.ICoreWebView2, args *edge.ICoreWebView2NavigationCompletedEventArgs) uintptr {
-    uri := sender.MustGetSource()
+    uri, err := sender.GetSource()
+    if err != nil {
+        log.Println("GetSource 失败: " + err.Error())
+        return 0
+    }
+    fmt.Println("导航完成:", uri)
 
     switch uri {
     case edge.JoinUrlHeader(hostName) + "/CalcMD5.html":
@@ -249,14 +290,16 @@ m.wv.Event_NavigationCompleted(func(sender *edge.ICoreWebView2, args *edge.ICore
 
 #### 9. 环境选项优化
 
-优化 WebView2 性能和体验：
+通过 `EnvOptions` 配置 WebView2 环境：
 
 ```go
-// 禁用跟踪防护以提高运行时性能（仅在呈现已知安全内容时）
-envOpts5.SetEnableTrackingPrevention(false)
-
-// 设置现代化滚动条样式
-envOpts8.SetScrollBarStyle(edge.COREWEBVIEW2_SCROLLBAR_STYLE_FLUENT_OVERLAY)
+edg, err := edge.New(edge.Option{
+    UserDataFolder: os.TempDir(), // 用户数据目录
+    EnvOptions: &edge.EnvOptions{
+        DisableTrackingPrevention: true, // 禁用跟踪防护以提高运行时性能
+        ScrollBarStyle: edge.COREWEBVIEW2_SCROLLBAR_STYLE_FLUENT_OVERLAY, // Fluent 风格滚动条
+    },
+})
 ```
 
 ## 使用方法
@@ -308,13 +351,13 @@ var isDebug = false
 - **实时反馈**：计算过程中显示"计算中..."状态，完成后显示结果
 - **自动焦点**：启动后自动聚焦到输入框，方便直接拖拽文件
 - **紧凑设计**：550x500 的窗口大小，适合工具类应用
+- **透明背景**：WebView 背景透明，视觉效果更佳
 
 ### 技术创新
-- **圆角窗口**：通过 `WithXmlWindowShadowAngleSize` 和 `WithRoundRadius` 实现 8px 圆角
+- **透明背景**：WebView 默认背景色设为透明，与窗口主题融合
 - **拖拽文件**：使用 WebView2 的 `postMessageWithAdditionalObjects` API 实现文件拖拽
 - **异步计算**：协程 + 消息循环机制，既不阻塞界面又能等待计算完成
 - **资源一体化**：将所有前端资源嵌入可执行文件，简化部署
-- **双圆角一致**：WebView2 和外层窗口都设置 8px 圆角，保持视觉一致性
 
 ## 扩展可能性
 
@@ -342,7 +385,7 @@ var isDebug = false
 ### 窗口设计
 - 使用渐进式加载避免白屏闪烁
 - 自动焦点提升用户体验
-- 圆角设计增加现代感
+- 透明背景与窗口主题融合
 - 自定义标题栏实现统一风格
 
 ## 注意事项
@@ -361,9 +404,6 @@ A: 因为 MD5 计算在后台协程中执行，通过消息循环等待完成，
 
 ### Q: 如何支持更多哈希算法？
 A: 可以在 Go 端添加对应的哈希函数（如 `crypto/sha256`），然后在 JavaScript 中调用。
-
-### Q: 为什么窗口是圆角的？
-A: 通过 `WithXmlWindowShadowAngleSize(8)` 和 `WithRoundRadius(8)` 两个配置实现 8px 圆角。
 
 ### Q: 如何禁用调试功能？
 A: 将 `isDebug` 变量设置为 `false` 即可。
