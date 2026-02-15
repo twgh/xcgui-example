@@ -2,7 +2,7 @@
 const maximizeBtn = document.querySelector('.maximize-btn');
 let isMaximized = false;
 // 切换窗口最大化, 并更新按钮图标
-function toggleMaximize2(){
+function toggleMaximizeWithIcon(){
     isMaximized = !isMaximized;
 
     const icon = maximizeBtn.querySelector('i');
@@ -13,7 +13,7 @@ function toggleMaximize2(){
         icon.classList.remove('fa-window-restore');
         icon.classList.add('fa-window-maximize');
     }
-    go.toggleMaximize();
+    wnd.toggleMaximize();
 }
 
 // 切换侧边栏

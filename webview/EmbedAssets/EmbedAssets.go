@@ -53,7 +53,7 @@ func NewMainWindow(edg *edge.Edge) *MainWindow {
 		edge.WithZoomControl(false),
 		edge.WithAutoFocus(true),
 		// 设置默认背景色为透明, 这也是防止首次加载会闪烁的一部分
-		edge.WithDefaultBackgroundColor(edge.NewColor(255, 255, 255, 0)),
+		edge.WithDefaultBackgroundColor(edge.NewColor(0, 0, 0, 0)),
 	)
 	if err != nil {
 		wapi.MessageBoxW(0, "创建 webview 失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
@@ -86,21 +86,25 @@ func NewMainWindow(edg *edge.Edge) *MainWindow {
 		// 或者查看 VueAndVite 例子.
 	}
 
-	// 注册事件
-	m.regEvents()
+	// 注册 WebView 事件
+	m.regWebViewEvents()
 	// 绑定函数
 	m.bindBasicFuncs()
 	// 导航到首页
 	m.wv.Navigate(edge.JoinUrlHeader(hostName) + "/EmbedAssets.html")
-	m.w.Show(true)
 	return m
 }
 
-func (m *MainWindow) regEvents() {
+// 注册 WebView 事件
+func (m *MainWindow) regWebViewEvents() {
 	var firstLoad = true
 	// 导航完成事件
 	m.wv.Event_NavigationCompleted(func(sender *edge.ICoreWebView2, args *edge.ICoreWebView2NavigationCompletedEventArgs) uintptr {
-		uri := sender.MustGetSource()
+		uri, err := sender.GetSource()
+		if err != nil {
+			log.Println("GetSource 失败: " + err.Error())
+			return 0
+		}
 		fmt.Println("导航完成:", uri)
 
 		switch uri {
@@ -120,17 +124,17 @@ func (m *MainWindow) regEvents() {
 // bindBasicFuncs 绑定基本函数.
 func (m *MainWindow) bindBasicFuncs() {
 	// 绑定 最小化窗口函数
-	m.wv.Bind("go.minimizeWindow", func() {
+	m.wv.Bind("wnd.minimize", func() {
 		m.w.ShowWindow(xcc.SW_MINIMIZE)
 	})
 
 	// 绑定 切换最大化窗口函数
-	m.wv.Bind("go.toggleMaximize", func() {
+	m.wv.Bind("wnd.toggleMaximize", func() {
 		m.w.MaxWindow(!m.w.IsMaxWindow())
 	})
 
 	// 绑定 关闭窗口函数
-	m.wv.Bind("go.closeWindow", func() {
+	m.wv.Bind("wnd.close", func() {
 		m.w.CloseWindow()
 	})
 }
@@ -152,45 +156,17 @@ func main() {
 }
 
 func createEdge() *edge.Edge {
-	// 创建 WebView2 环境选项.
-	envOpts, err := edge.CreateEnvironmentOptions()
-	if err != nil {
-		log.Println("创建 WebView2 环境选项失败: " + err.Error())
-	} else {
-		// 获取 WebView2 环境选项5
-		envOpts5, err := envOpts.GetICoreWebView2EnvironmentOptions5()
-		if err != nil {
-			log.Println("获取环境选项5失败: " + err.Error())
-		} else {
-			// 禁用 WebView2 中的跟踪防护功能以提高运行时性能, 仅在 WebView2 中呈现已知安全的内容时可以这样做.
-			// 如果 WebView2 被用作具有任意导航功能的“完整浏览器”且需要保护最终用户隐私，那么不应禁用此属性。
-			envOpts5.SetEnableTrackingPrevention(false)
-			envOpts5.Release()
-		}
-
-		// 获取 WebView2 环境选项8
-		envOpts8, err := envOpts.GetICoreWebView2EnvironmentOptions8()
-		if err != nil {
-			log.Println("获取环境选项8失败: " + err.Error())
-		} else {
-			// 设置滚动条样式
-			envOpts8.SetScrollBarStyle(edge.COREWEBVIEW2_SCROLLBAR_STYLE_FLUENT_OVERLAY)
-			envOpts8.Release()
-		}
-	}
-
 	// 创建 webview 环境
 	edg, err := edge.New(edge.Option{
-		UserDataFolder:     os.TempDir(), // 自己的软件应该在里面创建一个自己的目录, 而不是直接用临时目录
-		EnvironmentOptions: envOpts,
+		UserDataFolder: os.TempDir(), // 自己的软件应该在指定位置创建个固定目录
+		EnvOptions: &edge.EnvOptions{
+			DisableTrackingPrevention: true,
+			ScrollBarStyle:            edge.COREWEBVIEW2_SCROLLBAR_STYLE_FLUENT_OVERLAY,
+		},
 	})
 	if err != nil {
 		wapi.MessageBoxW(0, "创建 webview 环境失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
 		os.Exit(1)
-	}
-
-	if envOpts != nil { // 没用了, 直接释放
-		envOpts.Release()
 	}
 	return edg
 }

@@ -47,7 +47,6 @@ EmbedAssets/
 - **Go 语言**：主要编程语言
 - **XCGUI**：炫彩界面库
 - **WebView2**：嵌入式浏览器组件
-- **embed**：Go 1.16+ 文件嵌入功能
 - **HTML/CSS/JavaScript**：前端技术栈（引用 Font Awesome 图标库）
 
 ### 关键技术点
@@ -76,11 +75,11 @@ const hostName = "app.example"
 
 **生产模式**（`isDebug = false`）：映射嵌入文件系统
 ```go
-// 启用虚拟主机名和嵌入文件系统之间的映射
-err = m.wv.EnableVirtualHostNameToEmbedFSMapping(true)
-
 // 设置虚拟主机名和嵌入文件系统之间的映射
 err = edge.SetVirtualHostNameToEmbedFSMapping(hostName, embedAssets)
+
+// 启用虚拟主机名和嵌入文件系统之间的映射
+err = m.wv.EnableVirtualHostNameToEmbedFSMapping(true)
 ```
 
 **开发模式**（`isDebug = true`）：映射本地文件夹，方便热重载
@@ -95,11 +94,10 @@ err = m.wv.SetVirtualHostNameToFolderMapping(hostName,
 优化 WebView2 性能和体验：
 
 ```go
-// 禁用跟踪防护以提高运行时性能（仅在呈现已知安全内容时）
-envOpts5.SetEnableTrackingPrevention(false)
-
-// 设置现代化滚动条样式
-envOpts8.SetScrollBarStyle(edge.COREWEBVIEW2_SCROLLBAR_STYLE_FLUENT_OVERLAY)
+EnvOptions: &edge.EnvOptions{
+    DisableTrackingPrevention: true,
+    ScrollBarStyle:            edge.COREWEBVIEW2_SCROLLBAR_STYLE_FLUENT_OVERLAY,
+},
 ```
 
 #### 4. Go 与 JavaScript 交互
@@ -108,26 +106,26 @@ envOpts8.SetScrollBarStyle(edge.COREWEBVIEW2_SCROLLBAR_STYLE_FLUENT_OVERLAY)
 
 ```go
 // 绑定最小化窗口函数
-m.wv.Bind("go.minimizeWindow", func() {
+m.wv.Bind("wnd.minimize", func() {
     m.w.ShowWindow(xcc.SW_MINIMIZE)
 })
 
 // 绑定切换最大化窗口函数
-m.wv.Bind("go.toggleMaximize", func() {
+m.wv.Bind("wnd.toggleMaximize", func() {
     m.w.MaxWindow(!m.w.IsMaxWindow())
 })
 
 // 绑定关闭窗口函数
-m.wv.Bind("go.closeWindow", func() {
+m.wv.Bind("wnd.close", func() {
     m.w.CloseWindow()
 })
 ```
 
 在 HTML 中调用：
 ```html
-<button onclick="go.minimizeWindow()">最小化</button>
-<button onclick="go.toggleMaximize()">最大化</button>
-<button onclick="go.closeWindow()">关闭</button>
+<button onclick="wnd.minimize()">最小化</button>
+<button onclick="wnd.toggleMaximize()">最大化</button>
+<button onclick="wnd.close()">关闭</button>
 ```
 
 #### 5. 渐进式加载（避免白屏闪烁）
@@ -151,7 +149,7 @@ m.wv.Event_NavigationCompleted(func(sender *edge.ICoreWebView2, args *edge.ICore
 })
 ```
 
-**原因**：采用嵌入文件系统的方式时，网页还没加载出来时会显示 WebView 白色的背景，然后才会加载出网页，表现出来的就是有一瞬间的闪烁。通过延迟显示窗口可以解决这个问题。
+**原因**：采用嵌入文件系统的方式时，网页还没加载出来时会显示 WebView 白色的背景，然后才会加载出网页，表现出来的就是有一瞬间的闪烁。等首次加载完成再显示窗口可以解决这个问题。
 
 ### 设计模式
 
@@ -337,7 +335,6 @@ edge.WithZoomControl(false)           // 是否显示缩放控制
 
 1. **WebView2 版本要求**：某些高级功能需要较新版本的 WebView2 运行时
 3. **更新机制**：嵌入的资源无法像外部文件那样独立更新
-4. **内存占用**：嵌入的文件系统会占用一定内存
 5. **用户数据目录**：生产环境应使用固定的用户数据目录，而非临时目录
 6. **开发路径**：开发模式下的文件夹路径需要注意相对路径和绝对路径的转换
 
