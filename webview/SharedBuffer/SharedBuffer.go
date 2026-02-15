@@ -398,6 +398,7 @@ func sendData(wv *edge.WebView, data []byte, typeStr string) error {
 
 func main() {
 	checkWebView2()
+	// 创建 WebView2 环境
 	edg := createEdge()
 
 	// 初始化界面库
@@ -411,36 +412,18 @@ func main() {
 	a.Exit()
 }
 
+// 创建 WebView2 环境
 func createEdge() *edge.Edge {
-	// 创建 WebView2 环境选项.
-	envOpts, err := edge.CreateEnvironmentOptions()
-	if err != nil {
-		log.Println("创建 WebView2 环境选项失败: " + err.Error())
-	} else {
-		// 获取 WebView2 环境选项5
-		envOpts5, err := envOpts.GetICoreWebView2EnvironmentOptions5()
-		if err != nil {
-			log.Println("获取环境选项5失败: " + err.Error())
-		} else {
-			// 禁用 WebView2 中的跟踪防护功能以提高运行时性能, 仅在 WebView2 中呈现已知安全的内容时可以这样做.
-			// 如果 WebView2 被用作具有任意导航功能的“完整浏览器”且需要保护最终用户隐私，那么不应禁用此属性。
-			envOpts5.SetEnableTrackingPrevention(false)
-			envOpts5.Release()
-		}
-	}
-
-	// 创建 WebView 环境
+	// 创建 WebView2 环境
 	edg, err := edge.New(edge.Option{
-		UserDataFolder:     os.TempDir(), // 实际应用中应使用自己创建的固定目录
-		EnvironmentOptions: envOpts,
+		UserDataFolder: os.TempDir(), // 实际应用中应使用自己创建的固定目录
+		EnvOptions: &edge.EnvOptions{
+			DisableTrackingPrevention: true,
+		},
 	})
 	if err != nil {
-		wapi.MessageBoxW(0, "创建 WebView 环境失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
+		wapi.MessageBoxW(0, "创建 WebView2 环境失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
 		os.Exit(1)
-	}
-
-	if envOpts != nil { // 没用了, 直接释放
-		envOpts.Release()
 	}
 	return edg
 }
