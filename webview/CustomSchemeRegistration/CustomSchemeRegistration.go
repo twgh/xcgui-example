@@ -22,7 +22,7 @@ var (
 	w  *window.Window
 	wv *edge.WebView
 
-	//go:embed index.html
+	//go:embed CustomSchemeRegistration.html
 	indexHtml string
 )
 
