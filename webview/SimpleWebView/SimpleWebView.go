@@ -35,11 +35,11 @@ func main() {
 	// 创建 WebView
 	w, wv, err := edg.NewWebViewWithWindow(
 		edge.WithXmlWindowTitle("简单 WebView 例子"), // 窗口标题
-		edge.WithXmlWindowSize(1400, 900),            // 窗口大小
-		edge.WithXmlWindowTitleBar(true),             // 使用炫彩窗口标题栏
-		edge.WithFillParent(true),                    // WebView 填充窗口
-		edge.WithDebug(true),                         // 可打开开发者工具
-		edge.WithAutoFocus(true),                     // 在窗口获得焦点时尝试保持 WebView 的焦点
+		edge.WithXmlWindowSize(1400, 900),        // 窗口大小
+		edge.WithXmlWindowTitleBar(true),         // 使用炫彩窗口标题栏
+		edge.WithFillParent(true),                // WebView 填充窗口
+		edge.WithDebug(true),                     // 可打开开发者工具
+		edge.WithAutoFocus(true),                 // 在窗口获得焦点时尝试保持 WebView 的焦点
 	)
 	if err != nil {
 		wapi.MessageBoxW(0, "创建 WebView 失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
