@@ -91,7 +91,7 @@ func main() {
 	layoutWV := widget.NewLayoutEleByName("布局WV")
 
 	// 设置全局 WebView 错误回调. 调用 Must 系列方法时, 出错会触发该回调. 还有一些不方便直接 return 的地方也会把错误报告到该回调.
-	edge.SetErrorCallBack(func(err *edge.WebViewError) {
+	edge.SetErrorCallback(func(err *edge.WebViewError) {
 		if isDubug {
 			log.Println(err.ErrorWithFile())
 		} else {

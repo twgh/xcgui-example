@@ -73,7 +73,7 @@ wv, err := edg.NewWebView(layoutWV.Handle,
 #### 2. 全局错误处理
 ```go
 // 设置全局WebView错误回调
-edge.SetErrorCallBack(func(err *edge.WebViewError) {
+edge.SetErrorCallback(func(err *edge.WebViewError) {
     if isDubug {
         log.Println(err.ErrorWithFile())
     } else {
@@ -293,7 +293,7 @@ defer stream.Release()
 ### 3. 错误处理
 ```go
 // 设置全局错误回调处理所有WebView错误
-edge.SetErrorCallBack(func(err *edge.WebViewError) {
+edge.SetErrorCallback(func(err *edge.WebViewError) {
     // 统一的错误处理逻辑
 })
 ```
