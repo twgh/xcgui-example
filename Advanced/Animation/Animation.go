@@ -121,14 +121,14 @@ func main() {
 	left = 900
 	CreateButtonRadio(left, &top, "19.窗口特效").AddEvent_BnClick(OnBtnClick19)
 	CreateButtonRadio(left, &top, "20.遮盖弹窗").AddEvent_BnClick(OnBtnClick20)
-	// todo: 翻译剩下的动画
 	CreateButtonRadio(left, &top, "21.通知消息").AddEvent_BnClick(OnBtnClick21)
 	CreateButtonRadio(left, &top, "22.进度条").AddEvent_BnClick(OnBtnClick22)
 	CreateButtonRadio(left, &top, "23.焦点追踪").AddEvent_BnClick(OnBtnClick23)
 	CreateButtonRadio(left, &top, "24.页面切换 滑动").AddEvent_BnClick(OnBtnClick24)
 	CreateButtonRadio(left, &top, "25.折叠面板").AddEvent_BnClick(OnBtnClick25)
-	CreateButtonRadio(left, &top, "26.图片轮播").AddEvent_BnClick(OnBtnClick19)
-	CreateButtonRadio(left, &top, "27.背景管理器").AddEvent_BnClick(OnBtnClick19)
+	// todo: 翻译剩下的动画
+	// CreateButtonRadio(left, &top, "26.图片轮播").AddEvent_BnClick(OnBtnClick26)
+	// CreateButtonRadio(left, &top, "27.背景管理器").AddEvent_BnClick(OnBtnClick27)
 
 	w.AddEvent_Paint(OnWndDrawWindow)
 	w.AddEvent_Destroy(func(hWindow int, pbHandled *bool) int {
@@ -168,6 +168,8 @@ func ReleaseAnimation() {
 		case *CFocusTraceEdit_Border:
 			obj.Release()
 		case *CFocusTraceEdit_Line:
+			obj.Release()
+		case *CExpandGroup:
 			obj.Release()
 		}
 	}
