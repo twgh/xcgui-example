@@ -155,14 +155,14 @@ func onMenuDrawItem(hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *bool) int {
 	*pbHandled = true // 作用是拦截菜单原本的绘制
 
 	// 绘制分割栏
-	if pInfo.NState&xcc.Menu_Item_Flag_Separator > 0 {
+	if pInfo.NState&xcc.MenuItem_State_Flag_Separator > 0 {
 		xc.XDraw_SetBrushColor(hDraw, xc.RGBA(218, 220, 224, 255))
 		xc.XDraw_DrawLine(hDraw, pInfo.RcItem.Left+3, pInfo.RcItem.Top+1, pInfo.RcItem.Right-3, pInfo.RcItem.Top+1)
 		return 0
 	}
 
 	// 绘制鼠标停留时菜单项的背景
-	if pInfo.NState&xcc.Menu_Item_Flag_Select > 0 {
+	if pInfo.NState&xcc.MenuItem_State_Flag_Stay > 0 {
 		// 左右把项填满
 		rc := xc.RECT{
 			Left:   pInfo.RcItem.Left - 2,
@@ -181,7 +181,7 @@ func onMenuDrawItem(hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *bool) int {
 	}
 
 	// 绘制右三角
-	if pInfo.NState&xcc.Menu_Item_Flag_Popup > 0 {
+	if pInfo.NState&xcc.MenuItem_State_Flag_Popup > 0 {
 		var pt [3]xc.POINT
 		pt[0].X = pInfo.RcItem.Right - 12
 		pt[0].Y = pInfo.RcItem.Top + 10
@@ -200,7 +200,7 @@ func onMenuDrawItem(hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *bool) int {
 	rc := pInfo.RcItem
 	rc.Left = leftWidth + 5
 
-	if pInfo.NState&xcc.Menu_Item_Flag_Disable > 0 {
+	if pInfo.NState&xcc.MenuItem_State_Flag_Disable > 0 {
 		// 设置被禁用的菜单项文本颜色
 		xc.XDraw_SetBrushColor(hDraw, xc.RGBA(160, 160, 160, 255))
 	} else {
