@@ -106,7 +106,7 @@ type updateButton struct {
 	RedrawWindow bool
 }
 
-func (u *updateButton) UiThreadCallBack(data int) int {
+func (u *updateButton) UiThreadCallback(data int) int {
 	xc.XBtn_SetText(u.HEle, u.Text)
 	xc.XEle_SetWidth(u.HEle, u.Width)
 	w.Redraw(u.RedrawWindow)
