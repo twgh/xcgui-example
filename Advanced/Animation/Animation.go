@@ -4,8 +4,12 @@ package main
 import (
 	_ "embed"
 	"fmt"
+	"math/rand"
 
+	"github.com/twgh/xcgui/common"
 	"github.com/twgh/xcgui/font"
+	"github.com/twgh/xcgui/svg"
+	"github.com/twgh/xcgui/wapi"
 
 	"github.com/twgh/xcgui/ani"
 	"github.com/twgh/xcgui/app"
@@ -21,6 +25,7 @@ var (
 	list_svg       []int
 	list_animation []int
 	list_xcgui     []int
+	list_object    []interface{}
 
 	m_hLayout1 int
 	m_hLayout2 int
@@ -44,6 +49,14 @@ var (
 	svg6 string
 	//go:embed svg/淘公仔文字.svg
 	svg7 string
+	//go:embed svg/成功.svg
+	svgSuccess string
+	//go:embed svg/消息.svg
+	svgMessage string
+	//go:embed svg/警告.svg
+	svgWarning string
+	//go:embed svg/错误.svg
+	svgError string
 
 	//go:embed image/img-1.jpg
 	img1 []byte
@@ -57,6 +70,11 @@ var (
 	img5 []byte
 	//go:embed image/img-6.jpg
 	img6 []byte
+
+	//go:embed image/progressBar.png
+	imgProgressBar []byte
+	//go:embed image/sliderBar.png
+	imgSliderBar []byte
 
 	svg11 = `<svg x="0" y="0" width="25" height="25" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#ee6362" /></svg>`
 	svg12 = `<svg x="0" y="0" width="25" height="25" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#2cb0b2" /></svg>`
@@ -104,13 +122,13 @@ func main() {
 	CreateButtonRadio(left, &top, "19.窗口特效").AddEvent_BnClick(OnBtnClick19)
 	CreateButtonRadio(left, &top, "20.遮盖弹窗").AddEvent_BnClick(OnBtnClick20)
 	// todo: 翻译剩下的动画
-	/*CreateButtonRadio(left, &top, "21.通知消息").AddEvent_BnClick(OnBtnClick19)
-	CreateButtonRadio(left, &top, "22.进度条").AddEvent_BnClick(OnBtnClick19)
-	CreateButtonRadio(left, &top, "23.焦点追踪").AddEvent_BnClick(OnBtnClick19)
-	CreateButtonRadio(left, &top, "24.页面切换 滑动").AddEvent_BnClick(OnBtnClick19)
-	CreateButtonRadio(left, &top, "25.折叠面板").AddEvent_BnClick(OnBtnClick19)
+	CreateButtonRadio(left, &top, "21.通知消息").AddEvent_BnClick(OnBtnClick21)
+	CreateButtonRadio(left, &top, "22.进度条").AddEvent_BnClick(OnBtnClick22)
+	CreateButtonRadio(left, &top, "23.焦点追踪").AddEvent_BnClick(OnBtnClick23)
+	CreateButtonRadio(left, &top, "24.页面切换 滑动").AddEvent_BnClick(OnBtnClick24)
+	CreateButtonRadio(left, &top, "25.折叠面板").AddEvent_BnClick(OnBtnClick25)
 	CreateButtonRadio(left, &top, "26.图片轮播").AddEvent_BnClick(OnBtnClick19)
-	CreateButtonRadio(left, &top, "27.背景管理器").AddEvent_BnClick(OnBtnClick19)*/
+	CreateButtonRadio(left, &top, "27.背景管理器").AddEvent_BnClick(OnBtnClick19)
 
 	w.AddEvent_Paint(OnWndDrawWindow)
 	w.AddEvent_Destroy(func(hWindow int, pbHandled *bool) int {
@@ -143,6 +161,17 @@ func CreateButton(left, top, width, height int32, name string) *widget.Button {
 
 // 释放资源
 func ReleaseAnimation() {
+	for i := 0; i < len(list_object); i++ {
+		switch obj := list_object[i].(type) {
+		case *CFocusTraceButton_Line:
+			obj.Release()
+		case *CFocusTraceEdit_Border:
+			obj.Release()
+		case *CFocusTraceEdit_Line:
+			obj.Release()
+		}
+	}
+
 	for _, v := range list_animation {
 		xc.XAnima_Release(v, true)
 	}
@@ -166,6 +195,19 @@ func ReleaseAnimation() {
 	list_animation = list_animation[:0]
 	list_svg = list_svg[:0]
 	list_xcgui = list_xcgui[:0]
+	list_object = list_object[:0]
+}
+
+func ReleaseObject(hObject int) {
+	xc_type := xc.XObj_GetTypeBase(hObject)
+	switch xc_type {
+	case xcc.XC_ELE:
+		xc.XEle_Destroy(hObject)
+	case xcc.XC_SHAPE:
+		xc.XShape_Destroy(hObject)
+	case xcc.XC_SVG:
+		xc.XSvg_Release(hObject)
+	}
 }
 
 // 窗口绘制消息.
@@ -1727,7 +1769,7 @@ func OnBtnClick20_1(hEle int, pbHandled *bool) int {
 	w.GetBodyRect(&rect)
 
 	hEle_mask = xc.XEle_Create(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top, w.Handle)
-	xc.XEle_AddBkFill(hEle_mask, xcc.CombinedState(xcc.Window_State_Flag_Leave), xc.RGBA(0, 0, 0, 200))
+	xc.XEle_AddBkFill(hEle_mask, xcc.CombinedState_Window_State_Flag_Leave, xc.RGBA(0, 0, 0, 200))
 	xc.XEle_Redraw(hEle_mask, true)
 
 	wd := window.NewEx(0, xcc.WS_CHILD, "", 0, 0, 300, 200, "内嵌子弹窗", w.GetHWND(), xcc.Window_Style_Default)
@@ -1751,7 +1793,7 @@ func OnBtnClick20_2(hEle int, pbHandled *bool) int {
 	w.GetBodyRect(&rect)
 
 	hEle_mask = xc.XEle_Create(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top, w.Handle)
-	xc.XEle_AddBkFill(hEle_mask, xcc.CombinedState(xcc.Window_State_Flag_Leave), xc.RGBA(0, 0, 0, 200))
+	xc.XEle_AddBkFill(hEle_mask, xcc.CombinedState_Window_State_Flag_Leave, xc.RGBA(0, 0, 0, 200))
 	xc.XEle_Redraw(hEle_mask, true)
 
 	wd := w.Msg_CreateEx(0, xcc.WS_CHILD, "", "标题", "内嵌消息框", xcc.MessageBox_Flag_Ok|xcc.MessageBox_Flag_Icon_Info, xcc.Window_Style_Default)
@@ -1766,7 +1808,7 @@ func OnBtnClick20_3(hEle int, pbHandled *bool) int {
 	w.GetBodyRect(&rect)
 
 	hEle_mask = xc.XEle_Create(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top, w.Handle)
-	xc.XEle_AddBkFill(hEle_mask, xcc.CombinedState(xcc.Window_State_Flag_Leave), xc.RGBA(0, 0, 0, 200))
+	xc.XEle_AddBkFill(hEle_mask, xcc.CombinedState_Window_State_Flag_Leave, xc.RGBA(0, 0, 0, 200))
 	xc.XEle_Redraw(hEle_mask, true)
 
 	wd := w.Msg_Create("标题", "消息框", xcc.MessageBox_Flag_Ok|xcc.MessageBox_Flag_Icon_Info, xcc.Window_Style_Default)
@@ -1791,7 +1833,7 @@ func OnBtnClick20_4(hEle int, pbHandled *bool) int {
 	eleMask := widget.NewElement(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top, w.Handle)
 	hEle_mask = eleMask.Handle
 
-	eleMask.AddBkFill(xcc.CombinedState(xcc.Window_State_Flag_Leave), xc.RGBA(0, 0, 0, 200))
+	eleMask.AddBkFill(xcc.CombinedState_Window_State_Flag_Leave, xc.RGBA(0, 0, 0, 200))
 	eleMask.Redraw(true)
 
 	eleMask.AddEvent_Paint(OnDraw20_4)
@@ -1861,7 +1903,7 @@ func OnBtnClick20_5(hEle int, pbHandled *bool) int {
 	eleMask := widget.NewElement(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top, w.Handle)
 	hEle_mask = eleMask.Handle
 
-	eleMask.AddBkFill(xcc.CombinedState(xcc.Window_State_Flag_Leave), xc.RGBA(0, 0, 0, 200))
+	eleMask.AddBkFill(xcc.CombinedState_Window_State_Flag_Leave, xc.RGBA(0, 0, 0, 200))
 	eleMask.AddEvent_LButtonDown(OnLButtonDown20_4and5)
 
 	var width int32 = 350
@@ -1923,4 +1965,1042 @@ func OnBtnClick20_5_close(hEle int, pbHandled *bool) int {
 	xc.XEle_Destroy(xc.XEle_GetUserData(hEle))
 	w.Redraw(false)
 	return 0
+}
+
+// 21.消息通知
+func OnBtnClick21(hEle int, pbHandled *bool) int {
+	ReleaseAnimation()
+	var top int32 = 200
+	var left int32 = 140
+	var width int32 = 150
+	var height_btn int32 = 35
+	var height int32 = 34
+
+	// -----top------------
+	btn := CreateButton(left, top, width, height_btn, "top-成功")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.AddEvent_BnClick(OnBtnClick21_1)
+
+	btn = CreateButton(left, top, width, height_btn, "top-警告消息")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.AddEvent_BnClick(OnBtnClick21_2)
+
+	btn = CreateButton(left, top, width, height_btn, "top-消息")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.AddEvent_BnClick(OnBtnClick21_3)
+
+	btn = CreateButton(left, top, width, height_btn, "top-错误消息")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.AddEvent_BnClick(OnBtnClick21_4)
+
+	btn = CreateButton(left, top, width, height_btn, "top-没有关闭按钮")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.AddEvent_BnClick(OnBtnClick21_5)
+
+	btn = CreateButton(left, top, width, height_btn, "top-手动关闭消息")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.AddEvent_BnClick(OnBtnClick21_6)
+
+	btn = CreateButton(left, top, width, height_btn, "top-不带标题")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.AddEvent_BnClick(OnBtnClick21_7)
+
+	btn = CreateButton(left, top, width, height_btn, "top-自定义大小")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.AddEvent_BnClick(OnBtnClick21_8)
+
+	// -----right------------
+	left += 160
+	top = 200
+	btn = CreateButton(left, top, width, height_btn, "right-成功")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.AddEvent_BnClick(OnBtnClick21_right_1)
+
+	btn = CreateButton(left, top, width, height_btn, "right-警告消息")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.AddEvent_BnClick(OnBtnClick21_right_2)
+
+	btn = CreateButton(left, top, width, height_btn, "right-消息")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.AddEvent_BnClick(OnBtnClick21_right_3)
+
+	btn = CreateButton(left, top, width, height_btn, "right-错误消息")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.AddEvent_BnClick(OnBtnClick21_right_4)
+
+	btn = CreateButton(left, top, width, height_btn, "right-没有关闭按钮")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.AddEvent_BnClick(OnBtnClick21_right_5)
+
+	btn = CreateButton(left, top, width, height_btn, "right-手动关闭消息")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.AddEvent_BnClick(OnBtnClick21_right_6)
+
+	btn = CreateButton(left, top, width, height_btn, "right-不带标题")
+	top += height
+	list_xcgui = append(list_xcgui, btn.Handle)
+	btn.AddEvent_BnClick(OnBtnClick21_right_7)
+
+	w.Redraw(false)
+	return 0
+}
+
+func OnBtnClick21_1(hEle int, pbHandled *bool) int {
+	_svg := svg.NewByString(svgSuccess).SetSize(16, 16)
+
+	w.NotifyMsg_WindowPopup(xcc.Position_Flag_Top, "成功", "这是一条成功的提示消息", xc.XImage_LoadSvg(_svg.Handle), xcc.NotifyMsg_Skin_Success)
+	return 0
+}
+
+func OnBtnClick21_2(hEle int, pbHandled *bool) int {
+	_svg := svg.NewByString(svgWarning).SetSize(16, 16)
+
+	w.NotifyMsg_WindowPopup(xcc.Position_Flag_Top, "警告", "这是一条警告的提示消息", xc.XImage_LoadSvg(_svg.Handle), xcc.NotifyMsg_Skin_Warning)
+	return 0
+}
+
+func OnBtnClick21_3(hEle int, pbHandled *bool) int {
+	_svg := svg.NewByString(svgMessage).SetSize(16, 16)
+
+	w.NotifyMsg_WindowPopup(xcc.Position_Flag_Top, "消息", "这是一条消息的提示消息", xc.XImage_LoadSvg(_svg.Handle), xcc.NotifyMsg_Skin_Message)
+	return 0
+}
+
+func OnBtnClick21_4(hEle int, pbHandled *bool) int {
+	_svg := svg.NewByString(svgError).SetSize(16, 16)
+
+	w.NotifyMsg_WindowPopup(xcc.Position_Flag_Top, "错误", "这是一条错误的提示消息", xc.XImage_LoadSvg(_svg.Handle), xcc.NotifyMsg_Skin_Error)
+	return 0
+}
+
+func OnBtnClick21_5(hEle int, pbHandled *bool) int {
+	_svg := svg.NewByString(svgSuccess).SetSize(16, 16)
+
+	w.NotifyMsg_WindowPopupEx(xcc.Position_Flag_Top, "成功", "这是一条成功的提示消息, 没有关闭按钮", xc.XImage_LoadSvg(_svg.Handle), xcc.NotifyMsg_Skin_Success, false, true, -1, -1)
+	return 0
+}
+
+func OnBtnClick21_6(hEle int, pbHandled *bool) int {
+	_svg := svg.NewByString(svgSuccess).SetSize(16, 16)
+
+	w.NotifyMsg_WindowPopupEx(xcc.Position_Flag_Top, "成功", "这是一条成功的提示消息, 手动关闭, 这是一个自动换行文本", xc.XImage_LoadSvg(_svg.Handle), xcc.NotifyMsg_Skin_No, true, false, -1, -1)
+	return 0
+}
+
+func OnBtnClick21_7(hEle int, pbHandled *bool) int {
+	_svg := svg.NewByString(svgSuccess).SetSize(16, 16)
+
+	w.NotifyMsg_WindowPopup(xcc.Position_Flag_Top, "", "这是一条成功的提示消息, 没有标题", xc.XImage_LoadSvg(_svg.Handle), xcc.NotifyMsg_Skin_Success)
+	return 0
+}
+
+func OnBtnClick21_8(hEle int, pbHandled *bool) int {
+	_svg := svg.NewByString(svgSuccess).SetSize(16, 16)
+
+	w.NotifyMsg_WindowPopupEx(xcc.Position_Flag_Top, "成功", "这是一条成功的提示消息,\n自定义大小", xc.XImage_LoadSvg(_svg.Handle), xcc.NotifyMsg_Skin_Success, true, true, 300, 200)
+	return 0
+}
+
+func OnBtnClick21_right_1(hEle int, pbHandled *bool) int {
+	_svg := svg.NewByString(svgSuccess).SetSize(20, 20)
+
+	w.NotifyMsg_WindowPopupEx(xcc.Position_Flag_Right, "成功", "这是一条成功的提示消息", xc.XImage_LoadSvg(_svg.Handle), xcc.NotifyMsg_Skin_Success, true, true, -1, -1)
+	return 0
+}
+
+func OnBtnClick21_right_2(hEle int, pbHandled *bool) int {
+	_svg := svg.NewByString(svgWarning).SetSize(20, 20)
+
+	w.NotifyMsg_WindowPopupEx(xcc.Position_Flag_Right, "警告", "这是一条警告的提示消息", xc.XImage_LoadSvg(_svg.Handle), xcc.NotifyMsg_Skin_Warning, true, true, -1, -1)
+	return 0
+}
+
+func OnBtnClick21_right_3(hEle int, pbHandled *bool) int {
+	_svg := svg.NewByString(svgMessage).SetSize(20, 20)
+
+	w.NotifyMsg_WindowPopupEx(xcc.Position_Flag_Right, "消息", "这是一条消息的提示消息", xc.XImage_LoadSvg(_svg.Handle), xcc.NotifyMsg_Skin_Message, true, true, -1, -1)
+	return 0
+}
+
+func OnBtnClick21_right_4(hEle int, pbHandled *bool) int {
+	_svg := svg.NewByString(svgError).SetSize(20, 20)
+
+	w.NotifyMsg_WindowPopupEx(xcc.Position_Flag_Right, "错误", "这是一条错误的提示消息", xc.XImage_LoadSvg(_svg.Handle), xcc.NotifyMsg_Skin_Error, true, true, -1, -1)
+	return 0
+}
+
+func OnBtnClick21_right_5(hEle int, pbHandled *bool) int {
+	_svg := svg.NewByString(svgSuccess).SetSize(20, 20)
+
+	w.NotifyMsg_WindowPopupEx(xcc.Position_Flag_Right, "成功", "这是一条成功的提示消息, 没有关闭按钮", xc.XImage_LoadSvg(_svg.Handle), xcc.NotifyMsg_Skin_Success, false, true, -1, -1)
+	return 0
+}
+
+func OnBtnClick21_right_6(hEle int, pbHandled *bool) int {
+	_svg := svg.NewByString(svgSuccess).SetSize(20, 20)
+
+	w.NotifyMsg_WindowPopupEx(xcc.Position_Flag_Right, "成功", "这是一条成功的提示消息, 手动关闭, 这是一个自动换行文本", xc.XImage_LoadSvg(_svg.Handle), xcc.NotifyMsg_Skin_No, true, false, -1, -1)
+	return 0
+}
+
+func OnBtnClick21_right_7(hEle int, pbHandled *bool) int {
+	_svg := svg.NewByString(svgSuccess).SetSize(20, 20)
+
+	w.NotifyMsg_WindowPopupEx(xcc.Position_Flag_Right, "成功", "这是一条成功的提示消息, 没有标题", xc.XImage_LoadSvg(_svg.Handle), xcc.NotifyMsg_Skin_Success, true, true, -1, -1)
+	return 0
+}
+
+var (
+	hSliderBar1 int
+	hSliderBar2 int
+	hSliderBar3 int
+	hProgBar1   int
+	hProgBar2   int
+	hProgBar3   int
+)
+
+// 22.进度条
+func OnBtnClick22(hEle int, pbHandled *bool) int {
+	ReleaseAnimation()
+
+	var left int32 = 150
+	var top int32 = 100
+	var width int32 = 500
+
+	// 滑动条
+	{
+		strBackground := "{99:1.9.9;98:16(0);5:2(37)3(0,8,0,0)20(1)21(3)26(1)22(-3618616)23(255)9(3,3,3,3);}"
+		hSliderBar1 = xc.XSliderBar_Create(left, top, width, 20, w.Handle)
+		top += 50
+		hSliderBar2 = xc.XSliderBar_Create(left, top, width, 20, w.Handle)
+		top += 50
+		hSliderBar3 = xc.XSliderBar_Create(left, top, width, 20, w.Handle)
+		top += 50
+		list_xcgui = append(list_xcgui, hSliderBar1)
+		list_xcgui = append(list_xcgui, hSliderBar2)
+		list_xcgui = append(list_xcgui, hSliderBar3)
+		xc.XEle_SetBkInfo(hSliderBar1, strBackground)
+		xc.XEle_SetBkInfo(hSliderBar2, strBackground)
+		xc.XEle_SetBkInfo(hSliderBar3, strBackground)
+		xc.XSliderBar_SetButtonWidth(hSliderBar1, 20)
+		xc.XSliderBar_SetButtonWidth(hSliderBar2, 20)
+		xc.XSliderBar_SetButtonWidth(hSliderBar3, 20)
+		xc.XEle_SetBkInfo(xc.XSliderBar_GetButton(hSliderBar1), "{99:1.9.9;98:16(0)32(0)64(0);6:2(15)20(1)21(3)26(1)22(-25024)23(255);}")
+		xc.XEle_SetBkInfo(xc.XSliderBar_GetButton(hSliderBar2), "{99:1.9.9;98:16(0)32(0)64(0);6:2(15)20(1)21(3)26(1)22(-25024)23(255);}")
+		xc.XEle_SetBkInfo(xc.XSliderBar_GetButton(hSliderBar3), "{99:1.9.9;98:16(0)32(0)64(0);6:2(15)20(1)21(3)26(0)22(-1)23(255)10(1)7(2)11(3)16(1)12(-25024)13(255);}")
+
+		hImage := xc.XImage_LoadMemory(imgSliderBar)
+		xc.XImage_SetDrawTypeAdaptive(hImage, 5, 5, 5, 5)
+		xc.XSliderBar_SetImageLoad(hSliderBar1, hImage)
+		xc.XSliderBar_SetImageLoad(hSliderBar2, hImage)
+
+		hAnimation := xc.XAnima_Create(0, 0)
+		list_animation = append(list_animation, hAnimation)
+		xc.XAnimaItem_SetCallback(xc.XAnima_DelayEx(hAnimation, 2000, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, true), OnAnimationItem_22)
+		xc.XAnima_Run(hAnimation, w.Handle)
+	}
+
+	// 进度条
+	{
+		hProgBar1 = xc.XProgBar_Create(left, top, width, 20, w.Handle)
+		top += 50
+		hProgBar2 = xc.XProgBar_Create(left, top, width, 20, w.Handle)
+		top += 50
+		hProgBar3 = xc.XProgBar_Create(left, top, width, 20, w.Handle)
+		top += 50
+		list_xcgui = append(list_xcgui, hProgBar1)
+		list_xcgui = append(list_xcgui, hProgBar2)
+		list_xcgui = append(list_xcgui, hProgBar3)
+		xc.XEle_SetBkInfo(hProgBar1, "{99:1.9.9;98:16(0);5:2(15)20(1)21(3)26(1)22(-3618616)23(255)9(10,10,10,10);}")
+		xc.XEle_SetBkInfo(hProgBar2, "{99:1.9.9;98:16(0);5:2(15)20(1)21(3)26(1)22(-3618616)23(255)9(10,10,10,10);}")
+
+		hImage := xc.XImage_LoadMemory(imgProgressBar)
+		xc.XImage_SetDrawTypeAdaptive(hImage, 10, 0, 10, 0)
+		xc.XProgBar_SetImageLoad(hProgBar1, hImage)
+		xc.XProgBar_SetImageLoad(hProgBar2, hImage)
+
+		xc.XEle_SetTextColor(hProgBar1, xc.RGBA(255, 255, 255, 255))
+		xc.XEle_SetTextColor(hProgBar2, xc.RGBA(255, 255, 255, 255))
+	}
+	w.Redraw(false)
+	return 0
+}
+
+func OnAnimationItem_22(hAnimation int, pos float32) int {
+	if xc.XC_IsHELE(hSliderBar1) {
+		xc.XSliderBar_SetPos(hSliderBar1, int32(100.0*pos+0.5))
+	}
+	if xc.XC_IsHELE(hSliderBar2) {
+		xc.XSliderBar_SetPos(hSliderBar2, int32(80.0*pos+0.5))
+	}
+	if xc.XC_IsHELE(hSliderBar3) {
+		xc.XSliderBar_SetPos(hSliderBar3, int32(50.0*pos+0.5))
+	}
+
+	if hProgBar1 > 0 {
+		xc.XProgBar_SetPos(hProgBar1, int32(100.0*pos+0.5))
+	}
+	if hProgBar2 > 0 {
+		xc.XProgBar_SetPos(hProgBar2, int32(80.0*pos+0.5))
+	}
+	if hProgBar3 > 0 {
+		xc.XProgBar_SetPos(hProgBar3, int32(50.0*pos+0.5))
+	}
+	return 0
+}
+
+// 23.焦点追踪
+func OnBtnClick23(hEle int, pbHandled *bool) int {
+	ReleaseAnimation()
+
+	var left int32 = 150
+	var top int32 = 80
+	var width int32 = 100
+	var height int32 = 60
+
+	// 图标按钮 切换
+	{
+		pFocus := NewCFocusTraceButton_Line()
+		list_object = append(list_object, pFocus)
+		pFocus.FocusOffset = 20
+		pFocus.ChangeColor = true
+		pFocus.CreatePane2(left, top-20, 600, height+40, w.Handle)
+		left += 50
+		pFocus.CreateFocusEle(left, top+height-2, width, 2, xc.RGBA(0, 162, 232, 255), w.Handle)
+
+		pFocus.CreateButton2(left, top, width, height, "Button", xc.XSvg_LoadString(svg1), xc.RGBA(171, 72, 188, 255), xc.RGBA(247, 238, 248, 255), w.Handle)
+		left += width
+		pFocus.CreateButton2(left, top, width, height, "Button", xc.XSvg_LoadString(svg2), xc.RGBA(254, 167, 38, 255), xc.RGBA(253, 244, 232, 255), w.Handle)
+		left += width
+		pFocus.CreateButton2(left, top, width, height, "Button", xc.XSvg_LoadString(svg3), xc.RGBA(38, 166, 154, 255), xc.RGBA(236, 246, 245, 255), w.Handle)
+		left += width
+	}
+
+	left = 150
+	top += 100
+	width = 90
+	height = 40
+	// 图标按钮 切换2 导航条
+	{
+		pFocus := NewCFocusTraceButton_Line()
+		list_object = append(list_object, pFocus)
+		pFocus.CreatePane(left, top, 600, height, w.Handle)
+		left += 50
+		pFocus.CreateFocusEle(left, top+height-3, width, 3, xc.RGBA(0, 162, 232, 255), w.Handle)
+
+		pFocus.CreateButton(left, top, width, height, "Button", xc.XSvg_LoadString(svg1), w.Handle)
+		left += width
+		pFocus.CreateButton(left, top, width, height, "Button", xc.XSvg_LoadString(svg2), w.Handle)
+		left += width
+		pFocus.CreateButton(left, top, width, height, "Button", xc.XSvg_LoadString(svg3), w.Handle)
+		left += width
+	}
+
+	left = 150
+	top += 80
+	width = 150
+	height = 30
+	// 编辑框 焦点边
+	{
+		pFocus := NewCFocusTraceEdit_Line()
+		list_object = append(list_object, pFocus)
+		pFocus.CreatePane(left, top, 600, height+40, w.Handle)
+		left += 50
+		top += 20
+		pFocus.CreateEdit(left, top, width, height, w.Handle)
+		left += width + 20
+		pFocus.CreateEdit(left, top, width, height, w.Handle)
+		left += width + 20
+		pFocus.CreateEdit(left, top, width, height, w.Handle)
+		left += width + 20
+	}
+
+	left = 150
+	top += 90
+	width = 150
+	height = 30
+	// 编辑框 焦点矩形
+	{
+		pFocus := NewCFocusTraceEdit_Border()
+		list_object = append(list_object, pFocus)
+		pFocus.CreatePane(left, top, 600, height+40, w.Handle)
+		left += 50
+		top += 20
+		pFocus.CreateFocusEle(left, top, width, height, w.Handle)
+
+		pFocus.CreateEdit(left, top, width, height, w.Handle)
+		left += width + 20
+		pFocus.CreateEdit(left, top, width, height, w.Handle)
+		left += width + 20
+		pFocus.CreateEdit(left, top, width, height, w.Handle)
+		left += width + 20
+	}
+
+	w.Redraw(false)
+	return 0
+}
+
+// CFocusTraceButton_Line 焦点追踪 - 线
+type CFocusTraceButton_Line struct {
+	HShapeRect  int
+	HFocusEle   int
+	ChangeColor bool
+	FocusOffset int32
+	List        []int
+}
+
+// NewCFocusTraceButton_Line 构造函数
+func NewCFocusTraceButton_Line() *CFocusTraceButton_Line {
+	return &CFocusTraceButton_Line{
+		FocusOffset: -1,
+		List:        make([]int, 0),
+	}
+}
+
+// Release 释放资源
+func (c *CFocusTraceButton_Line) Release() {
+	for _, hxcgui := range c.List {
+		ReleaseObject(hxcgui)
+	}
+}
+
+func (c *CFocusTraceButton_Line) CreatePane(x, y, width, height int32, hParent int) {
+	c.HShapeRect = xc.XShapeRect_Create(x, y, width, height, hParent)
+	c.List = append(c.List, c.HShapeRect)
+	xc.XShapeRect_SetFillColor(c.HShapeRect, xc.RGBA(156, 39, 176, 255))
+	xc.XShapeRect_EnableBorder(c.HShapeRect, false)
+}
+
+func (c *CFocusTraceButton_Line) CreatePane2(x, y, width, height int32, hParent int) {
+	c.HShapeRect = xc.XShapeRect_Create(x, y, width, height, hParent)
+	c.List = append(c.List, c.HShapeRect)
+	xc.XShapeRect_SetBorderColor(c.HShapeRect, xc.RGBA(200, 200, 200, 255))
+	xc.XShapeRect_EnableFill(c.HShapeRect, false)
+}
+
+func (c *CFocusTraceButton_Line) CreateFocusEle(x, y, width, height int32, color uint32, hParent int) {
+	c.HFocusEle = xc.XEle_Create(x, y, width, height, hParent)
+	c.List = append(c.List, c.HFocusEle)
+	xc.XEle_EnableTopmost(c.HFocusEle, true)
+	xc.XEle_AddBkFill(c.HFocusEle, xcc.Element_State_Flag_Leave, color)
+}
+
+func (c *CFocusTraceButton_Line) CreateButton(x, y, width, height int32, pName string, hSvg, hParent int) int {
+	hButton := xc.XBtn_Create(x, y, width, height, pName, hParent)
+	c.List = append(c.List, hButton)
+
+	str := "{99:1.9.9;98:16(0)32(1)64(2);5:2(15)20(1)21(3)26(1)22(-5232740)23(255);5:2(15)20(1)21(3)26(1)22(-4702042)23(255);5:2(15)20(1)21(3)26(1)22(-4303953)23(255);}"
+	xc.XEle_SetBkInfo(hButton, str)
+	xc.XEle_SetTextColor(hButton, xc.RGBA(255, 255, 255, 255))
+	xc.XSvg_SetSize(hSvg, 24, 24)
+	xc.XSvg_SetUserFillColor(hSvg, xc.RGBA(255, 255, 255, 255), true)
+
+	hImage := xc.XImage_LoadSvg(hSvg)
+	xc.XBtn_SetIcon(hButton, hImage)
+
+	btn := widget.NewButtonByHandle(hButton)
+	btn.AddEvent_BnClick(c.OnBtnClick2)
+	return hButton
+}
+
+func (c *CFocusTraceButton_Line) CreateButton2(x, y, width, height int32, pName string, hSvg int, color, colorBack uint32, hParent int) {
+	hButton := xc.XBtn_Create(x, y, width, height, pName, hParent)
+	c.List = append(c.List, hButton)
+
+	xc.XBtn_SetIconAlign(hButton, xcc.Button_Icon_Align_Top)
+	xc.XSvg_SetUserFillColor(hSvg, color, true)
+	xc.XEle_SetTextColor(hButton, color)
+	xc.XEle_AddBkFill(hButton, xcc.Element_State_Flag_Stay, colorBack)
+	xc.XEle_AddBkFill(hButton, xcc.Element_State_Flag_Down, colorBack)
+
+	xc.XSvg_SetSize(hSvg, 32, 32)
+	hImage := xc.XImage_LoadSvg(hSvg)
+	xc.XBtn_SetIcon(hButton, hImage)
+
+	xc.XEle_AddBkFill(hButton, xcc.Element_State_Flag_Leave, xc.RGBA(255, 255, 255, 255))
+
+	btn := widget.NewButtonByHandle(hButton)
+	btn.AddEvent_BnClick(c.OnBtnClick2)
+}
+
+func (c *CFocusTraceButton_Line) OnBtnClick(hButton int, pbHandled *bool) int {
+	var x, y int32
+	xc.XEle_GetPosition(hButton, &x, &y)
+
+	hAnimation := xc.XAnima_Create(c.HFocusEle, 1)
+	xc.XAnimaMove_SetFlag(xc.XAnima_Move(hAnimation, 400, float32(x), float32(y), 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, false), xcc.Animation_Move_X)
+	xc.XAnima_Run(hAnimation, c.HShapeRect)
+	return 0
+}
+
+func (c *CFocusTraceButton_Line) OnBtnClick2(hButton int, pbHandled *bool) int {
+	if c.ChangeColor {
+		xc.XEle_ClearBkInfo(c.HFocusEle)
+		xc.XEle_AddBkFill(c.HFocusEle, xcc.Element_State_Flag_Leave, xc.XEle_GetTextColor(hButton))
+	}
+
+	var rect xc.RECT
+	xc.XEle_GetRect(hButton, &rect)
+
+	hAnimation := xc.XAnima_Create(c.HFocusEle, 1)
+	if c.FocusOffset == -1 {
+		xc.XEle_SetWidth(c.HFocusEle, rect.Right-rect.Left)
+		xc.XAnimaMove_SetFlag(xc.XAnima_Move(hAnimation, 400, float32(rect.Left), 0, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, false), xcc.Animation_Move_X)
+	} else {
+		xc.XEle_SetWidth(c.HFocusEle, (rect.Right-rect.Left)-c.FocusOffset-c.FocusOffset)
+		xc.XAnimaMove_SetFlag(xc.XAnima_Move(hAnimation, 400, float32(rect.Left+c.FocusOffset), 0, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, false), xcc.Animation_Move_X)
+	}
+	xc.XAnima_Run(hAnimation, c.HShapeRect)
+
+	hImage := xc.XBtn_GetIcon(hButton, 0)
+	hSvg := xc.XImage_GetSvg(hImage)
+
+	hAnimation = xc.XAnima_Create(hSvg, 1)
+	index := rand.Intn(3)
+
+	switch index {
+	case 0:
+		xc.XAnima_Scale(hAnimation, 600, 1.5, 1.5, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In, true)
+	case 1:
+		xc.XAnima_Rotate(hAnimation, 600, 360, 1, 0, false)
+	case 2:
+		xc.XAnima_Rotate(hAnimation, 200, -45, 1, 0, false)
+		xc.XAnima_Rotate(hAnimation, 300, 45, 1, 0, true)
+		xc.XAnima_Rotate(hAnimation, 200, 0, 1, 0, false)
+	}
+	xc.XAnima_Run(hAnimation, hButton)
+	return 0
+}
+
+// CFocusTraceEdit_Line 焦点追踪 - 线
+type CFocusTraceEdit_Line struct {
+	hShapeRect int
+	list       []int
+}
+
+func NewCFocusTraceEdit_Line() *CFocusTraceEdit_Line {
+	return &CFocusTraceEdit_Line{
+		list: make([]int, 0),
+	}
+}
+
+func (c *CFocusTraceEdit_Line) Release() {
+	for _, hxcgui := range c.list {
+		ReleaseObject(hxcgui)
+	}
+}
+
+func (c *CFocusTraceEdit_Line) CreatePane(x, y, width, height int32, hParent int) {
+	c.hShapeRect = xc.XShapeRect_Create(x, y, width, height, hParent)
+	c.list = append(c.list, c.hShapeRect)
+	xc.XShapeRect_SetBorderColor(c.hShapeRect, xc.RGBA(200, 200, 200, 255))
+	xc.XShapeRect_EnableFill(c.hShapeRect, false)
+}
+
+func (c *CFocusTraceEdit_Line) CreateEdit(x, y, width, height int32, hParent int) {
+	hEdit := xc.XEdit_Create(x, y, width, height, hParent)
+	c.list = append(c.list, hEdit)
+
+	xc.XEle_EnableDrawFocus(hEdit, false)
+
+	xc.XEle_AddBkFill(hEdit, xcc.Element_State_Flag_Leave, xc.RGBA(235, 235, 235, 255))
+	xc.XEle_AddBkFill(hEdit, xcc.Element_State_Flag_Stay, xc.RGBA(235, 235, 235, 255))
+
+	edit := widget.NewEditByHandle(hEdit)
+	edit.AddEvent_SetFocus(c.OnSetFocus)
+	edit.AddEvent_KillFocus(c.OnKillFocus)
+}
+
+// 获得焦点
+func (c *CFocusTraceEdit_Line) OnSetFocus(hEdit int, pbHandled *bool) int {
+	var rect xc.RECT
+	xc.XEle_GetRect(hEdit, &rect)
+
+	hParent := xc.XWidget_GetParent(hEdit)
+	// 创建焦点指示元素，位置在编辑框底部中间
+	hFocusEle := xc.XEle_Create(rect.Left+(rect.Right-rect.Left)/2, rect.Bottom-2, 1, 2, hParent)
+
+	// 随机选择颜色
+	color := xc.RGBA(200, 0, 0, 255)
+	switch rand.Intn(4) {
+	case 0:
+		color = xc.RGBA(171, 72, 188, 255)
+	case 1:
+		color = xc.RGBA(254, 167, 38, 255)
+	case 2:
+		color = xc.RGBA(38, 166, 154, 255)
+	}
+
+	xc.XEle_AddBkFill(hFocusEle, xcc.Element_State_Flag_Leave, color)
+
+	// 将 hFocusEle 存储在 Edit 的 UserData 中
+	xc.XEle_SetUserData(hEdit, hFocusEle)
+
+	// 创建动画：从中间向两边扩展
+	hAnimation := xc.XAnima_Create(hFocusEle, 1)
+	xc.XAnima_ScaleSize(hAnimation, 400, float32(rect.Right-rect.Left), 2, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, false)
+	xc.XAnima_Run(hAnimation, c.hShapeRect)
+	return 0
+}
+
+// 失去焦点
+func (c *CFocusTraceEdit_Line) OnKillFocus(hEdit int, pbHandled *bool) int {
+	// 从 UserData 中取出之前保存的焦点元素句柄
+	hFocusEle := xc.XEle_GetUserData(hEdit)
+
+	if hFocusEle != 0 {
+		hAnimation := xc.XAnima_Create(hFocusEle, 1)
+		// 动画：缩小至宽度0
+		xc.XAnima_ScaleSize(hAnimation, 400, 0, 2, 1, xcc.Ease_Flag_Cubic|xcc.Ease_Flag_Out, false)
+		xc.XAnima_DestroyObjectUI(hAnimation, 0)
+		xc.XAnima_Run(hAnimation, c.hShapeRect)
+	}
+	return 0
+}
+
+// CFocusTraceEdit_Border 焦点追踪- 边
+type CFocusTraceEdit_Border struct {
+	hShapeRect int
+	hFocusEle  int
+	list       []int
+}
+
+// NewCFocusTraceEdit_Border 构造函数
+func NewCFocusTraceEdit_Border() *CFocusTraceEdit_Border {
+	return &CFocusTraceEdit_Border{
+		list: make([]int, 0),
+	}
+}
+
+// Release 释放资源
+func (c *CFocusTraceEdit_Border) Release() {
+	for _, hxcgui := range c.list {
+		ReleaseObject(hxcgui)
+	}
+}
+
+func (c *CFocusTraceEdit_Border) CreatePane(x, y, width, height int32, hParent int) {
+	c.hShapeRect = xc.XShapeRect_Create(x, y, width, height, hParent)
+	c.list = append(c.list, c.hShapeRect)
+	xc.XShapeRect_SetBorderColor(c.hShapeRect, xc.RGBA(200, 200, 200, 255))
+	xc.XShapeRect_EnableFill(c.hShapeRect, false)
+}
+
+func (c *CFocusTraceEdit_Border) CreateFocusEle(x, y, width, height int32, hParent int) {
+	c.hFocusEle = xc.XEle_Create(x, y, width, height, hParent)
+	c.list = append(c.list, c.hFocusEle)
+
+	xc.XEle_EnableTopmost(c.hFocusEle, true)
+	xc.XEle_EnableMouseThrough(c.hFocusEle, true)
+	xc.XEle_EnableBkTransparent(c.hFocusEle, true)
+	xc.XEle_AddBkBorder(c.hFocusEle, xcc.Element_State_Flag_Leave, xc.RGBA(254, 167, 38, 255), 2)
+}
+
+func (c *CFocusTraceEdit_Border) CreateEdit(x, y, width, height int32, hParent int) {
+	hEdit := xc.XEdit_Create(x, y, width, height, hParent)
+	c.list = append(c.list, hEdit)
+
+	xc.XEle_EnableDrawFocus(hEdit, false)
+
+	xc.XEle_AddBkFill(hEdit, xcc.Element_State_Flag_Leave, xc.RGBA(245, 245, 245, 255))
+	xc.XEle_AddBkFill(hEdit, xcc.Element_State_Flag_Stay, xc.RGBA(245, 245, 245, 255))
+	xc.XEle_AddBkBorder(hEdit, xcc.Element_State_Flag_Leave, xc.RGBA(220, 220, 220, 255), 1)
+	xc.XEle_AddBkBorder(hEdit, xcc.Element_State_Flag_Stay, xc.RGBA(200, 200, 200, 255), 1)
+
+	edit := widget.NewEditByHandle(hEdit)
+	edit.AddEvent_SetFocus(c.OnSetFocus)
+}
+
+// 获得焦点
+func (c *CFocusTraceEdit_Border) OnSetFocus(hEdit int, pbHandled *bool) int {
+	var rect xc.RECT
+	xc.XEle_GetRect(hEdit, &rect)
+
+	// 随机选择颜色
+	color := xc.RGBA(200, 0, 0, 255)
+	switch rand.Intn(4) {
+	case 0:
+		color = xc.RGBA(171, 72, 188, 255)
+	case 1:
+		color = xc.RGBA(254, 167, 38, 255)
+	case 2:
+		color = xc.RGBA(38, 166, 154, 255)
+	}
+
+	// 更新焦点元素样式
+	xc.XEle_ClearBkInfo(c.hFocusEle)
+	xc.XEle_AddBkBorder(c.hFocusEle, xcc.Element_State_Flag_Leave, color, 2)
+
+	// 创建动画：移动焦点框到编辑框位置
+	hAnimation := xc.XAnima_Create(c.hFocusEle, 1)
+	xc.XAnima_Move(hAnimation, 400, float32(rect.Left), float32(rect.Top), 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, false)
+	xc.XAnima_Run(hAnimation, c.hShapeRect)
+	return 0
+}
+
+var (
+	hTabPage_Background int // 页面背景,裁剪
+	hTabPage_cur        int // 当前页面
+)
+
+// 24.页面切换 滑动
+func OnBtnClick24(hEle int, pbHandled *bool) int {
+	ReleaseAnimation()
+
+	var left int32 = 150
+	var top int32 = 80
+	var width int32 = 90
+	var height int32 = 40
+
+	pFocus := NewCFocusTraceButton_Line()
+	list_object = append(list_object, pFocus)
+	pFocus.CreatePane(left, top, 600, height, w.Handle)
+	left += 50
+	pFocus.CreateFocusEle(left, top+height-3, width, 3, xc.RGBA(255, 255, 255, 255), w.Handle)
+
+	hButton1 := pFocus.CreateButton(left, top, width, height, "Button1", xc.XSvg_LoadString(svg1), w.Handle)
+	left += width
+	hButton2 := pFocus.CreateButton(left, top, width, height, "Button2", xc.XSvg_LoadString(svg2), w.Handle)
+	left += width
+	hButton3 := pFocus.CreateButton(left, top, width, height, "Button3", xc.XSvg_LoadString(svg3), w.Handle)
+	left += width
+
+	left = 150
+	top += 40
+	// 作为背景, 对动画区域裁剪
+	hTabPage_Background = xc.XEle_Create(left, top, 600, 300, w.Handle)
+	list_xcgui = append(list_xcgui, hTabPage_Background)
+	xc.XEle_SetUserData(hButton1, 1)
+	xc.XEle_SetUserData(hButton2, 2)
+	xc.XEle_SetUserData(hButton3, 3)
+
+	widget.NewButtonByHandle(hButton1).AddEvent_BnClick(OnBtnClick24_1, true)
+	widget.NewButtonByHandle(hButton2).AddEvent_BnClick(OnBtnClick24_1, true)
+	widget.NewButtonByHandle(hButton3).AddEvent_BnClick(OnBtnClick24_1, true)
+
+	OnBtnClick24_1(hButton1, nil)
+
+	w.Redraw(false)
+	return 0
+}
+
+func OnBtnClick24_1(hButton int, pbHandled *bool) int {
+	var bMoveLeft = false
+
+	var id_old = 0
+	var id_new = xc.XEle_GetUserData(hButton)
+
+	// 检查当前页面是否存在且是元素类型
+	if hTabPage_cur > 0 && xc.XC_IsHELE(hTabPage_cur) {
+		id_old = xc.XEle_GetUserData(hTabPage_cur)
+		if id_new == id_old {
+			return 0
+		}
+	}
+
+	if id_old < id_new {
+		bMoveLeft = true
+	}
+
+	var width int32 = 600
+	var height int32 = 300
+
+	// 处理旧页面的退出动画
+	if hTabPage_cur > 0 {
+		if xc.XC_IsHELE(hTabPage_cur) {
+			hAnimation := xc.XAnima_Create(hTabPage_cur, 1)
+			var moveX int32
+			if bMoveLeft {
+				moveX = 1 - width
+			} else {
+				moveX = width
+			}
+			xc.XAnima_Move(hAnimation, 500, float32(moveX), 0, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, false)
+			xc.XAnima_DestroyObjectUI(hAnimation, 0)
+			xc.XAnima_Run(hAnimation, hTabPage_Background)
+		}
+		hTabPage_cur = 0
+	}
+
+	// 计算新页面进入的起始位置
+	var left int32
+	if bMoveLeft {
+		left = width + 10
+	} else {
+		left = 1 - width - 10
+	}
+
+	// 创建新页面
+	hTabPage_cur = xc.XEle_Create(left, 0, width, height, hTabPage_Background)
+
+	// 根据ID设置不同的内容和背景色
+	switch id_new {
+	case 1:
+		xc.XEle_AddBkFill(hTabPage_cur, xcc.Element_State_Flag_Leave, xc.RGBA(34, 177, 76, 255))
+		xc.XBtn_Create(100, 100, 100, 30, "我是页面 1", hTabPage_cur)
+	case 2:
+		xc.XEle_AddBkFill(hTabPage_cur, xcc.Element_State_Flag_Leave, xc.RGBA(254, 167, 38, 255))
+		xc.XBtn_Create(100, 100, 100, 30, "我是页面 2", hTabPage_cur)
+	case 3:
+		xc.XEle_AddBkFill(hTabPage_cur, xcc.Element_State_Flag_Leave, xc.RGBA(38, 166, 154, 255))
+		xc.XBtn_Create(100, 100, 100, 30, "我是页面 3", hTabPage_cur)
+	}
+
+	// 新页面入场动画
+	if hTabPage_cur > 0 {
+		xc.XEle_SetUserData(hTabPage_cur, id_new)
+
+		hAnimation := xc.XAnima_Create(hTabPage_cur, 1)
+		xc.XAnima_Move(hAnimation, 500, 0, 0, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, false)
+		xc.XAnima_Run(hAnimation, hTabPage_Background)
+	}
+
+	xc.XEle_Redraw(hTabPage_Background, false)
+	return 0
+}
+
+// 25.折叠面板
+func OnBtnClick25(hEle int, pbHandled *bool) int {
+	ReleaseAnimation()
+
+	var left int32 = 150
+	var top int32 = 50
+	var width int32 = 500
+	var height int32 = 500
+
+	pExpandGroup := NewCExpandGroup()
+	list_object = append(list_object, pExpandGroup)
+	pExpandGroup.CreateLayout(left, top, width, height, w.Handle)
+
+	hButton := pExpandGroup.CreatePanel("折叠1", xc.XSvg_LoadString(svg1))
+	pExpandGroup.CreatePanel("折叠2", xc.XSvg_LoadString(svg2))
+	pExpandGroup.CreatePanel("Button3", xc.XSvg_LoadString(svg3))
+
+	xc.XEle_AdjustLayout(pExpandGroup.HLayout, 0)
+	pExpandGroup.OnBtnClick(hButton, nil)
+	xc.XBtn_SetCheck(hButton, true)
+
+	w.Redraw()
+	return 0
+}
+
+type panel_info_ struct {
+	hPanel     int
+	hButton    int
+	height     int32
+	list_temp  []int
+	list_temp2 []int
+	list_temp3 []int
+	list_temp4 []int
+}
+
+// CExpandGroup 展开收缩面板
+type CExpandGroup struct {
+	m_list  []*panel_info_
+	HLayout int
+}
+
+// NewCExpandGroup 构造函数
+func NewCExpandGroup() *CExpandGroup {
+	return &CExpandGroup{
+		m_list: make([]*panel_info_, 0),
+	}
+}
+
+// Release 释放资源
+func (c *CExpandGroup) Release() {
+	c.m_list = nil
+
+	// 销毁布局元素
+	if c.HLayout != 0 && xc.XC_IsHELE(c.HLayout) {
+		xc.XEle_Destroy(c.HLayout)
+	}
+	c.HLayout = 0
+}
+
+func (c *CExpandGroup) CreateLayout(x, y, width, height int32, hParent int) int {
+	c.HLayout = xc.XLayout_Create(x, y, width, height, hParent)
+	xc.XLayoutBox_EnableHorizon(c.HLayout, false)
+	xc.XEle_AddBkBorder(c.HLayout, xcc.Element_State_Flag_Leave, xc.RGBA(200, 200, 200, 255), 1)
+	xc.XEle_SetPadding(c.HLayout, 1, 0, 1, 1)
+	xc.XWidget_LayoutItem_SetHeight(c.HLayout, xcc.Layout_Size_Auto, 0)
+	return c.HLayout
+}
+
+func (c *CExpandGroup) CreatePanel(pName string, hSvg int) int {
+	hButton := xc.XBtn_Create(0, 0, 100, 40, pName, c.HLayout)
+	xc.XObj_SetTypeEx(hButton, xcc.Button_Type_Check)
+	xc.XWidget_LayoutItem_SetWidth(hButton, xcc.Layout_Size_Fill, 0)
+	xc.XEle_EnableDrawBorder(hButton, false)
+	xc.XEle_EnableDrawFocus(hButton, false)
+	xc.XBtn_SetTextAlign(hButton, xcc.TextAlignFlag_Left|xcc.TextAlignFlag_Vcenter)
+	xc.XEle_SetPadding(hButton, 20, 0, 0, 0)
+	xc.XEle_SetBkInfo(hButton, "{99:1.9.9;98:272(0)288(0)320(0)128(0);5:2(7)3(0,0,0,1)20(1)21(3)26(0)22(-3618616)23(255);}")
+	xc.XEle_EnableBkTransparent(hButton, true)
+
+	xc.XSvg_SetSize(hSvg, 24, 24)
+	xc.XBtn_SetIcon(hButton, xc.XImage_LoadSvg(hSvg))
+
+	hCur := wapi.LoadImageW(0, wapi.IDC_HAND, wapi.IMAGE_CURSOR, 0, 0, wapi.LR_DEFAULTSIZE|wapi.LR_SHARED)
+	if hCur != 0 {
+		xc.XEle_SetCursor(hButton, hCur)
+	}
+
+	hPanel := xc.XEle_Create(0, 0, 100, 0, c.HLayout)
+	xc.XWidget_LayoutItem_SetWidth(hPanel, xcc.Layout_Size_Fill, 0)
+	xc.XEle_EnableCanvas(hPanel, false)
+	xc.XEle_EnableDrawBorder(hPanel, false)
+
+	// 创建 panel_info_
+	pInfo := &panel_info_{
+		hPanel:     hPanel,
+		hButton:    hButton,
+		height:     200,
+		list_temp:  make([]int, 0),
+		list_temp2: make([]int, 0),
+		list_temp3: make([]int, 0),
+		list_temp4: make([]int, 0),
+	}
+	c.m_list = append(c.m_list, pInfo)
+
+	var left int32 = 20
+	var top int32 = 10
+	var width int32 = 500
+
+	// 第一组文本
+	hText := xc.XShapeText_Create(left+width, top, 200, 20, "炫彩界面库 3.3.0", pInfo.hPanel)
+	pInfo.list_temp = append(pInfo.list_temp, hText)
+	xc.XShapeText_SetTextColor(hText, xc.RGBA(80, 80, 80, 255))
+
+	top += 25
+	// 第一组元素
+	for i := 0; i < 3; i++ {
+		hEle := xc.XEle_Create(left+width, top, 100, 50, pInfo.hPanel)
+		pInfo.list_temp2 = append(pInfo.list_temp2, hEle)
+		switch i {
+		case 0:
+			xc.XEle_AddBkFill(hEle, xcc.Element_State_Flag_Leave, xc.RGBA(213, 162, 221, 255))
+		case 1:
+			xc.XEle_AddBkFill(hEle, xcc.Element_State_Flag_Leave, xc.RGBA(255, 221, 170, 255))
+		case 2:
+			xc.XEle_AddBkFill(hEle, xcc.Element_State_Flag_Leave, xc.RGBA(151, 232, 223, 255))
+		}
+		left += 130
+	}
+
+	left = 20
+	top += 70
+
+	// 第二组文本
+	hText = xc.XShapeText_Create(left+width, top, 200, 20, "炫彩界面库 3.3.1", pInfo.hPanel)
+	pInfo.list_temp3 = append(pInfo.list_temp3, hText)
+	xc.XShapeText_SetTextColor(hText, xc.RGBA(80, 80, 80, 255))
+
+	top += 25
+	// 第二组元素
+	for i := 0; i < 3; i++ {
+		hEle := xc.XEle_Create(left+width, top, 100, 50, pInfo.hPanel)
+		pInfo.list_temp4 = append(pInfo.list_temp4, hEle)
+		switch i {
+		case 0:
+			xc.XEle_AddBkFill(hEle, xcc.Element_State_Flag_Leave, xc.RGBA(213, 162, 221, 255))
+		case 1:
+			xc.XEle_AddBkFill(hEle, xcc.Element_State_Flag_Leave, xc.RGBA(255, 221, 170, 255))
+		case 2:
+			xc.XEle_AddBkFill(hEle, xcc.Element_State_Flag_Leave, xc.RGBA(151, 232, 223, 255))
+		}
+		left += 130
+	}
+
+	// 注册按钮点击事件
+	xc.XEle_RegEventC1(hButton, xcc.XE_BNCLICK, func(hEle int, pbHandled *bool) int {
+		return c.OnBtnClick(hEle, pbHandled)
+	})
+
+	return hButton
+}
+
+func (c *CExpandGroup) OnBtnClick(hButton int, pbHandled *bool) int {
+	var pInfo *panel_info_ = nil
+	// 查找对应的 panel_info
+	for _, var_ := range c.m_list {
+		if var_.hButton == hButton {
+			pInfo = var_
+			break
+		}
+	}
+	if pInfo == nil {
+		return 0
+	}
+
+	hGroup := xc.XAnimaGroup_Create(1)
+	hAnimation := xc.XAnima_Create(pInfo.hPanel, 1)
+	xc.XAnimaGroup_AddItem(hGroup, hAnimation)
+
+	width := xc.XEle_GetWidth(pInfo.hPanel)
+	bExpand := !xc.XBtn_IsCheck(hButton)
+
+	if len(pInfo.list_temp) > 0 {
+		hText := pInfo.list_temp[0]
+		c.Animation25_Move(hGroup, hText, common.Choose(bExpand, 0, 600), common.Choose(bExpand, -width, width), true)
+	}
+
+	count := len(pInfo.list_temp2)
+	for i := 0; i < count; i++ {
+		hEle := pInfo.list_temp2[i]
+		c.Animation25_Move(hGroup, hEle, common.Choose(bExpand, 200, 400), common.Choose(bExpand, -width, width), true)
+	}
+
+	if len(pInfo.list_temp3) > 0 {
+		hText := pInfo.list_temp3[0]
+		c.Animation25_Move(hGroup, hText, common.Choose(bExpand, 400, 200), common.Choose(bExpand, -width, width), true)
+	}
+
+	count = len(pInfo.list_temp4)
+	for i := 0; i < count; i++ {
+		hEle := pInfo.list_temp4[i]
+		c.Animation25_Move(hGroup, hEle, common.Choose(bExpand, 600, 0), common.Choose(bExpand, -width, width), true)
+	}
+
+	if bExpand {
+		xc.XAnima_LayoutHeight(hAnimation, 400, xcc.Layout_Size_Fixed, float32(pInfo.height), 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, false)
+	} else {
+		xc.XAnima_Delay(hAnimation, 400)
+		xc.XAnima_LayoutHeight(hAnimation, 400, xcc.Layout_Size_Fixed, 0, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In, false)
+	}
+
+	xc.XAnima_Run(hGroup, w.Handle)
+	return 0
+}
+
+func (c *CExpandGroup) Animation25_Move(hGroup int, hObjectUI int, delay int, offsetx int32, bDestroy bool) {
+	var left, top int32 = 0, 0
+	if xc.XC_IsHELE(hObjectUI) {
+		xc.XEle_GetPosition(hObjectUI, &left, &top)
+	} else {
+		xc.XShape_GetPosition(hObjectUI, &left, &top)
+	}
+
+	hAnimationMove := xc.XAnima_Create(hObjectUI, 1)
+	xc.XAnimaGroup_AddItem(hGroup, hAnimationMove)
+	if delay > 0 {
+		xc.XAnima_Delay(hAnimationMove, float32(delay))
+	}
+
+	easeFlag := common.Choose(offsetx < 0, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In)
+	xc.XAnima_Move(hAnimationMove, 300, float32(left+offsetx), float32(top), 1, easeFlag, false)
 }
