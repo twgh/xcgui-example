@@ -60,7 +60,7 @@ func main() {
 			// 这会把消息传进窗口消息循环.
 			w1.SendMessage(wapi.WM_MOVE, 0, 0)
 		} else {
-			w1.RemoveEvent(xcc.WM_MOVE)
+			w1.RemoveEvent(xcc.XWM_WINDPROC)
 		}
 		return 0
 	})
