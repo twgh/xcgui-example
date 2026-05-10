@@ -98,7 +98,7 @@ func setNavAdjAttr() {
 		img_hide.Release()
 		img_show.Release()
 		return 0
-	}, true) // 因为有多个地方添加了此事件, 所以填 true, 以添加多个事件回调函数
+	})
 
 	// 获取左侧导航布局元素
 	navLayout := widget.NewLayoutEleByName("nav")
@@ -143,7 +143,7 @@ func setDateTimeUI() {
 			xc.XImage_Release(v)
 		}
 		return 0
-	}, true) // 因为有多个地方添加了此事件, 所以填 true, 以添加多个事件回调函数
+	})
 
 	for i := 1; i <= 4; i++ {
 		// 获取日期时间元素
@@ -302,7 +302,7 @@ func setListAttr(ls *widget.List) {
 			}
 		}
 		return 0
-	}, true) // 这里要特别注意, 因为该窗口的windproc事件上面已经添加过了, AddEvent开头的函数你想给一个元素的一个类型事件添加多个回调函数, 最后这个参数必须为true, 不然会覆盖掉之前添加的那个
+	})
 
 	// 列表头按钮被选择事件
 	onBtnCheckListListHeader := func(hEle int, bCheck bool, pbHandled *bool) int {
