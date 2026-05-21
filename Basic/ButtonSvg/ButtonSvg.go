@@ -4,9 +4,9 @@ package main
 import (
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/imagex"
+	"github.com/twgh/xcgui/svg"
 	"github.com/twgh/xcgui/widget"
 	"github.com/twgh/xcgui/window"
-	"github.com/twgh/xcgui/xc"
 	"github.com/twgh/xcgui/xcc"
 )
 
@@ -19,9 +19,8 @@ func main() {
 	w := window.New(0, 0, 400, 300, "给按钮设置Svg图标", 0, xcc.Window_Style_Default)
 
 	// 加载图片从svg string
-	img1 := imagex.NewBySvgString(svgStr1)
-	// 设置图片的大小
-	xc.XSvg_SetSize(img1.GetSvg(), 24, 24)
+	svg1 := svg.NewByString(svgStr1).SetSize(24, 24)
+	img1 := imagex.NewBySvg(svg1.Handle)
 
 	// 创建按钮1
 	btn1 := widget.NewButton(30, 40, 130, 30, "Test Svg Icon", w.Handle)
@@ -29,9 +28,8 @@ func main() {
 	btn1.SetIcon(img1.Handle)
 
 	// 加载图片从svg string
-	img2 := imagex.NewBySvgString(svgStr2)
-	// 设置图片的大小
-	xc.XSvg_SetSize(img2.GetSvg(), 100, 100)
+	svg2 := svg.NewByString(svgStr2).SetSize(100, 100)
+	img2 := imagex.NewBySvg(svg2.Handle)
 
 	// 创建按钮2
 	btn2 := widget.NewButton(30, 80, 100, 100, "", w.Handle)
