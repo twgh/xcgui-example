@@ -1,4 +1,4 @@
-// WinUI 3 风格编辑框封装.
+// 美化编辑框.
 // 本例子是由 AI 调用 go-xcgui-dev 技能生成的代码.
 package main
 
@@ -10,8 +10,8 @@ import (
 	"github.com/twgh/xcgui/xcc"
 )
 
-// WinUIEdit WinUI 3 风格编辑框封装
-type WinUIEdit struct {
+// BeautifyEdit 美化编辑框封装
+type BeautifyEdit struct {
 	*widget.Edit
 	themeColor  uint32 // 主题色
 	normalColor uint32 // 正常状态边框色
@@ -21,11 +21,11 @@ type WinUIEdit struct {
 	textColor   uint32 // 文本颜色
 }
 
-// NewWinUIEdit 创建 WinUI 3 风格编辑框
-func NewWinUIEdit(x, y, cx, cy int32, hParent int, themeColor uint32) *WinUIEdit {
+// NewBeautifyEdit 创建美化编辑框
+func NewBeautifyEdit(x, y, cx, cy int32, hParent int, themeColor uint32) *BeautifyEdit {
 	edit := widget.NewEdit(x, y, cx, cy, hParent)
 
-	w := &WinUIEdit{
+	w := &BeautifyEdit{
 		Edit:        edit,
 		themeColor:  themeColor,
 		normalColor: xc.RGBA(200, 200, 200, 255),
@@ -39,8 +39,8 @@ func NewWinUIEdit(x, y, cx, cy int32, hParent int, themeColor uint32) *WinUIEdit
 	return w
 }
 
-// initStyle 初始化 WinUI 3 样式
-func (w *WinUIEdit) initStyle() {
+// initStyle 初始化样式
+func (w *BeautifyEdit) initStyle() {
 	w.SetTextColor(w.textColor)
 	w.SetDefaultTextColor(xc.RGBA(150, 150, 150, 255))
 
@@ -75,7 +75,7 @@ func (w *WinUIEdit) initStyle() {
 }
 
 // SetThemeColor 设置主题色
-func (w *WinUIEdit) SetThemeColor(color uint32) *WinUIEdit {
+func (w *BeautifyEdit) SetThemeColor(color uint32) *BeautifyEdit {
 	w.themeColor = color
 	w.focusColor = color
 	w.initStyle()
@@ -88,27 +88,27 @@ func main() {
 	a := app.New(true)
 	a.EnableAutoDPI(true).EnableDPI(true)
 
-	w := window.New(0, 0, 500, 450, "WinUI 3 风格编辑框示例", 0, xcc.Window_Style_Default)
+	w := window.New(0, 0, 500, 450, "美化编辑框示例", 0, xcc.Window_Style_Default)
 
-	// WinUI 3 主题色 (蓝色)
+	// 主题色 (蓝色)
 	themeColor := xc.RGBA(0, 120, 212, 255)
 
 	// 1. 普通编辑框
-	edit1 := NewWinUIEdit(30, 80, 300, 36, w.Handle, themeColor)
+	edit1 := NewBeautifyEdit(30, 80, 300, 36, w.Handle, themeColor)
 	edit1.SetDefaultText("请输入用户名")
 
 	// 2. 密码框
-	edit2 := NewWinUIEdit(30, 140, 300, 36, w.Handle, themeColor)
+	edit2 := NewBeautifyEdit(30, 140, 300, 36, w.Handle, themeColor)
 	edit2.SetDefaultText("请输入密码")
 	edit2.EnablePassword(true)
 
 	// 3. 只读编辑框
-	edit3 := NewWinUIEdit(30, 200, 300, 36, w.Handle, themeColor)
+	edit3 := NewBeautifyEdit(30, 200, 300, 36, w.Handle, themeColor)
 	edit3.SetText("这是只读文本")
 	edit3.EnableReadOnly(true)
 
 	// 4. 不同主题色的编辑框 (绿色主题)
-	edit4 := NewWinUIEdit(30, 260, 300, 36, w.Handle, xc.RGBA(0, 180, 80, 255))
+	edit4 := NewBeautifyEdit(30, 260, 300, 36, w.Handle, xc.RGBA(0, 180, 80, 255))
 	edit4.SetDefaultText("绿色主题编辑框")
 
 	// 显示窗口
