@@ -132,16 +132,6 @@ func createEdge() *edge.Edge {
 		// 设置创建 WebView2 环境时要传递给浏览器进程的其它命令行参数。
 		envOpts.SetAdditionalBrowserArguments(sb.String())
 
-		// 获取 WebView2 环境选项2
-		envOpts2, err := envOpts.GetICoreWebView2EnvironmentOptions2()
-		if err != nil {
-			log.Println("获取环境选项2失败: " + err.Error())
-		} else {
-			// 设置其他进程可以从使用相同用户数据文件夹创建的 WebView2 环境创建 WebView2
-			envOpts2.SetExclusiveUserDataFolderAccess(true)
-			envOpts2.Release()
-		}
-
 		// 获取 WebView2 环境选项8
 		envOpts8, err := envOpts.GetICoreWebView2EnvironmentOptions8()
 		if err != nil {
