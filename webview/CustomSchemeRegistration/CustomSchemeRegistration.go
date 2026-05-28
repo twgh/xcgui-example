@@ -166,10 +166,7 @@ func createEdge() *edge.Edge {
 	edg, err := edge.New(edge.Option{
 		UserDataFolder: os.TempDir(), // 实际应用中应使用自己创建的固定目录，这里用临时目录示例
 		EnvOptions: &edge.EnvOptions{
-			ExclusiveUserDataFolderAccess: true, // 其他进程可以从使用相同用户数据文件夹创建的 WebView2Environment 创建 WebView2，从而共享同一个 WebView 浏览器进程实例
-			DisableTrackingPrevention:     true, // 禁用 WebView2 中的跟踪防护功能
-			// 滚动条样式
-			ScrollBarStyle:            edge.COREWEBVIEW2_SCROLLBAR_STYLE_FLUENT_OVERLAY,
+			DisableTrackingPrevention: true, // 禁用 WebView2 中的跟踪防护功能
 			CustomSchemeRegistrations: []*edge.ICoreWebView2CustomSchemeRegistration{customScheme},
 		},
 	})
