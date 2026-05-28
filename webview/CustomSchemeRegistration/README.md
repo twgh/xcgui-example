@@ -112,9 +112,7 @@ defer customScheme.Release()
 edg, err := edge.New(edge.Option{
     UserDataFolder: os.TempDir(),
     EnvOptions: &edge.EnvOptions{
-        ExclusiveUserDataFolderAccess: true,  // 多进程共享用户数据
         EnableTrackingPrevention:        false,  // 禁用跟踪防护
-        ScrollBarStyle:                edge.COREWEBVIEW2_SCROLLBAR_STYLE_FLUENT_OVERLAY,
         CustomSchemeRegistrations:       []*edge.ICoreWebView2CustomSchemeRegistration{customScheme},
     },
 })
@@ -123,7 +121,6 @@ edg, err := edge.New(edge.Option{
 **注意**:
 - 本示例使用了简化的 `EnvOptions` 配置，更加简洁易读
 - `CustomSchemeRegistrations` 字段用于注册自定义协议
-- 其他配置项如 `ExclusiveUserDataFolderAccess`、`EnableTrackingPrevention` 等也一并设置
 
 #### 2. WebView 和窗口创建
 ```go
