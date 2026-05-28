@@ -21,8 +21,8 @@ func main() {
 	// 手动的可以自己控制怎么处理错误, 出错是否继续往下运行, 自动的出错直接就返回错误了.
 	// 如果你不想因为一个选项设置失败而导致整个环境创建失败, 那么就使用手动方式.
 	// 设置失败可能是因为 WebView2 运行时版本低不支持该选项.
-	edg := createEdge1()
-	// edg := createEdge2()
+	edg := createEdge2()
+	// edg := createEdge1()
 
 	// 初始化界面库
 	app.InitOrExit()
@@ -159,7 +159,7 @@ func createEdge2() *edge.Edge {
 	fmt.Println("------------------- WebView2 环境选项 -------------------")
 	fmt.Println("语言:", envOpts.MustGetLanguage())
 	fmt.Println("命令行参数:", envOpts.MustGetAdditionalBrowserArguments())
-	fmt.Println("多进程共享用户数据文件夹:", envOpts2.MustGetExclusiveUserDataFolderAccess())
+	fmt.Println("是否禁止多进程共享用户数据文件夹:", envOpts2.MustGetExclusiveUserDataFolderAccess())
 	fmt.Println("跟踪防护功能:", envOpts5.MustGetEnableTrackingPrevention())
 	fmt.Println("浏览器扩展功能:", envOpts6.MustGetAreBrowserExtensionsEnabled())
 	fmt.Println("频道搜索类型:", envOpts7.MustGetChannelSearchKind())

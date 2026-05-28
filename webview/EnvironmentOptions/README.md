@@ -118,9 +118,8 @@ AdditionalBrowserArguments: []string{
 
 #### 3. 多进程共享用户数据文件夹
 ```go
-ExclusiveUserDataFolderAccess: true
-// 其他进程可以从使用相同用户数据文件夹创建的 WebView2 环境创建 WebView2
-// 从而共享同一个 WebView 浏览器进程实例
+ExclusiveUserDataFolderAccess: false
+// 是否禁止其它进程使用相同用户数据文件夹创建的 WebView2Environment 创建 WebView2，从而共享同一个 WebView 浏览器进程实例, 默认为 false 是允许共享, 为 true 时不允许共享.
 ```
 
 #### 4. 跟踪防护
@@ -162,7 +161,7 @@ ReleaseChannels: &edge.ReleaseChannels{
 fmt.Println("------------------- WebView2 环境选项 -------------------")
 fmt.Println("语言:", envOpts.MustGetLanguage())
 fmt.Println("命令行参数:", envOpts.MustGetAdditionalBrowserArguments())
-fmt.Println("多进程共享用户数据文件夹:", envOpts2.MustGetExclusiveUserDataFolderAccess())
+fmt.Println("是否禁止多进程共享用户数据文件夹:", envOpts2.MustGetExclusiveUserDataFolderAccess())
 fmt.Println("跟踪防护功能:", envOpts5.MustGetEnableTrackingPrevention())
 fmt.Println("浏览器扩展功能:", envOpts6.MustGetAreBrowserExtensionsEnabled())
 fmt.Println("频道搜索类型:", envOpts7.MustGetChannelSearchKind())
