@@ -62,9 +62,9 @@ func createEdge1() *edge.Edge {
 			AdditionalBrowserArguments: []string{
 				"--autoplay-policy=no-user-gesture-required", "--disable-features=PreloadMediaEngagementData,MediaEngagementBypassAutoplayPolicies", "--enable-features=AutoplayIgnoreWebAudio",
 			}, // 命令行参数, 视频自动播放
-			ExclusiveUserDataFolderAccess: true, // 其他进程可以从使用相同用户数据文件夹创建的 WebView2Environment 创建 WebView2，从而共享同一个 WebView 浏览器进程实例
-			DisableTrackingPrevention:     true, // 禁用 WebView2 中的跟踪防护功能
-			AreBrowserExtensionsEnabled:   true, // 启用浏览器扩展功能
+			ExclusiveUserDataFolderAccess: false, // 是否禁止其它进程使用相同用户数据文件夹创建的 WebView2Environment 创建 WebView2，从而共享同一个 WebView 浏览器进程实例, 默认为 false 是允许共享, 为 true 时不允许共享.
+			DisableTrackingPrevention:     true,  // 禁用 WebView2 中的跟踪防护功能
+			AreBrowserExtensionsEnabled:   true,  // 启用浏览器扩展功能
 			// 频道搜索类型
 			ChannelSearchKind: edge.COREWEBVIEW2_CHANNEL_SEARCH_KIND_MOST_STABLE,
 			// 滚动条样式
@@ -109,8 +109,9 @@ func createEdge2() *edge.Edge {
 	if err != nil {
 		log.Println("获取环境选项2失败: " + err.Error())
 	} else {
-		// 设置其他进程可以从使用相同用户数据文件夹创建的 WebView2 环境创建 WebView2
-		envOpts2.SetExclusiveUserDataFolderAccess(true)
+		// 是否禁止其它进程使用相同用户数据文件夹创建的 WebView2Environment 创建 WebView2，从而共享同一个 WebView 浏览器进程实例, 默认为 false 是允许共享.
+		// 这里仅为演示, 因为默认就是 false, 所以一般是不用设置这个.
+		envOpts2.SetExclusiveUserDataFolderAccess(false)
 		envOpts2.Release()
 	}
 
