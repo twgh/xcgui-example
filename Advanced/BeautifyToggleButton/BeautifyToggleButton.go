@@ -43,11 +43,11 @@ func NewBeautifyToggleButton(x, y int32, hParent int) *BeautifyToggleButton {
 		disabledColor: xc.RGBA(220, 220, 220, 255),
 	}
 	// 设置按钮类型为多选按钮
-	t.Button.SetTypeEx(xcc.Button_Type_Check)
+	t.SetTypeEx(xcc.Button_Type_Check)
 	// 启用背景透明, 由自绘接管全部绘制
-	t.Button.EnableBkTransparent(true)
+	t.EnableBkTransparent(true)
 	// 注册自绘事件
-	t.Button.AddEvent_Paint(t.onPaint)
+	t.AddEvent_Paint(t.onPaint)
 	return t
 }
 
