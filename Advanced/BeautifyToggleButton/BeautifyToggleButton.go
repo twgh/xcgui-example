@@ -44,8 +44,6 @@ func NewBeautifyToggleButton(x, y int32, hParent int) *BeautifyToggleButton {
 	}
 	// 设置按钮类型为多选按钮
 	t.SetTypeEx(xcc.Button_Type_Check)
-	// 启用背景透明, 由自绘接管全部绘制
-	t.EnableBkTransparent(true)
 	// 注册自绘事件
 	t.AddEvent_Paint(t.onPaint)
 	return t
