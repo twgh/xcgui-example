@@ -54,7 +54,7 @@ func main() {
 
 		// 取选中项id
 		var ids []xc.ListView_Item_Id_
-		lv.GetSelectAll(&ids, n)
+		lv.GetSelectAll(&ids)
 		fmt.Println("选中的列表视-项ID:", ids)
 
 		var groupIndex, itemIndex int32
@@ -77,7 +77,7 @@ func main() {
 		return 0
 	})
 
-	w.ShowWindow(xcc.SW_SHOW)
+	w.Show()
 	a.Run()
 	a.Exit()
 }
