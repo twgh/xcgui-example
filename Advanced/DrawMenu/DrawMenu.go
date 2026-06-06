@@ -192,7 +192,7 @@ func onMenuDrawItem(hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *bool) int {
 		pt[2].X = pInfo.RcItem.Right - 7
 		pt[2].Y = pInfo.RcItem.Top + 15
 		xc.XDraw_SetBrushColor(hDraw, xc.RGBA(130, 130, 130, 255))
-		xc.XDraw_FillPolygon(hDraw, pt[:], 3)
+		xc.XDraw_FillPolygon(hDraw, pt[:])
 	}
 
 	// 取菜单左侧区域宽度
