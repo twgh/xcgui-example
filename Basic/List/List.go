@@ -265,7 +265,7 @@ func listDelSelectItem() {
 
 	var indexArr []int32
 	// 取选中行索引数组
-	list.GetSelectAll(&indexArr, count)
+	list.GetSelectAll(&indexArr)
 	// 根据选中行索引数组倒着删, 正着删的话你每删1行下面的行索引就变了
 	for i := count - 1; i > -1; i-- {
 		list.DeleteRow(indexArr[i])
