@@ -350,6 +350,6 @@ func OnDrawWindow(hDraw int, pbHandled *bool) int {
 	left := rc.Left + int32(float32(m_time_pos)*400.0/float32(m_time))
 
 	draw.DrawLine(left, rcBorder_Line.Top, left, rcBorder_Line.Bottom)
-	draw.DrawCurveF(pts, m_time+1, 0.5)
+	draw.DrawCurveF(pts[:m_time+1], 0.5)
 	return 0
 }
