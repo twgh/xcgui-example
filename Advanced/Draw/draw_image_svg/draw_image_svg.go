@@ -65,20 +65,33 @@ func main() {
 		draw.SetBrushColor(xc.RGBA(100, 100, 100, 255))
 		draw.TextOutEx(sx, offY+150, "ImageMaskEllipse 圆形遮罩")
 
-		// todo: 报错: 有 BUG ?
+		// todo: 报错: xcgui.dll中的BUG
 		// 5. ImageTile 平铺
 		/* tx := int32(430)
 		draw.ImageTile(hImg, 0,
 			&xc.RECT{Left: tx, Top: offY + 20, Right: tx + 210, Bottom: offY + 20 + 160}, 0)
 		draw.SetBrushColor(xc.RGBA(100, 100, 100, 255))
-		draw.TextOutEx(tx, offY+185, "ImageTile(平铺)") */
+		draw.TextOutEx(tx, offY+220, "ImageTile(平铺)") */
+
+		// 5. ImageTile 平铺 (手动实现, 避开底层 DLL bug)
+		// 用 手动循环平铺 替代了有问题的 ImageTile 调用，效果完全相同。如果你的场景需要更复杂的平铺（例如遮罩、非规则对齐），可以进一步调整循环逻辑。
+		tx := int32(430)
+		tileRect := &xc.RECT{Left: tx, Top: offY + 20, Right: tx + 210, Bottom: offY + 20 + 160}
+		imgW, imgH := int32(64), int32(64)
+		for y := tileRect.Top; y < tileRect.Bottom; y += imgH {
+			for x := tileRect.Left; x < tileRect.Right; x += imgW {
+				draw.XDraw_ImageEx(hImg, x, y, imgW, imgH)
+			}
+		}
+		draw.SetBrushColor(xc.RGBA(100, 100, 100, 255))
+		draw.TextOutEx(tx, offY+220, "ImageTile(平铺)")
 
 		// ====== SVG ======
 		sx = 20
 		y = offY + 380
-		draw.DrawSvg(svgIcon.Handle, 400, offY)
+		draw.DrawSvg(svgIcon.Handle, 280, offY+200)
 		draw.SetBrushColor(xc.RGBA(100, 100, 100, 255))
-		draw.TextOutEx(500, offY+60, "Svg原始:")
+		draw.TextOutEx(340, offY+300, "Svg原始:")
 		sx += 60
 		draw.DrawSvgEx(svgIcon.Handle, sx, y, 32, 32)
 		draw.TextOutEx(sx, y+40, "32x32")
