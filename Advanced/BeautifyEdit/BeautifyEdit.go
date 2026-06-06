@@ -1,7 +1,7 @@
 // 美化编辑框.
-// 本例子是由 AI 调用 go-xcgui-dev 技能生成的代码.
 package main
 
+// 本例子是由 AI 调用 go-xcgui-dev 技能生成的代码.
 import (
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/widget"
