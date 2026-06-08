@@ -126,9 +126,8 @@ func main() {
 	CreateButtonRadio(left, &top, "23.焦点追踪").AddEvent_BnClick(OnBtnClick23)
 	CreateButtonRadio(left, &top, "24.页面切换 滑动").AddEvent_BnClick(OnBtnClick24)
 	CreateButtonRadio(left, &top, "25.折叠面板").AddEvent_BnClick(OnBtnClick25)
-	// todo: 翻译剩下的动画
-	// CreateButtonRadio(left, &top, "26.图片轮播").AddEvent_BnClick(OnBtnClick26)
-	// CreateButtonRadio(left, &top, "27.背景管理器").AddEvent_BnClick(OnBtnClick27)
+	CreateButtonRadio(left, &top, "26.图片轮播").AddEvent_BnClick(OnBtnClick26)
+	CreateButtonRadio(left, &top, "27.背景管理器").AddEvent_BnClick(OnBtnClick27)
 
 	w.AddEvent_Paint(OnWndDrawWindow)
 	w.AddEvent_Destroy(func(hWindow int, pbHandled *bool) int {
@@ -170,6 +169,8 @@ func ReleaseAnimation() {
 		case *CFocusTraceEdit_Line:
 			obj.Release()
 		case *CExpandGroup:
+			obj.Release()
+		case *CImagePlay:
 			obj.Release()
 		}
 	}
@@ -3005,4 +3006,412 @@ func (c *CExpandGroup) Animation25_Move(hGroup int, hObjectUI int, delay int, of
 
 	easeFlag := common.Choose(offsetx < 0, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, xcc.Ease_Flag_Quad|xcc.Ease_Flag_In)
 	xc.XAnima_Move(hAnimationMove, 300, float32(left+offsetx), float32(top), 1, easeFlag, false)
+}
+
+// CImagePlay 图片轮播
+type CImagePlay struct {
+	m_list            []int
+	m_listFocus       []int
+	m_rect            xc.RECT
+	m_hParent         int
+	m_hAnimationGroup int
+	m_index           int
+}
+
+// NewCImagePlay 构造函数
+func NewCImagePlay() *CImagePlay {
+	return &CImagePlay{
+		m_list:      make([]int, 0),
+		m_listFocus: make([]int, 0),
+	}
+}
+
+// Release 释放资源
+func (c *CImagePlay) Release() {
+	if c.m_hAnimationGroup != 0 {
+		xc.XAnima_Release(c.m_hAnimationGroup, false)
+	}
+	if c.m_hParent != 0 && xc.XC_IsHELE(c.m_hParent) {
+		xc.XEle_Destroy(c.m_hParent)
+	}
+}
+
+// Create 创建轮播容器
+func (c *CImagePlay) Create(x, y, width, height int32, hParent int) {
+	c.m_hAnimationGroup = 0
+	c.m_index = 0
+	c.m_rect = xc.RECT{Left: x, Top: y, Right: x + width, Bottom: y + height}
+	c.m_hParent = xc.XEle_Create(x, y, width, height, hParent)
+
+	hBtnLeft := xc.XBtn_Create(10, height/2-35/2, 35, 35, "", c.m_hParent)
+	hBtnRight := xc.XBtn_Create(width-35-10, height/2-35/2, 35, 35, "", c.m_hParent)
+
+	hCur := wapi.LoadImageW(0, wapi.IDC_HAND, wapi.IMAGE_CURSOR, 0, 0, wapi.LR_DEFAULTSIZE|wapi.LR_SHARED)
+	if hCur != 0 {
+		xc.XEle_SetCursor(hBtnLeft, hCur)
+		xc.XEle_SetCursor(hBtnRight, hCur)
+	}
+
+	xc.XEle_EnableTopmost(hBtnLeft, true)
+	xc.XEle_EnableTopmost(hBtnRight, true)
+	xc.XEle_EnableBkTransparent(hBtnLeft, true)
+	xc.XEle_EnableBkTransparent(hBtnRight, true)
+	xc.XEle_SetBkInfo(hBtnLeft, "{99:1.9.9;98:16(3,1,2)32(0,1,2)64(3,1,2);6:2(15)20(1)21(3)26(1)22(1342177280)23(80);5:2(18)8(135.00)3(2,15,2,10)20(1)21(3)26(1)22(-1)23(255);5:2(18)8(45.00)3(2,9,2,10)20(1)21(3)26(1)22(-1)23(255);6:2(15)20(1)21(3)26(1)22(838860800)23(50);}")
+	xc.XEle_SetBkInfo(hBtnRight, "{99:1.9.9;98:16(0,1,2)32(3,1,2)64(0,1,2);6:2(15)20(1)21(3)26(1)22(838860800)23(50);5:2(18)8(45.00)3(2,15,2,10)20(1)21(3)26(1)22(-1)23(255);5:2(18)8(135.00)3(2,9,2,10)20(1)21(3)26(1)22(-1)23(255);6:2(15)20(1)21(3)26(1)22(838860800)23(50);}")
+
+	widget.NewButtonByHandle(hBtnLeft).AddEvent_BnClick(func(hEle int, pbHandled *bool) int {
+		return c.OnBtnClickLeft(pbHandled)
+	}, true)
+	widget.NewButtonByHandle(hBtnRight).AddEvent_BnClick(func(hEle int, pbHandled *bool) int {
+		return c.OnBtnClickRight(pbHandled)
+	}, true)
+}
+
+// CreatePage 创建页面
+func (c *CImagePlay) CreatePage(pName string, color uint32) {
+	width := c.m_rect.Right - c.m_rect.Left
+	height := c.m_rect.Bottom - c.m_rect.Top
+	hEle := xc.XEle_Create(0, 0, width, height, c.m_hParent)
+	c.m_list = append(c.m_list, hEle)
+	xc.XEle_AddBkFill(hEle, xcc.Element_State_Flag_Leave, color)
+
+	hText := xc.XShapeText_Create(20, height-30, 200, 20, pName, hEle)
+	xc.XShapeText_SetTextColor(hText, xc.RGBA(255, 255, 255, 255))
+
+	if len(c.m_list) != 1 {
+		xc.XWidget_Show(hEle, false)
+	}
+
+	hFocus := xc.XBtn_Create(0, 0, 20, 20, "", c.m_hParent)
+	c.m_listFocus = append(c.m_listFocus, hFocus)
+	xc.XEle_SetUserData(hFocus, len(c.m_listFocus)-1)
+	xc.XBtn_SetGroupID(hFocus, 9)
+	xc.XObj_SetTypeEx(hFocus, xcc.Button_Type_Radio)
+	xc.XEle_EnableTopmost(hFocus, true)
+	xc.XEle_EnableBkTransparent(hFocus, true)
+
+	hCur := wapi.LoadImageW(0, wapi.IDC_HAND, wapi.IMAGE_CURSOR, 0, 0, wapi.LR_DEFAULTSIZE|wapi.LR_SHARED)
+	if hCur != 0 {
+		xc.XEle_SetCursor(hFocus, hCur)
+	}
+	xc.XEle_SetBkInfo(hFocus, "{sizeT:100,100;99:1.9.9;98:272(0)288(1,0)320(1,0)128(1,0);6:2(15)3(5,5,5,5)20(1)21(3)26(1)22(-1761607681)23(150);6:2(15)20(1)21(3)26(1)22(1694498815)23(100);}")
+
+	widget.NewButtonByHandle(hFocus).AddEvent_Button_Check(func(hButton int, bCheck bool, pbHandled *bool) int {
+		if bCheck {
+			index := xc.XEle_GetUserData(hButton)
+			c.Run(true, index)
+		}
+		return 0
+	}, true)
+}
+
+// End 结束创建
+func (c *CImagePlay) End() {
+	count := len(c.m_listFocus)
+	left := (c.m_rect.Right - c.m_rect.Left - int32(count)*30) / 2
+	for _, hFocus := range c.m_listFocus {
+		xc.XEle_SetPosition(hFocus, left, c.m_rect.Bottom-c.m_rect.Top-50, false, xcc.AdjustLayout_No)
+		left += 30
+	}
+	c.Run(true, -1)
+}
+
+// OnBtnClickLeft 左按钮点击
+func (c *CImagePlay) OnBtnClickLeft(pbHandled *bool) int {
+	c.Run(true, -1)
+	return 0
+}
+
+// OnBtnClickRight 右按钮点击
+func (c *CImagePlay) OnBtnClickRight(pbHandled *bool) int {
+	c.Run(false, -1)
+	return 0
+}
+
+// OnAnimation 动画完成回调
+func (c *CImagePlay) OnAnimation(hAnimation int, flag int32) {
+	c.m_hAnimationGroup = 0
+	c.Run(true, -1)
+}
+
+// Run 运行轮播
+func (c *CImagePlay) Run(bLeft bool, index int) {
+	if c.m_hAnimationGroup != 0 {
+		xc.XAnima_Release(c.m_hAnimationGroup, true)
+		c.m_hAnimationGroup = 0
+	}
+
+	count := len(c.m_list)
+	if count < 2 {
+		return
+	}
+
+	if index != -1 {
+		if c.m_index == index {
+			return
+		}
+		if c.m_index <= index {
+			bLeft = true
+		} else {
+			bLeft = false
+		}
+	}
+
+	c.m_hAnimationGroup = xc.XAnimaGroup_Create(1)
+
+	width := c.m_rect.Right - c.m_rect.Left
+
+	if c.m_index < count {
+		hPage := c.m_list[c.m_index]
+		xc.XEle_SetPosition(hPage, 0, 0, false, xcc.AdjustLayout_No)
+
+		hAnimation := xc.XAnima_Create(hPage, 1)
+		xc.XAnima_Move(hAnimation, 1000, float32(common.Choose(bLeft, -width, width)), 0, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, false)
+		xc.XAnima_Delay(hAnimation, 2000)
+		xc.XAnimaGroup_AddItem(c.m_hAnimationGroup, hAnimation)
+	}
+
+	if index != -1 {
+		c.m_index = index
+	} else if bLeft {
+		c.m_index++
+		if c.m_index >= count {
+			c.m_index = 0
+		}
+	} else {
+		c.m_index--
+		if c.m_index < 0 {
+			c.m_index = count - 1
+		}
+	}
+
+	if c.m_index < 0 || c.m_index >= count {
+		c.m_index = 0
+	}
+
+	if c.m_index < count {
+		hPage := c.m_list[c.m_index]
+		xc.XEle_SetPosition(hPage, common.Choose(bLeft, width, -width), 0, false, xcc.AdjustLayout_No)
+		xc.XWidget_Show(hPage, true)
+
+		hAnimation := xc.XAnima_Create(hPage, 1)
+		xc.XAnima_Move(hAnimation, 1000, 0, 0, 1, xcc.Ease_Flag_Quad|xcc.Ease_Flag_Out, false)
+		xc.XAnimaGroup_AddItem(c.m_hAnimationGroup, hAnimation)
+	}
+
+	xc.XAnima_Run(c.m_hAnimationGroup, c.m_hParent)
+	xc.XAnima_SetCallback(c.m_hAnimationGroup, func(hAnimation int, flag int32) {
+		c.OnAnimation(hAnimation, flag)
+	})
+
+	if c.m_index < len(c.m_listFocus) {
+		xc.XBtn_SetCheck(c.m_listFocus[c.m_index], true)
+	}
+}
+
+// 26.图片轮播
+func OnBtnClick26(hEle int, pbHandled *bool) int {
+	ReleaseAnimation()
+	pImagePlay := NewCImagePlay()
+	list_object = append(list_object, pImagePlay)
+	pImagePlay.Create(150, 80, 600, 300, w.Handle)
+	pImagePlay.CreatePage("1. 炫彩界面库3.3.1", xc.RGBA(251, 140, 0, 255))
+	pImagePlay.CreatePage("2. 炫彩界面库3.3.2", xc.RGBA(239, 83, 80, 255))
+	pImagePlay.CreatePage("3. 炫彩界面库3.3.3", xc.RGBA(194, 24, 91, 255))
+	pImagePlay.End()
+
+	w.Redraw(false)
+	return 0
+}
+
+// CButtonAnimation 通过背景管理器实现按钮动画
+type CButtonAnimation struct {
+}
+
+// NewCButtonAnimation 构造函数
+func NewCButtonAnimation() *CButtonAnimation {
+	return &CButtonAnimation{}
+}
+
+// Run 运行动画
+func (c *CButtonAnimation) Run(hButton int, nType int) {
+	xc.XEle_SetTextColor(hButton, xc.RGBA(255, 255, 255, 255))
+	switch nType {
+	case 1, 2, 3:
+		xc.XEle_SetBkInfo(hButton, "{99:1.9.9;98:16(0,1)32(0,1)64(0);5:41(10)2(15)20(1)21(3)26(0)22(-2984423)23(255);5:41(1)2(15)3(10,10,10,10)20(1)21(3)26(0)22(-1669594)23(255);}")
+	case 4, 5:
+		xc.XEle_SetBkInfo(hButton, "{99:1.9.9;98:16(0,1)32(0,1)64(0);5:41(10)2(15)20(1)21(3)26(0)22(-2984423)23(255);5:41(1)2(11)8(160.00)3(10,-5,10,-5)20(1)21(3)26(0)22(-1669594)23(255);}")
+	}
+
+	xc.XEle_SetUserData(hButton, nType)
+
+	// 注册鼠标停留和离开事件
+	btn := widget.NewButtonByHandle(hButton)
+	btn.AddEvent_MouseStay(func(hEle int, pbHandled *bool) int {
+		return c.OnMouseStay(hEle, pbHandled)
+	}, true)
+	btn.AddEvent_MouseLeave(func(hEle, hEleStay int, pbHandled *bool) int {
+		return c.OnMouseLeave(hEle, hEleStay, pbHandled)
+	}, true)
+}
+
+// OnMouseStay 鼠标停留
+func (c *CButtonAnimation) OnMouseStay(hButton int, pbHandled *bool) int {
+	xc.XAnima_ReleaseEx(hButton, false)
+	hAnimation := xc.XAnima_Create(hButton, 1)
+	xc.XAnimaItem_SetCallback(xc.XAnima_Delay(hAnimation, 500), func(hAnimItem int, pos float32) int {
+		return c.OnAnimationItem(hAnimItem, pos)
+	})
+	xc.XAnima_Run(hAnimation, hButton)
+	return 0
+}
+
+// OnMouseLeave 鼠标离开
+func (c *CButtonAnimation) OnMouseLeave(hButton, hEleStay int, pbHandled *bool) int {
+	xc.XAnima_ReleaseEx(hButton, false)
+	hAnimation := xc.XAnima_Create(hButton, 1)
+	xc.XAnimaItem_SetCallback(xc.XAnima_Delay(hAnimation, 500), func(hAnimItem int, pos float32) int {
+		return c.OnAnimationItem(hAnimItem, pos)
+	})
+	xc.XAnima_Run(hAnimation, hButton)
+	return 0
+}
+
+// OnAnimationItem 动画项回调
+func (c *CButtonAnimation) OnAnimationItem(hAnimation int, pos float32) int {
+	hButton := xc.XAnima_GetObjectUI(hAnimation)
+	if !xc.XC_IsHELE(hButton) {
+		return 0
+	}
+
+	var width, height int32
+	xc.XEle_GetSize(hButton, &width, &height)
+	hBkM := xc.XEle_GetBkManager(hButton)
+	state := xc.XBtn_GetState(hButton)
+	nType := xc.XEle_GetUserData(hButton)
+
+	switch nType {
+	case 1:
+		switch state {
+		case xcc.Common_State3_Leave:
+			hObj := xc.XBkM_GetObject(hBkM, 1)
+			sizeH := int32(float32(width/2) * pos)
+			sizeV := int32(float32(height/2) * pos)
+			xc.XBkObj_SetMargin(hObj, sizeH, sizeV, sizeH, sizeV)
+		case xcc.Common_State3_Stay:
+			hObj := xc.XBkM_GetObject(hBkM, 1)
+			sizeH := int32(float32(width/2) * (1.0 - pos))
+			sizeV := int32(float32(height/2) * (1.0 - pos))
+			xc.XBkObj_SetMargin(hObj, sizeH, sizeV, sizeH, sizeV)
+		}
+	case 2:
+		switch state {
+		case xcc.Common_State3_Leave:
+			hObj := xc.XBkM_GetObject(hBkM, 1)
+			sizeH := int32(float32(width/2) * pos)
+			xc.XBkObj_SetMargin(hObj, sizeH, 0, sizeH, 0)
+		case xcc.Common_State3_Stay:
+			hObj := xc.XBkM_GetObject(hBkM, 1)
+			sizeH := int32(float32(width/2) * (1.0 - pos))
+			xc.XBkObj_SetMargin(hObj, sizeH, 0, sizeH, 0)
+		}
+	case 3:
+		switch state {
+		case xcc.Common_State3_Leave:
+			hObj := xc.XBkM_GetObject(hBkM, 1)
+			sizeH := int32(float32(width) * pos)
+			xc.XBkObj_SetMargin(hObj, 0, 0, sizeH, 0)
+		case xcc.Common_State3_Stay:
+			hObj := xc.XBkM_GetObject(hBkM, 1)
+			sizeH := int32(float32(width) * (1.0 - pos))
+			xc.XBkObj_SetMargin(hObj, 0, 0, sizeH, 0)
+		}
+	case 4:
+		switch state {
+		case xcc.Common_State3_Leave:
+			hObj := xc.XBkM_GetObject(hBkM, 1)
+			sizeH := int32(float32(width/2) * (1.0 - pos))
+			xc.XBkObj_SetMargin(hObj, sizeH, 0, sizeH, 0)
+		case xcc.Common_State3_Stay:
+			hObj := xc.XBkM_GetObject(hBkM, 1)
+			sizeH := int32(float32(width/2) * pos)
+			if pos == 1.0 {
+				sizeH = 0
+			}
+			xc.XBkObj_SetMargin(hObj, sizeH, 0, sizeH, 0)
+		}
+	case 5:
+		width += 30
+		switch state {
+		case xcc.Common_State3_Leave:
+			hObj := xc.XBkM_GetObject(hBkM, 1)
+			sizeH := int32(float32(width) * (1.0 - pos))
+			xc.XBkObj_SetMargin(hObj, sizeH-15, -5, 10, -5)
+		case xcc.Common_State3_Stay:
+			hObj := xc.XBkM_GetObject(hBkM, 1)
+			sizeH := int32(float32(width) * pos)
+			xc.XBkObj_SetMargin(hObj, sizeH-15, -5, 10, -5)
+		}
+	}
+	return 0
+}
+
+// 27.背景管理器
+func OnBtnClick27(hEle int, pbHandled *bool) int {
+	ReleaseAnimation()
+	pBtnAni := NewCButtonAnimation()
+
+	var left int32 = 150
+	var top int32 = 50
+
+	// 第一列: 类型1
+	for i := 0; i < 5; i++ {
+		hButton := xc.XBtn_Create(left, top, 120, 40, "Button", w.Handle)
+		top += 50
+		list_xcgui = append(list_xcgui, hButton)
+		pBtnAni.Run(hButton, 1)
+	}
+
+	// 第二列: 类型2
+	left += 140
+	top = 50
+	for i := 0; i < 5; i++ {
+		hButton := xc.XBtn_Create(left, top, 120, 40, "Button", w.Handle)
+		top += 50
+		list_xcgui = append(list_xcgui, hButton)
+		pBtnAni.Run(hButton, 2)
+	}
+
+	// 第三列: 类型3
+	left += 140
+	top = 50
+	for i := 0; i < 5; i++ {
+		hButton := xc.XBtn_Create(left, top, 120, 40, "Button", w.Handle)
+		top += 50
+		list_xcgui = append(list_xcgui, hButton)
+		pBtnAni.Run(hButton, 3)
+	}
+
+	// 第四列: 类型4
+	left += 140
+	top = 50
+	for i := 0; i < 5; i++ {
+		hButton := xc.XBtn_Create(left, top, 120, 40, "Button", w.Handle)
+		top += 50
+		list_xcgui = append(list_xcgui, hButton)
+		pBtnAni.Run(hButton, 4)
+	}
+
+	// 第五列: 类型5
+	left += 140
+	top = 50
+	for i := 0; i < 5; i++ {
+		hButton := xc.XBtn_Create(left, top, 120, 40, "Button", w.Handle)
+		top += 50
+		list_xcgui = append(list_xcgui, hButton)
+		pBtnAni.Run(hButton, 5)
+	}
+
+	w.Redraw(false)
+	return 0
 }
