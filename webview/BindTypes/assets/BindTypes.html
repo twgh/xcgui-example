@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bind 类型演示</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f5f7fa;
+    color: #333;
+}
+
+/* 标题栏 — 固定在顶部不滚动 */
+.title-bar {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 20px;
+    min-height: 44px;
+    background: #f5f7fa;
+    -webkit-app-region: drag;
+    z-index: 10;
+}
+.title-bar h1 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1a1a2e;
+    line-height: 1;
+}
+.title-bar-actions {
+    display: flex;
+    gap: 6px;
+    -webkit-app-region: no-drag;
+}
+.title-btn {
+    width: 32px; height: 32px;
+    border: none; border-radius: 6px;
+    background: transparent;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #555;
+    transition: background .15s;
+}
+.title-btn:hover { background: #e0e0e0; }
+.title-btn.close:hover { background: #e81123; color: #fff; }
+
+/* 卡片网格 — 可滚动区域 */
+.card-grid {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 20px 16px 20px;
+}
+.card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.card h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #eef2f7;
+}
+.card-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+.card-row:last-child { margin-bottom: 0; }
+.card-row label {
+    font-size: 13px;
+    color: #666;
+    min-width: 50px;
+}
+.card-row input, .card-row textarea {
+    flex: 1;
+    min-width: 100px;
+    padding: 6px 10px;
+    border: 1px solid #d0d5dd;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color .15s;
+}
+.card-row input:focus, .card-row textarea:focus { border-color: #4f6ef7; }
+.card-row textarea {
+    min-height: 36px;
+    resize: vertical;
+    font-family: "Cascadia Code", "Consolas", monospace;
+    font-size: 12px;
+}
+.btn {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    background: #4f6ef7;
+    color: #fff;
+    white-space: nowrap;
+    transition: background .15s;
+}
+.btn:hover { background: #3b5de7; }
+.btn:active { background: #2f4fd6; }
+.btn.warning { background: #f59e0b; }
+.btn.warning:hover { background: #d97706; }
+.btn.danger { background: #ef4444; }
+.btn.danger:hover { background: #dc2626; }
+.result-box {
+    background: #f0f4ff;
+    border: 1px solid #d0d5dd;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 13px;
+    font-family: "Cascadia Code", "Consolas", monospace;
+    word-break: break-all;
+    min-height: 32px;
+    margin-top: 4px;
+    color: #1a1a2e;
+}
+.result-box.ok { background: #ecfdf3; border-color: #6ce9a6; }
+.result-box.err { background: #fef2f2; border-color: #fca5a5; }
+.result-box.info { background: #f0f4ff; border-color: #a5b4fc; }
+</style>
+</head>
+<body>
+<div class="title-bar">
+    <h1>Bind 类型演示</h1>
+    <div class="title-bar-actions">
+        <button class="title-btn" onclick="wnd.minimize()">─</button>
+        <button class="title-btn" onclick="wnd.toggleMaximize()">□</button>
+        <button class="title-btn close" onclick="wnd.close()">✕</button>
+    </div>
+</div>
+
+<div class="card-grid" id="app">
+
+    <!-- 基本类型 -->
+    <div class="card">
+        <h2>✨ 基本类型</h2>
+        <div class="card-row">
+            <label>string:</label>
+            <input id="strInput" value="World" placeholder="输入字符串">
+            <button class="btn" onclick="callString()">调用</button>
+        </div>
+        <div class="card-row">
+            <label>int:</label>
+            <input id="intA" type="number" value="10">
+            <span>+</span>
+            <input id="intB" type="number" value="20">
+            <button class="btn" onclick="callInt()">求和</button>
+        </div>
+        <div class="card-row">
+            <label>float:</label>
+            <input id="floatA" type="number" value="3.5" step="0.1">
+            <span>×</span>
+            <input id="floatB" type="number" value="2.0" step="0.1">
+            <button class="btn" onclick="callFloat()">相乘</button>
+        </div>
+        <div class="card-row">
+            <label>bool:</label>
+            <span>当前: <b id="boolVal">true</b></span>
+            <button class="btn" onclick="callBool()">取反</button>
+        </div>
+        <div class="card-row">
+            <button class="btn" onclick="callHello()">无参+返回值</button>
+            <button class="btn" onclick="callNoop()">无参+无返回值</button>
+        </div>
+        <div class="result-box info" id="basicResult">点击按钮查看结果</div>
+    </div>
+
+    <!-- Slice -->
+    <div class="card">
+        <h2>📦 Slice (切片)</h2>
+        <div class="card-row">
+            <label>[]int:</label>
+            <input id="sliceInt" value="[1,2,3,4,5]" placeholder='如 [1,2,3]'>
+            <button class="btn" onclick="callSliceInt()">每个+1</button>
+        </div>
+        <div class="card-row">
+            <label>[]string:</label>
+            <input id="sliceStr" value='["Go","WebView2","xcgui"]' placeholder='如 ["a","b"]'>
+            <button class="btn" onclick="callSliceStr()">拼接</button>
+        </div>
+        <div class="result-box info" id="sliceResult">点击按钮查看结果</div>
+    </div>
+
+    <!-- Map -->
+    <div class="card">
+        <h2>🗺️ Map (映射)</h2>
+        <div class="card-row">
+            <textarea id="mapInput" rows="2" placeholder='输入 JSON 对象'>{"name":"张三","age":28,"score":95.5,"active":true}</textarea>
+        </div>
+        <div class="card-row">
+            <button class="btn" onclick="callMap()">打印 Map</button>
+        </div>
+        <div class="result-box info" id="mapResult">点击按钮查看结果</div>
+    </div>
+
+    <!-- Struct -->
+    <div class="card">
+        <h2>🧱 Struct (结构体)</h2>
+        <div class="card-row">
+            <textarea id="structPerson" rows="2" placeholder='{"name":"...","age":...,"city":"..."}'>{"name":"小明","age":18,"city":"北京"}</textarea>
+            <button class="btn" onclick="callStruct()">生日+1</button>
+        </div>
+        <div class="result-box info" id="structResult">点击按钮查看结果</div>
+    </div>
+
+    <!-- 嵌套 Struct -->
+    <div class="card">
+        <h2>🏢 嵌套 Struct</h2>
+        <div class="card-row">
+            <textarea id="structCompany" rows="3">{"name":"ACME Corp","revenue":1000000,"staff":[{"name":"Alice","age":30,"city":"NYC"},{"name":"Bob","age":25,"city":"SF"}]}</textarea>
+            <button class="btn" onclick="callCompany()">涨薪+营收↑20%</button>
+        </div>
+        <div class="result-box info" id="companyResult">点击按钮查看结果</div>
+    </div>
+
+    <!-- error 返回值 -->
+    <div class="card">
+        <h2>⚠️ error 返回值</h2>
+        <div class="card-row">
+            <label>除法:</label>
+            <input id="divA" type="number" value="10" step="0.1">
+            <span>÷</span>
+            <input id="divB" type="number" value="3" step="0.1">
+            <button class="btn" onclick="callDivideOK()">成功时</button>
+            <button class="btn warning" onclick="callDivideFail()">除零错误</button>
+        </div>
+        <div class="card-row">
+            <label>检查正数:</label>
+            <input id="posNum" type="number" value="-5">
+            <button class="btn" onclick="callCheckPositive()">检查</button>
+        </div>
+        <div class="result-box info" id="errorResult">点击按钮查看结果</div>
+    </div>
+
+    <!-- 混合参数 -->
+    <div class="card">
+        <h2>🔀 混合参数</h2>
+        <div class="card-row">
+            <textarea id="mixedInput" rows="3">{"name":"小红","age":22,"scores":[88,92,76],"info":{"city":"上海"}}</textarea>
+            <button class="btn" onclick="callMixed()">调用</button>
+        </div>
+        <div class="result-box info" id="mixedResult">点击按钮查看结果</div>
+    </div>
+
+</div>
+
+<script>
+// ===== 辅助函数 =====
+
+function showResult(elId, msg, type) {
+    const el = document.getElementById(elId);
+    el.textContent = msg;
+    el.className = 'result-box ' + (type || 'info');
+}
+
+function showBasic(v) { showResult('basicResult', v); }
+function showSlice(v)  { showResult('sliceResult', v); }
+function showMap(v)    { showResult('mapResult', v); }
+function showStruct(v) { showResult('structResult', JSON.stringify(v, null, 2)); }
+function showCompany(v){ showResult('companyResult', JSON.stringify(v, null, 2)); }
+function showError(v)  { showResult('errorResult', v); }
+function showMixed(v)  { showResult('mixedResult', JSON.stringify(v, null, 2)); }
+
+// ===== 基本类型 =====
+
+async function callString() {
+    const val = document.getElementById('strInput').value;
+    const result = await demo.stringParam(val);
+    showBasic('返回: ' + result);
+}
+
+async function callInt() {
+    const a = parseInt(document.getElementById('intA').value) || 0;
+    const b = parseInt(document.getElementById('intB').value) || 0;
+    const result = await demo.intParam(a, b);
+    showBasic(a + ' + ' + b + ' = ' + result);
+}
+
+async function callFloat() {
+    const a = parseFloat(document.getElementById('floatA').value) || 0;
+    const b = parseFloat(document.getElementById('floatB').value) || 0;
+    const result = await demo.floatParam(a, b);
+    showBasic(a + ' × ' + b + ' = ' + result);
+}
+
+let boolVal = true;
+async function callBool() {
+    const result = await demo.boolParam(boolVal);
+    boolVal = result;
+    document.getElementById('boolVal').textContent = boolVal;
+    showBasic('!true = ' + boolVal);
+}
+
+async function callHello() {
+    const result = await demo.hello();
+    showBasic('返回: "' + result + '"');
+}
+
+async function callNoop() {
+    await demo.noop();
+    showBasic('已调用 noop (无返回值, 控制台有输出)');
+}
+
+// ===== Slice =====
+
+async function callSliceInt() {
+    const val = JSON.parse(document.getElementById('sliceInt').value);
+    const result = await demo.sliceInt(val);
+    showSlice('输入: ' + JSON.stringify(val) + ' → 输出: ' + JSON.stringify(result));
+}
+
+async function callSliceStr() {
+    const val = JSON.parse(document.getElementById('sliceStr').value);
+    const result = await demo.sliceString(val);
+    showSlice('返回: "' + result + '"');
+}
+
+// ===== Map =====
+
+async function callMap() {
+    const val = JSON.parse(document.getElementById('mapInput').value);
+    const result = await demo.mapParam(val);
+    showMap('返回:\n' + result);
+}
+
+// ===== Struct =====
+
+async function callStruct() {
+    const val = JSON.parse(document.getElementById('structPerson').value);
+    const result = await demo.structParam(val);
+    showStruct(result);
+}
+
+async function callCompany() {
+    const val = JSON.parse(document.getElementById('structCompany').value);
+    const result = await demo.companyInfo(val);
+    showCompany(result);
+}
+
+// ===== error =====
+
+async function callDivideOK() {
+    const a = parseFloat(document.getElementById('divA').value) || 0;
+    const b = parseFloat(document.getElementById('divB').value) || 1;
+    try {
+        const result = await demo.divideOK(a, b);
+        showError('结果: ' + result);
+    } catch(e) {
+        showError('错误: ' + e, 'err');
+    }
+}
+
+async function callDivideFail() {
+    const a = parseFloat(document.getElementById('divA').value) || 0;
+    try {
+        const result = await demo.divideFail(a, 0);
+        showError('结果: ' + result);
+    } catch(e) {
+        showError('捕获错误: ' + e, 'err');
+    }
+}
+
+async function callCheckPositive() {
+    const n = parseInt(document.getElementById('posNum').value) || 0;
+    try {
+        await demo.checkPositive(n);
+        showError(n + ' 是正数 ✓', 'ok');
+    } catch(e) {
+        showError('捕获错误: ' + e, 'err');
+    }
+}
+
+// ===== 混合参数 =====
+
+async function callMixed() {
+    const val = JSON.parse(document.getElementById('mixedInput').value);
+    const result = await demo.mixedArgs(val.name, val.age, val.scores, val.info);
+    showMixed(result);
+}
+</script>
+</body>
+</html>
