@@ -208,7 +208,7 @@ func main() {
 		edge.WithZoomControl(false),
 		edge.WithDebug(),
 		edge.WithAutoFocus(true),
-		edge.WithDefaultBackgroundColor(edge.NewColor(0xFF, 0xFF, 0xFF, 0xFF)),
+		edge.WithDefaultBackgroundColor(edge.NewColor(0, 0, 0, 0)), // 设置背景透明
 	)
 	if err != nil {
 		wapi.MessageBoxW(0, "创建 webview 失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
