@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代桌面应用</title>
+    <style>
+        /* 重置所有默认样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei UI', sans-serif;
+            font-size: 12px;
+            color: #323130;
+            background: #F5F5F5;
+            overflow: hidden;
+            height: 100vh;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* 应用程序容器 */
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* 自定义标题栏 - 完全模仿 Windows 11 */
+        #titleBar {
+            height: 32px;
+            background: #252D41;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            -webkit-app-region: drag;
+            user-select: none;
+            flex-shrink: 0;
+        }
+
+        #titleBar .titleBar-icon {
+            width: 16px;
+            height: 16px;
+            margin-left: 12px;
+            margin-right: 8px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="2" fill="%234CAF50"/></svg>') no-repeat center;
+            background-size: contain;
+        }
+
+        #titleBar .titleBar-title {
+            flex: 1;
+            font-size: 12px;
+            font-weight: 400;
+            color: #FFFFFF;
+            padding-left: 4px;
+            line-height: 32px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            -webkit-app-region: drag;
+        }
+
+        #titleBar .titleBar-controls {
+            display: flex;
+            height: 32px;
+            -webkit-app-region: no-drag;
+        }
+
+        #titleBar .titleBar-button {
+            width: 46px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: #FFFFFF;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.1s;
+        }
+
+        #titleBar .titleBar-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        #titleBar .titleBar-button.close:hover {
+            background: #E81123;
+        }
+
+        #titleBar .titleBar-button svg {
+            width: 10px;
+            height: 10px;
+            fill: currentColor;
+        }
+
+        /* 菜单栏 */
+        #menuBar {
+            height: 28px;
+            background: #FFFFFF;
+            border-bottom: 1px solid #E0E0E0;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            flex-shrink: 0;
+        }
+
+        #menuBar .menu-item {
+            padding: 4px 12px;
+            font-size: 12px;
+            color: #323130;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.1s;
+        }
+
+        #menuBar .menu-item:hover {
+            background: #F0F0F0;
+        }
+
+        /* 主内容区域 */
+        #mainContent {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* 侧边栏 */
+        #sidebar {
+            width: 220px;
+            background: #FFFFFF;
+            border-right: 1px solid #E0E0E0;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        #sidebar .sidebar-header {
+            padding: 16px 16px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #605E5C;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #sidebar .nav-item {
+            padding: 8px 16px;
+            font-size: 12px;
+            color: #323130;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.1s;
+            border-left: 3px solid transparent;
+        }
+
+        #sidebar .nav-item:hover {
+            background: #F5F5F5;
+        }
+
+        #sidebar .nav-item.active {
+            background: #E8F0FE;
+            border-left-color: #0078D4;
+            color: #0078D4;
+            font-weight: 500;
+        }
+
+        #sidebar .nav-item .nav-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        /* 内容区域 */
+        #content {
+            flex: 1;
+            background: #F5F5F5;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* 页面标题 */
+        .page-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #201F1E;
+            margin-bottom: 4px;
+        }
+
+        .page-subtitle {
+            font-size: 12px;
+            color: #605E5C;
+            margin-bottom: 20px;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: #FFFFFF;
+            border: 1px solid #E0E0E0;
+            border-radius: 4px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #201F1E;
+            margin-bottom: 8px;
+        }
+
+        .card-content {
+            font-size: 12px;
+            color: #323130;
+            line-height: 1.5;
+        }
+
+        /* 按钮样式 - Windows 11 风格 */
+        .btn {
+            padding: 6px 16px;
+            font-size: 12px;
+            font-family: 'Segoe UI', sans-serif;
+            border: 1px solid #D1D1D1;
+            border-radius: 4px;
+            background: #FFFFFF;
+            color: #323130;
+            cursor: pointer;
+            transition: all 0.1s;
+            outline: none;
+        }
+
+        .btn:hover {
+            background: #F5F5F5;
+            border-color: #C8C8C8;
+        }
+
+        .btn:active {
+            background: #E0E0E0;
+        }
+
+        .btn-primary {
+            background: #0078D4;
+            border-color: #0078D4;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #106EBE;
+            border-color: #106EBE;
+        }
+
+        .btn-primary:active {
+            background: #005A9E;
+            border-color: #005A9E;
+        }
+
+        /* 输入框 */
+        .input {
+            padding: 6px 10px;
+            font-size: 12px;
+            font-family: 'Segoe UI', sans-serif;
+            border: 1px solid #D1D1D1;
+            border-radius: 4px;
+            background: #FFFFFF;
+            color: #323130;
+            outline: none;
+            transition: border-color 0.1s;
+        }
+
+        .input:focus {
+            border-color: #0078D4;
+            box-shadow: 0 0 0 1px #0078D4;
+        }
+
+        /* 列表 */
+        .list-item {
+            padding: 10px 16px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.1s;
+        }
+
+        .list-item:hover {
+            background: #F5F5F5;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        /* 滚动条样式 - 模仿原生 Windows */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #C0C0C0;
+            border-radius: 5px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #A0A0A0;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        ::-webkit-scrollbar-button {
+            display: none;
+        }
+
+        /* 状态栏 */
+        #statusBar {
+            height: 24px;
+            background: #F0F0F0;
+            border-top: 1px solid #E0E0E0;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            font-size: 11px;
+            color: #605E5C;
+            flex-shrink: 0;
+        }
+
+        #statusBar .status-item {
+            margin-right: 16px;
+        }
+
+        /* 网格布局 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        /* 表格样式 */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #FFFFFF;
+            border: 1px solid #E0E0E0;
+            border-radius: 4px;
+        }
+
+        .table th {
+            padding: 8px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #605E5C;
+            text-align: left;
+            border-bottom: 1px solid #E0E0E0;
+            background: #FAFAFA;
+        }
+
+        .table td {
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #323130;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .table tr:hover td {
+            background: #F5F5F5;
+        }
+
+        /* 徽章 */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 11px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: #DFF6DD;
+            color: #107C10;
+        }
+
+        .badge-warning {
+            background: #FFF4CE;
+            color: #8A6D00;
+        }
+
+        .badge-error {
+            background: #FDE7E9;
+            color: #D13438;
+        }
+
+        /* 设置面板 */
+        .settings-group {
+            margin-bottom: 24px;
+        }
+
+        .settings-group-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #201F1E;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #E0E0E0;
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+
+        .setting-label {
+            font-size: 12px;
+            color: #323130;
+        }
+
+        .setting-description {
+            font-size: 11px;
+            color: #605E5C;
+            margin-top: 2px;
+        }
+
+        /* 开关 */
+        .toggle {
+            width: 40px;
+            height: 20px;
+            background: #D1D1D1;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .toggle.active {
+            background: #0078D4;
+        }
+
+        .toggle::after {
+            content: '';
+            width: 16px;
+            height: 16px;
+            background: #FFFFFF;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: left 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .toggle.active::after {
+            left: 22px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- 自定义标题栏 -->
+        <div id="titleBar">
+            <div class="titleBar-icon"></div>
+            <div class="titleBar-title">现代桌面应用</div>
+            <div class="titleBar-controls">
+                <button class="titleBar-button" onclick="app.minimize()" title="最小化">
+                    <svg viewBox="0 0 10 10"><rect x="0" y="4.5" width="10" height="1" fill="currentColor"/></svg>
+                </button>
+                <button class="titleBar-button" onclick="app.toggleMaximize()" title="最大化">
+                    <svg viewBox="0 0 10 10"><rect x="1" y="1" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+                </button>
+                <button class="titleBar-button close" onclick="app.close()" title="关闭">
+                    <svg viewBox="0 0 10 10"><path d="M1,1 L9,9 M9,1 L1,9" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- 菜单栏 -->
+        <div id="menuBar">
+            <div class="menu-item" onclick="showMenu('file')">文件</div>
+            <div class="menu-item" onclick="showMenu('edit')">编辑</div>
+            <div class="menu-item" onclick="showMenu('view')">查看</div>
+            <div class="menu-item" onclick="showMenu('help')">帮助</div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div id="mainContent">
+            <!-- 侧边栏 -->
+            <div id="sidebar">
+                <div class="sidebar-header">导航</div>
+                <div class="nav-item active" data-page="home" onclick="switchPage('home')">
+                    <span class="nav-icon">🏠</span>
+                    <span>首页</span>
+                </div>
+                <div class="nav-item" data-page="files" onclick="switchPage('files')">
+                    <span class="nav-icon">📁</span>
+                    <span>文件管理</span>
+                </div>
+                <div class="nav-item" data-page="analytics" onclick="switchPage('analytics')">
+                    <span class="nav-icon">📊</span>
+                    <span>数据分析</span>
+                </div>
+                <div class="nav-item" data-page="messages" onclick="switchPage('messages')">
+                    <span class="nav-icon">💬</span>
+                    <span>消息中心</span>
+                </div>
+                <div class="nav-item" data-page="settings" onclick="switchPage('settings')">
+                    <span class="nav-icon">⚙️</span>
+                    <span>设置</span>
+                </div>
+            </div>
+
+            <!-- 内容区域 -->
+            <div id="content">
+                <!-- 首页 -->
+                <div id="page-home" class="content-section active">
+                    <div class="page-title">欢迎使用</div>
+                    <div class="page-subtitle">基于 xcgui + WebView2 构建的现代桌面应用</div>
+
+                    <div class="grid">
+                        <div class="card">
+                            <div class="card-title">📊 数据统计</div>
+                            <div class="card-content">
+                                <p>今日访问量: <strong>1,234</strong></p>
+                                <p>本周新增: <strong>856</strong></p>
+                                <p>活跃用户: <strong>3,456</strong></p>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">✅ 任务完成情况</div>
+                            <div class="card-content">
+                                <p>已完成: <strong>24</strong> / 30</p>
+                                <p>完成率: <strong>80%</strong></p>
+                                <div style="margin-top: 8px; height: 4px; background: #E0E0E0; border-radius: 2px;">
+                                    <div style="width: 80%; height: 100%; background: #0078D4; border-radius: 2px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">🔔 最新通知</div>
+                            <div class="card-content">
+                                <div class="list-item">
+                                    <span>系统更新可用</span>
+                                    <span class="badge badge-warning">待处理</span>
+                                </div>
+                                <div class="list-item">
+                                    <span>备份完成</span>
+                                    <span class="badge badge-success">已完成</span>
+                                </div>
+                                <div class="list-item">
+                                    <span>新用户注册</span>
+                                    <span class="badge badge-success">新</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 文件管理 -->
+                <div id="page-files" class="content-section">
+                    <div class="page-title">文件管理</div>
+                    <div class="page-subtitle">管理您的文件和文件夹</div>
+
+                    <div style="margin-bottom: 16px; display: flex; gap: 8px;">
+                        <button class="btn btn-primary" onclick="alert('新建文件夹')">新建文件夹</button>
+                        <button class="btn" onclick="alert('上传文件')">上传文件</button>
+                        <button class="btn" onclick="alert('刷新')">刷新</button>
+                    </div>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>文件名</th>
+                                <th>大小</th>
+                                <th>修改时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>📄 报告.docx</td>
+                                <td>256 KB</td>
+                                <td>2026-05-28 09:00</td>
+                                <td><button class="btn" style="padding: 2px 8px; font-size: 11px;">打开</button></td>
+                            </tr>
+                            <tr>
+                                <td>📊 数据.xlsx</td>
+                                <td>1.2 MB</td>
+                                <td>2026-05-27 15:30</td>
+                                <td><button class="btn" style="padding: 2px 8px; font-size: 11px;">打开</button></td>
+                            </tr>
+                            <tr>
+                                <td>📁 项目备份</td>
+                                <td>--</td>
+                                <td>2026-05-26 10:15</td>
+                                <td><button class="btn" style="padding: 2px 8px; font-size: 11px;">打开</button></td>
+                            </tr>
+                            <tr>
+                                <td>🖼️ 图片.png</td>
+                                <td>512 KB</td>
+                                <td>2026-05-25 18:45</td>
+                                <td><button class="btn" style="padding: 2px 8px; font-size: 11px;">查看</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 数据分析 -->
+                <div id="page-analytics" class="content-section">
+                    <div class="page-title">数据分析</div>
+                    <div class="page-subtitle">查看系统数据统计和分析报告</div>
+
+                    <div class="card">
+                        <div class="card-title">月度趋势</div>
+                        <div class="card-content">
+                            <canvas id="chart1" style="width: 100%; height: 200px; background: #FAFAFA; border-radius: 4px;"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="grid" style="margin-top: 12px;">
+                        <div class="card">
+                            <div class="card-title">访问量趋势</div>
+                            <div class="card-content">
+                                <p>本月同比增长 <strong style="color: #107C10;">+15.3%</strong></p>
+                                <p>环比增长 <strong style="color: #107C10;">+8.7%</strong></p>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">用户分布</div>
+                            <div class="card-content">
+                                <p>新用户: <strong>456</strong></p>
+                                <p>回访用户: <strong>2,890</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 消息中心 -->
+                <div id="page-messages" class="content-section">
+                    <div class="page-title">消息中心</div>
+                    <div class="page-subtitle">查看和管理您的消息</div>
+
+                    <div class="card">
+                        <div class="list-item">
+                            <div>
+                                <div style="font-weight: 500;">系统通知</div>
+                                <div style="font-size: 11px; color: #605E5C;">系统将在今晚 22:00 进行维护升级</div>
+                                <div style="font-size: 10px; color: #A0A0A0; margin-top: 4px;">10 分钟前</div>
+                            </div>
+                            <span class="badge badge-warning">未读</span>
+                        </div>
+                        <div class="list-item">
+                            <div>
+                                <div style="font-weight: 500;">任务提醒</div>
+                                <div style="font-size: 11px; color: #605E5C;">您有 3 个待完成的任务</div>
+                                <div style="font-size: 10px; color: #A0A0A0; margin-top: 4px;">1 小时前</div>
+                            </div>
+                            <span class="badge badge-warning">未读</span>
+                        </div>
+                        <div class="list-item">
+                            <div>
+                                <div style="font-weight: 500;">欢迎消息</div>
+                                <div style="font-size: 11px; color: #605E5C;">欢迎使用现代桌面应用！</div>
+                                <div style="font-size: 10px; color: #A0A0A0; margin-top: 4px;">1 天前</div>
+                            </div>
+                            <span class="badge badge-success">已读</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 设置 -->
+                <div id="page-settings" class="content-section">
+                    <div class="page-title">设置</div>
+                    <div class="page-subtitle">配置应用程序选项</div>
+
+                    <div class="settings-group">
+                        <div class="settings-group-title">常规设置</div>
+                        <div class="setting-item">
+                            <div>
+                                <div class="setting-label">自动启动</div>
+                                <div class="setting-description">开机时自动启动应用程序</div>
+                            </div>
+                            <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                        <div class="setting-item">
+                            <div>
+                                <div class="setting-label">最小化到系统托盘</div>
+                                <div class="setting-description">关闭窗口时最小化到系统托盘</div>
+                            </div>
+                            <div class="toggle" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                        <div class="setting-item">
+                            <div>
+                                <div class="setting-label">检查更新</div>
+                                <div class="setting-description">自动检查应用程序更新</div>
+                            </div>
+                            <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <div class="settings-group-title">界面设置</div>
+                        <div class="setting-item">
+                            <div>
+                                <div class="setting-label">深色模式</div>
+                                <div class="setting-description">使用深色主题</div>
+                            </div>
+                            <div class="toggle" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                        <div class="setting-item">
+                            <div>
+                                <div class="setting-label">侧边栏折叠</div>
+                                <div class="setting-description">启动时折叠侧边栏</div>
+                            </div>
+                            <div class="toggle" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <div class="settings-group-title">关于</div>
+                        <div class="card-content">
+                            <p><strong>现代桌面应用</strong></p>
+                            <p style="margin-top: 8px;">版本: 1.0.0</p>
+                            <p>基于 xcgui + WebView2 构建</p>
+                            <p style="margin-top: 8px;">
+                                <button class="btn" onclick="app.showAbout()">关于</button>
+                                <button class="btn" style="margin-left: 8px;" onclick="alert('检查更新...')">检查更新</button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 状态栏 -->
+        <div id="statusBar">
+            <span class="status-item">就绪</span>
+            <span class="status-item">|</span>
+            <span class="status-item">用户: Admin</span>
+            <span class="status-item">|</span>
+            <span class="status-item">版本: 1.0.0</span>
+        </div>
+    </div>
+
+    <script>
+        // 页面切换
+        function switchPage(pageId) {
+            // 更新侧边栏
+            document.querySelectorAll('#sidebar .nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`#sidebar .nav-item[data-page="${pageId}"]`).classList.add('active');
+
+            // 更新内容区域
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(`page-${pageId}`).classList.add('active');
+
+            // 切换到数据分析页时重新绘制图表
+            if (pageId === 'analytics') {
+                setTimeout(drawSimpleChart, 50);
+            }
+        }
+
+        // 菜单点击
+        function showMenu(type) {
+            alert(`打开 ${type} 菜单`);
+        }
+
+        // 简化图表绘制
+        function drawSimpleChart() {
+            const canvas = document.getElementById('chart1');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth * 2;
+            canvas.height = canvas.offsetHeight * 2;
+            ctx.scale(2, 2);
+            
+            const width = canvas.offsetWidth;
+            const height = canvas.offsetHeight;
+            
+            // 绘制背景
+            ctx.fillStyle = '#FAFAFA';
+            ctx.fillRect(0, 0, width, height);
+            
+            // 绘制网格
+            ctx.strokeStyle = '#E0E0E0';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= 5; i++) {
+                const y = (height / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+            
+            // 绘制数据线
+            const data = [30, 55, 40, 65, 50, 75, 60, 85, 70, 90];
+            const stepX = width / (data.length - 1);
+            
+            ctx.strokeStyle = '#0078D4';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            data.forEach((value, index) => {
+                const x = index * stepX;
+                const y = height - (value / 100) * height;
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+            
+            // 绘制数据点
+            ctx.fillStyle = '#0078D4';
+            data.forEach((value, index) => {
+                const x = index * stepX;
+                const y = height - (value / 100) * height;
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        // 页面加载完成后绘制图表
+        window.addEventListener('load', function() {
+            setTimeout(drawSimpleChart, 100);
+        });
+
+        // 窗口大小改变时重绘图表
+        window.addEventListener('resize', function() {
+            setTimeout(drawSimpleChart, 100);
+        });
+    </script>
+</body>
+</html>
