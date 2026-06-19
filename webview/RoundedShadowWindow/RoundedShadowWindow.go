@@ -3,6 +3,9 @@
 // 3.使用 js 实现拖动窗口边框调整窗口大小
 package main
 
+// 这个窗口的标题栏区域的 css 是加了 `app-region: drag;` 的, 让标题栏区域成为了窗口非客户区, 可以进行拖动.
+// 窗口主体区域是使用 js 配合绑定的窗口移动函数实现拖动窗口移动位置, 如果用 `app-region: drag;` 的话会很简单, 但你在窗口上右键时会弹出那种标题栏上才会有的菜单, 就不好了.
+
 import (
 	"embed"
 	"fmt"
@@ -19,7 +22,7 @@ import (
 )
 
 var (
-	isDebug = true // 是否为调试版
+	isDebug = false // 是否为调试版
 
 	//go:embed assets/**
 	embedAssets embed.FS // 嵌入 assets 目录以及子目录下的文件, 不包括隐藏文件
@@ -75,8 +78,9 @@ func NewMainWindow(edg *edge.Edge) *MainWindow {
 			wapi.MessageBoxW(0, "EnableVirtualHostNameToEmbedFSMapping 失败: "+err.Error(), "错误", wapi.MB_OK|wapi.MB_IconError)
 			os.Exit(5)
 		}
-	} else { // 调试版采用文件夹映射的方式方便热重载
-		folderPath, _ := filepath.Abs("webview/RoundedShadowWindow/assets")
+	} else { // 调试版采用文件夹映射的方式方便重载
+		folderPath, _ := filepath.Abs("./assets")
+		fmt.Println("如果报错肯定是这个路径有问题, 得改下, folderPath:", folderPath)
 		err = m.wv.SetVirtualHostNameToFolderMapping(hostName,
 			folderPath, edge.COREWEBVIEW2_HOST_RESOURCE_ACCESS_KIND_ALLOW)
 		if err != nil {
