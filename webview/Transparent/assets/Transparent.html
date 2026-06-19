@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局部透明</title>
+    <style>
+        /* html 和 body 背景完全透明，让炫彩界面库的背景透出来 */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent !important;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        /* ---------- 不透明的元素们 ---------- */
+
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px 48px;
+            /* 卡片区域可拖动 */
+            app-region: drag;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            max-width: 520px;
+            width: 90%;
+            text-align: center;
+            margin-bottom: 32px;
+            /* 完全不透明 */
+            opacity: 1;
+        }
+
+        .card h1 {
+            margin: 0 0 8px 0;
+            font-size: 28px;
+            color: #1a1a2e;
+        }
+
+        .card p {
+            margin: 0 0 28px 0;
+            font-size: 15px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* 按钮行 */
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 10px 28px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            background: #4361ee;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.35);
+            opacity: 1;
+            /* 按钮不可拖动，确保点击正常 */
+            app-region: no-drag;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.45);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .btn.close {
+            background: #e63946;
+            box-shadow: 0 4px 12px rgba(230, 57, 70, 0.35);
+        }
+        .btn.close:hover {
+            box-shadow: 0 6px 20px rgba(230, 57, 70, 0.45);
+        }
+        .btn.minimize {
+            background: #f4a261;
+            box-shadow: 0 4px 12px rgba(244, 162, 97, 0.35);
+        }
+        .btn.minimize:hover {
+            box-shadow: 0 6px 20px rgba(244, 162, 97, 0.45);
+        }
+
+        /* 底部信息栏 - 同样不透明 */
+        .info-bar {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 12px 28px;
+            font-size: 13px;
+            color: #333;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+            max-width: 520px;
+            width: 90%;
+            text-align: center;
+            /* 底栏可拖动 */
+            app-region: drag;
+        }
+
+        .info-bar span {
+            color: #4361ee;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card" id="card">
+        <h1>🌐 局部透明 WebView</h1>
+        <p>
+            这个页面的 html / body 背景是透明的，<br>
+            因此窗口的背景可以直接透出来。<br>
+            而卡片、按钮、底栏等元素都是<strong>不透明</strong>的。
+        </p>
+        <div class="actions">
+            <button class="btn minimize" onclick="wnd.minimize()">最小化</button>
+            <button class="btn" onclick="wnd.toggleMaximize()">最大化/还原</button>
+            <button class="btn close" onclick="wnd.close()">关闭</button>
+        </div>
+    </div>
+
+    <div class="info-bar" id="statusBar">
+        💡 提示：拖动窗口任意空白区域可移动窗口 &nbsp;|&nbsp; 版本 <span>1.0</span>
+    </div>
+
+    <script>
+        // 获取卡片的四边距网页边界距离
+        function getCardRectMargin() {
+            var el = document.getElementById('card');
+            if (!el) return null;
+            var r = el.getBoundingClientRect();
+            return {
+                left: Math.round(r.x),
+                top: Math.round(r.y),
+                right: Math.round(window.innerWidth - r.right),
+                bottom: Math.round(window.innerHeight - r.bottom)
+            };
+        }
+
+        // 获取状态栏的四边距网页边界距离
+        function getStatusBarRectMargin() {
+            var el = document.getElementById('statusBar');
+            if (!el) return null;
+            var r = el.getBoundingClientRect();
+            return {
+                left: Math.round(r.x),
+                top: Math.round(r.y),
+                right: Math.round(window.innerWidth - r.right),
+                bottom: Math.round(window.innerHeight - r.bottom)
+            };
+        }
+    </script>
+
+</body>
+</html>
