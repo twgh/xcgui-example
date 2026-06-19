@@ -1,5 +1,7 @@
 # WebView 局部透明示例
 
+> 本文由 AI 生成
+
 演示如何利用 **xcgui**（炫彩界面库）+ **Edge WebView2** 实现**窗口透明 + WebView 局部不透明**的效果。
 
 ## 效果
@@ -54,8 +56,3 @@ var isDebug = true
 | 添加炫彩填充矩形 | 通过 `layContent.GetBkManagerObj().AddFill(...)` 添加与 HTML 元素位置对应的填充矩形 |
 | 窗口控制函数绑定 | `bindBasicFuncs()` 中绑定最小化、最大化、关闭 |
 | 嵌入文件系统 | 正式版使用 `//go:embed assets/**` 嵌入资源，配合 `EnableVirtualHostNameToEmbedFSMapping` |
-
-## 依赖
-
-- [xcgui](https://github.com/twgh/xcgui) - Windows 桌面界面库
-- Edge WebView2 Runtime
