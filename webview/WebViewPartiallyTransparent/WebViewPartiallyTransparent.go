@@ -39,7 +39,7 @@ func NewMainWindow(edg *edge.Edge) *MainWindow {
 	var err error
 
 	// 如果要仅显示 WebView 内容, 可以把窗口 style 改为 Window_Style_Center, 只留个居中
-	m.w = window.New(0, 0, 900, 900, "局部透明", 0, xcc.Window_Style_Default)
+	m.w = window.New(0, 0, 900, 900, "WebView 局部透明, 鼠标穿透", 0, xcc.Window_Style_Default)
 
 	// 设置为透明窗口
 	m.w.SetTransparentType(xcc.Window_Transparent_Shaped)
@@ -96,7 +96,7 @@ func NewMainWindow(edg *edge.Edge) *MainWindow {
 	// 绑定函数
 	m.bindBasicFuncs()
 	// 导航到首页
-	m.wv.Navigate(edge.JoinUrlHeader(hostName) + "/Transparent.html")
+	m.wv.Navigate(edge.JoinUrlHeader(hostName) + "/WebViewPartiallyTransparent.html")
 	return m
 }
 
@@ -113,7 +113,7 @@ func (m *MainWindow) regWebViewEvents() {
 		fmt.Println("导航完成:", uri)
 
 		switch uri {
-		case edge.JoinUrlHeader(hostName) + "/Transparent.html":
+		case edge.JoinUrlHeader(hostName) + "/WebViewPartiallyTransparent.html":
 			// 在导航完成事件里判断第一次加载完毕时才显示窗口,
 			// 这是因为采用嵌入文件系统的方式时, 网页还没加载出来的时候, 会显示webview白色的背景,
 			// 然后才会加载出网页, 表现出来就是有一瞬间的闪烁, 所以等加载完再显示窗口
