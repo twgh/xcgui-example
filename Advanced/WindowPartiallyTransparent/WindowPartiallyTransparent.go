@@ -1,4 +1,4 @@
-// 窗口局部透明, 包括布局元素都是局部透明的
+// 窗口局部透明, 鼠标穿透, 包括布局元素都是局部透明的
 package main
 
 import (
@@ -17,7 +17,7 @@ func main() {
 	// 显示布局对象边界, 方便调试时查看
 	a.ShowLayoutFrame(true)
 
-	// 创建窗口
+	// 创建窗口, 如果要不显示标题栏, 可以把窗口 style 改为 Window_Style_Center, 只留个居中
 	w := window.New(0, 0, 800, 600, "窗口局部透明", 0, xcc.Window_Style_Default|xcc.Window_Style_Drag_Window)
 	// 设置为透明窗口
 	w.SetTransparentType(xcc.Window_Transparent_Shaped)
@@ -30,7 +30,7 @@ func main() {
 
 	// 获取背景管理对象
 	bkm := layContent.GetBkManagerObj()
-	// 添加填充矩形, 绿色
+	// 添加填充矩形, 绿色. 如果没用布局元素, 而是直接在窗口上添加的话, Element_State_Flag_Leave 这个要改的
 	bkm.AddFill(xcc.Element_State_Flag_Leave, xc.RGBA(0, 255, 0, 255), 1)
 	// 添加填充矩形, 蓝色
 	bkm.AddFill(xcc.Element_State_Flag_Leave, xc.RGBA(0, 0, 255, 255), 2)
