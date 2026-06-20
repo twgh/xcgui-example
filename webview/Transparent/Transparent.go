@@ -120,62 +120,66 @@ func (m *MainWindow) regWebViewEvents() {
 			if firstLoad {
 				firstLoad = false
 
-				go func() {
-					xc.UI(func() {
-						// 获取 html 中卡片的外边距矩形
-						jsonStr, err := m.wv.EvalSync("getCardRectMargin()")
-						if err != nil {
-							fmt.Println("getCardRectMargin 失败:", err)
-							return
-						}
-						fmt.Println("getCardRectMargin jsonStr:", jsonStr)
+				// 因为要用到 EvalSync 同步执行 js 代码并取回返回值, 而 EvalSync 是依赖于窗口消息循环的,
+				// 所以要等窗口的消息循环开始了, 才能调用 EvalSync 函数, 也就是要等 app.Run 已经执行了.
+				// 事件函数都是在消息循环中执行的, 所以注册这个窗口绘制事件, 等窗口在绘制的时候再执行 EvalSync 函数.
+				// 有时候你可能想要窗口创建完成事件, 可以用 AddEvent_Paint_Display: 窗口绘制完成并且已经显示到屏幕
+				m.w.AddEvent_Paint(func(hWindow, hDraw int, pbHandled *bool) int {
+					fmt.Println("进入 Paint")
+					// 这个事件只用一次, 用完直接移除
+					defer m.w.RemoveEvent(xcc.WM_PAINT)
 
-						rc1, _ := UnmarshalRect(jsonStr)
-						fmt.Println("getCardRectMargin 结果:", rc1)
+					// 获取 html 中卡片的外边距矩形
+					jsonStr, err := m.wv.EvalSync("getCardRectMargin()")
+					if err != nil {
+						fmt.Println("getCardRectMargin 失败:", err)
+						return 0
+					}
+					fmt.Println("getCardRectMargin jsonStr:", jsonStr)
 
-						// 获取 html 中底栏的外边距矩形
-						jsonStr, err = m.wv.EvalSync("getStatusBarRectMargin()")
-						if err != nil {
-							fmt.Println("getStatusBarRectMargin 失败:", err)
-							return
-						}
-						fmt.Println("getStatusBarRectMargin jsonStr:", jsonStr)
+					rc1, _ := UnmarshalRect(jsonStr)
+					fmt.Println("getCardRectMargin 结果:", rc1)
 
-						rc2, _ := UnmarshalRect(jsonStr)
-						fmt.Println("getStatusBarRectMargin 结果:", rc2)
+					// 获取 html 中底栏的外边距矩形
+					jsonStr, err = m.wv.EvalSync("getStatusBarRectMargin()")
+					if err != nil {
+						fmt.Println("getStatusBarRectMargin 失败:", err)
+						return 0
+					}
+					fmt.Println("getStatusBarRectMargin jsonStr:", jsonStr)
 
-						// 设置为透明窗口后, 整个窗口都会鼠标穿透了, 包括 WebView 不透明的地方也是, 但我们的需求是要 WebView 不透明的地方是可以点击的.
-						// 之所以这样是因为炫彩窗口本体现在是全透明的, 没有不透明的地方, WebView 不透明的地方并不是在炫彩窗口上的, 所以我们需要在炫彩窗口上添加不透明的区域,
-						// 而且不透明的区域还得正好对上 WebView 不透明的地方, 正好在 WebView 不透明的内容下方, 这样才能实现透明的地方是鼠标穿透的, 不透明的地方是可以点击的.
-						{
-							// 获取背景管理对象
-							bkm := m.layContent.GetBkManagerObj()
-							// 添加填充矩形 (对应 card)
-							bkm.AddFill(xcc.Element_State_Flag_Leave, xc.RGBA(255, 255, 255, 255), 1)
-							// 添加填充矩形 (对应 statusBar)
-							bkm.AddFill(xcc.Element_State_Flag_Leave, xc.RGBA(255, 255, 255, 255), 2)
+					rc2, _ := UnmarshalRect(jsonStr)
+					fmt.Println("getStatusBarRectMargin 结果:", rc2)
 
-							// 获取填充矩形, 匹配 card
-							obj1 := bkm.GetObjectObj(1)
-							// SetMargin 在默认对齐下, 4 个参数按 [左边间距, 上边间距, 右边间距, 下边间距] 解释;
-							// HTML 端 getCardRectMargin 返回的 4 个值刚好是元素到 layContent 四边的距离, 直接对应.
-							obj1.SetMargin(rc1.Left, rc1.Top, rc1.Right, rc1.Bottom)
-							// card: border-radius: 16px
-							obj1.SetRectRoundAngle(16, 16, 16, 16)
+					// 设置为透明窗口后, 整个窗口都会鼠标穿透了, 包括 WebView 不透明的地方也是, 但我们的需求是要 WebView 不透明的地方是可以点击的.
+					// 之所以这样是因为炫彩窗口本体现在是全透明的, 没有不透明的地方, WebView 不透明的地方并不是在炫彩窗口上的, 所以我们需要在炫彩窗口上添加不透明的区域,
+					// 而且不透明的区域还得正好对上 WebView 不透明的地方, 正好在 WebView 不透明的内容下方, 这样才能实现透明的地方是鼠标穿透的, 不透明的地方是可以点击的.
+					{
+						// 获取背景管理对象
+						bkm := m.layContent.GetBkManagerObj()
+						// 添加填充矩形 (对应 card)
+						bkm.AddFill(xcc.Element_State_Flag_Leave, xc.RGBA(255, 255, 255, 255), 1)
+						// 添加填充矩形 (对应 statusBar)
+						bkm.AddFill(xcc.Element_State_Flag_Leave, xc.RGBA(255, 255, 255, 255), 2)
 
-							// 获取填充矩形, 匹配 statusBar
-							obj2 := bkm.GetObjectObj(2)
-							obj2.SetMargin(rc2.Left, rc2.Top, rc2.Right, rc2.Bottom)
-							// info-bar: border-radius: 12px
-							obj2.SetRectRoundAngle(12, 12, 12, 12)
-						}
+						// 获取填充矩形, 匹配 card
+						obj1 := bkm.GetObjectObj(1)
+						// SetMargin 在默认对齐下, 4 个参数按 [左边间距, 上边间距, 右边间距, 下边间距] 解释;
+						// HTML 端 getCardRectMargin 返回的 4 个值刚好是元素到 layContent 四边的距离, 直接对应.
+						obj1.SetMargin(rc1.Left, rc1.Top, rc1.Right, rc1.Bottom)
+						// card: border-radius: 16px
+						obj1.SetRectRoundAngle(16, 16, 16, 16)
 
-						// 显示窗口
-						m.w.Show()
-					})
-				}()
+						// 获取填充矩形, 匹配 statusBar
+						obj2 := bkm.GetObjectObj(2)
+						obj2.SetMargin(rc2.Left, rc2.Top, rc2.Right, rc2.Bottom)
+						// info-bar: border-radius: 12px
+						obj2.SetRectRoundAngle(12, 12, 12, 12)
+					}
+					return 0
+				})
 
-				m.w.Show(false)
+				m.w.Show(true)
 			}
 		}
 		return 0
