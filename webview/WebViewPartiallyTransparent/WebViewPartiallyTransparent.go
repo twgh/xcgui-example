@@ -157,10 +157,10 @@ func (m *MainWindow) regWebViewEvents() {
 					{
 						// 获取背景管理对象
 						bkm := m.layContent.GetBkManagerObj()
-						// 添加填充矩形 (对应 card)
-						bkm.AddFill(xcc.Element_State_Flag_Leave, xc.RGBA(255, 255, 255, 255), 1)
+						// 添加填充矩形 (对应 card), 这里的透明度为 1 保持不完全透明即可, 这样即使没有 WebView 也是看不到填充矩形的
+						bkm.AddFill(xcc.Element_State_Flag_Leave, xc.RGBA(255, 255, 255, 1), 1)
 						// 添加填充矩形 (对应 statusBar)
-						bkm.AddFill(xcc.Element_State_Flag_Leave, xc.RGBA(255, 255, 255, 255), 2)
+						bkm.AddFill(xcc.Element_State_Flag_Leave, xc.RGBA(255, 255, 255, 1), 2)
 
 						// 获取填充矩形, 匹配 card
 						obj1 := bkm.GetObjectObj(1)
