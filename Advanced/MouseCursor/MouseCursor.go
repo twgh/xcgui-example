@@ -1,5 +1,7 @@
-// 设置鼠标光标.
+// 设置鼠标光标
 package main
+
+// 在运行前, 可选择阅读<在vscode中实现编译后运行>: https://mcn1fno5w69l.feishu.cn/wiki/I0d9wpUVai4GxikqLxwcftYunWh
 
 import (
 	"fmt"
@@ -14,8 +16,6 @@ import (
 	"github.com/twgh/xcgui/xcc"
 )
 
-const prePath = "Advanced/MouseCursor/"
-
 func main() {
 	// 初始化界面库
 	app.InitOrExit()
@@ -24,9 +24,11 @@ func main() {
 	// 创建窗口
 	w := window.New(0, 0, 500, 400, "设置鼠标光标", 0, xcc.Window_Style_Default)
 
-	// 从游标文件加载, 设置窗口鼠标光标
-	hCur := wapi.LoadImageW(0, common.StrPtr(prePath+"arrow.cur"), wapi.IMAGE_CURSOR, 0, 0, wapi.LR_LOADFROMFILE)
-	fmt.Println("hCur:", hCur)
+	// 从syso中的游标加载, 设置窗口鼠标光标
+	// 这个例子必须得 go build 后运行 exe 才能看出效果, go run 是看不出效果的. go build 时 syso 文件会被嵌入程序.
+	// 如何生成 syso 文件: https://github.com/tc-hib/go-winres
+	hCur := wapi.LoadImageW(wapi.GetModuleHandleW(""), common.StrPtr("ARROW"), wapi.IMAGE_CURSOR, 0, 0, wapi.LR_SHARED|wapi.LR_DEFAULTSIZE)
+	fmt.Println("窗口鼠标光标句柄:", hCur)
 	if hCur != 0 {
 		w.SetCursor(hCur)
 	}
@@ -46,7 +48,7 @@ func main() {
 		}
 
 		hCur := wapi.LoadImageW(0, uintptr(idc), wapi.IMAGE_CURSOR, 0, 0, wapi.LR_DEFAULTSIZE|wapi.LR_SHARED)
-		fmt.Println(hCur)
+		fmt.Println("新的按钮鼠标光标句柄, 点击按钮后移动一下鼠标,", hCur)
 
 		if hCur != 0 {
 			btn.SetCursor(hCur) // 设置元素鼠标光标
