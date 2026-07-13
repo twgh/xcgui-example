@@ -11,6 +11,8 @@ import (
 	"github.com/twgh/xcgui/xcc"
 )
 
+var DarkMode bool // 深色模式
+
 func main() {
 	// 1.初始化UI库
 	app.InitOrExit()
@@ -28,25 +30,24 @@ func main() {
 	// 提示文本
 	widget.NewShapeText(0, 0, 400, 30, "点击鼠标右键显示菜单", w.Handle).SetFont(app.NewFont(16).Handle).LayoutItem_SetWidth(xcc.Layout_Size_Auto, 0)
 
+	btn := widget.NewButton(0, 0, 100, 30, "深色主题菜单", w.Handle).SetTypeEx(xcc.Button_Type_Check)
+	btn.EnableBkTransparent().LayoutItem_EnableWrap()
+	btn.AddEvent_Button_Check(func(hEle int, bCheck bool, pbHandled *bool) int {
+		DarkMode = bCheck
+		return 0
+	})
+
 	// 窗口鼠标右键弹起事件
 	w.AddEvent_RButtonUp(onWindowRButtonUp)
 
-	// 注册菜单背景绘制事件
-	w.AddEvent_Menu_DrawBackground(onMenuDrawBackground)
-	// 注册菜单项绘制事件
-	w.AddEvent_Menu_DrawItem(onMenuDrawItem)
-	// 注册菜单被选择事件
-	w.AddEvent_Menu_Select(onMenuSelect)
-
 	// 3.显示窗口
-	w.ShowWindow(xcc.SW_SHOW)
+	w.Show()
 	// 4.运行程序
 	a.Run()
 	a.Exit()
 }
 
 // 菜单项ID
-
 const (
 	menuItem1 = iota + 1
 	menuSubitem1
@@ -61,40 +62,38 @@ const (
 
 // 窗口鼠标右键弹起事件
 func onWindowRButtonUp(hWindow int, nFlags uint, pPt *xc.POINT, pbHandled *bool) int {
-	// 加载所有的svg图片
-	hSvgMap := make(map[int]int) // 存放图片句柄
-	hSvgMap[menuItem1] = xc.XImage_LoadSvgString(svg1)
-	hSvgMap[menuItem2] = xc.XImage_LoadSvgString(svg2)
-	hSvgMap[menuItem3] = xc.XImage_LoadSvgString(svg3)
-	hSvgMap[menuItem4] = xc.XImage_LoadSvgString(svg4)
-	hSvgMap[menuItemSelect] = xc.XImage_LoadSvgString(svg_select)
-	hSvgMap[menuSubitem1] = xc.XImage_LoadSvgString(svg_subitem1)
-	hSvgMap[menuSubitem2] = xc.XImage_LoadSvgString(svg_subitem2)
-	hSvgMap[menuItemDisable] = xc.XImage_LoadSvgString(svg_disable)
+	// 创建菜单. Choose 类似于三元运算符, 根据模式选择函数
+	menu := common.Choose(DarkMode, NewMenuExDark, NewMenuEx)(hWindow)
+	// 深色模式的图标颜色还有待优化, 使用svg时可以修改svg字符串中的颜色
 
-	// 创建菜单
-	menu := widget.NewMenu()
-	menu.SetItemHeight(30)          // 设置菜单项高度
-	menu.EnableDrawBackground(true) // 菜单_启用用户绘制背景
-	menu.EnableDrawItem(true)       // 菜单_启用用户绘制项
+	// 菜单项选择事件
+	menu.AddEvent_Menu_Select(hWindow, func(hWindow int, nID int32, pbHandled *bool) int {
+		// 勾选项的勾选状态切换
+		if nID == menuItemSelect {
+			selected := common.StringToBool(xc.XC_GetProperty(hWindow, "item_select-选中"))
+			xc.XC_SetProperty(hWindow, "item_select-选中", common.BoolToString(!selected))
+		}
+		return 0
+	}, false) // 这里填 false, 不然每次显示菜单都会加一个回调函数
 
 	// 一级菜单
-	menu.AddItemIcon(menuItem1, "item1测试", 0, hSvgMap[menuItem1], xcc.Menu_Item_Flag_Normal)
+	menu.AddItemSvg(menuItem1, "item1测试", 0, svg1, xcc.Menu_Item_Flag_Normal)
 	menu.SetItemWidth(menuItem1, 100) // 设置菜单宽度
-	menu.AddItemIcon(menuItem2, "item2中文", 0, hSvgMap[menuItem2], xcc.Menu_Item_Flag_Normal)
-	if common.StringToBool(xc.XC_GetProperty(hWindow, "菜单项选中")) {
-		menu.AddItemIcon(menuItemSelect, "item_select", 0, hSvgMap[menuItemSelect], xcc.Menu_Item_Flag_Check)
+	menu.AddItemSvg(menuItem2, "item2中文", 0, svg2, xcc.Menu_Item_Flag_Normal)
+	// 勾选项(根据当前勾选状态决定是否带图标)
+	if common.StringToBool(xc.XC_GetProperty(hWindow, "item_select-选中")) {
+		menu.AddItemSvg(menuItemSelect, "item_select", 0, svg_select, xcc.Menu_Item_Flag_Check)
 	} else {
 		menu.AddItem(menuItemSelect, "item_select", 0, xcc.Menu_Item_Flag_Normal)
 	}
-	menu.AddItemIcon(menuItem3, "item3", 0, hSvgMap[menuItem3], xcc.Menu_Item_Flag_Normal)
-	menu.AddItem(-1, "", 0, xcc.Menu_Item_Flag_Separator) // 分隔栏
-	menu.AddItemIcon(menuItem4, "item4", 0, hSvgMap[menuItem4], xcc.Menu_Item_Flag_Normal)
-	menu.AddItemIcon(menuItemDisable, "item_disable", 0, hSvgMap[menuItemDisable], xcc.Menu_Item_Flag_Disable)
+	menu.AddItemSvg(menuItem3, "item3", 0, svg3, xcc.Menu_Item_Flag_Normal)
+	menu.AddSeparator() // 分隔栏
+	menu.AddItemSvg(menuItem4, "item4", 0, svg4, xcc.Menu_Item_Flag_Normal)
+	menu.AddItemSvg(menuItemDisable, "item_disable", 0, svg_disable, xcc.Menu_Item_Flag_Disable)
 
 	// item1的二级菜单
-	menu.AddItemIcon(menuSubitem1, "subitem1", menuItem1, hSvgMap[menuSubitem1], xcc.Menu_Item_Flag_Normal)
-	menu.AddItemIcon(menuSubitem2, "subitem2", menuItem1, hSvgMap[menuSubitem2], xcc.Menu_Item_Flag_Normal)
+	menu.AddItemSvg(menuSubitem1, "subitem1", menuItem1, svg_subitem1, xcc.Menu_Item_Flag_Normal)
+	menu.AddItemSvg(menuSubitem2, "subitem2", menuItem1, svg_subitem2, xcc.Menu_Item_Flag_Normal)
 
 	// 获取鼠标光标的位置
 	var pt wapi.POINT
@@ -104,34 +103,127 @@ func onWindowRButtonUp(hWindow int, nFlags uint, pPt *xc.POINT, pbHandled *bool)
 	return 0
 }
 
-// 菜单背景绘制事件
-func onMenuDrawBackground(hWindow, hDraw int, pInfo *xc.Menu_DrawBackground_, pbHandled *bool) int {
-	*pbHandled = true // 作用是拦截菜单原本的绘制
-	var rc xc.RECT
-	xc.XWnd_GetClientRect(pInfo.HWindow, &rc)
-
-	// 绘制菜单背景
-	xc.XDraw_SetBrushColor(hDraw, xc.RGBA(255, 255, 255, 255))
-	xc.XDraw_FillRect(hDraw, &rc)
-
-	// 绘制菜单边框
-	xc.XDraw_SetBrushColor(hDraw, xc.RGBA(218, 220, 224, 255))
-	xc.XDraw_DrawRect(hDraw, &rc)
-	return 0
+// MenuEx 美化菜单.
+type MenuEx struct {
+	*widget.Menu
+	style *Style
 }
 
-// 菜单项绘制事件
-func onMenuDrawItem(hWindow, hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *bool) int {
-	*pbHandled = true // 作用是拦截菜单原本的绘制
+// NewMenuEx 创建一个使用默认样式的自绘菜单实例.
+//   - 等价于 NewMenuExWithStyle(NewStyle()).
+//
+// hWindowOrhEle: 窗口或元素句柄.
+func NewMenuEx(hWindowOrhEle int) *MenuEx {
+	return NewMenuExWithStyle(hWindowOrhEle, NewStyle())
+}
 
-	// 绘制分割栏
-	if pInfo.NState&xcc.MenuItem_State_Flag_Separator > 0 {
-		xc.XDraw_SetBrushColor(hDraw, xc.RGBA(218, 220, 224, 255))
-		xc.XDraw_DrawLine(hDraw, pInfo.RcItem.Left+3, pInfo.RcItem.Top+1, pInfo.RcItem.Right-3, pInfo.RcItem.Top+1)
-		return 0
+// NewMenuExDark 创建一个深色风格的自绘菜单实例.
+//
+// hWindowOrhEle: 窗口或元素句柄.
+func NewMenuExDark(hWindowOrhEle int) *MenuEx {
+	return NewMenuExWithStyle(hWindowOrhEle, DarkStyle())
+}
+
+// NewMenuExWithStyle 使用自定义样式创建一个自绘菜单实例.
+//
+// hWindowOrhEle: 窗口或元素句柄.
+func NewMenuExWithStyle(hWindowOrhEle int, style *Style) *MenuEx {
+	m := widget.NewMenu()
+	if style == nil {
+		style = NewStyle()
 	}
+	if style.ItemHeight > 0 {
+		m.SetItemHeight(style.ItemHeight)
+	}
+	m.EnableDrawBackground(true).EnableDrawItem(true)
 
-	// 绘制鼠标停留时菜单项的背景
+	mx := &MenuEx{
+		Menu:  m,
+		style: style,
+	}
+	mx.bindMenuEvent(hWindowOrhEle)
+	return mx
+}
+
+// GetStyle 返回当前菜单的样式, 可在添加菜单项前后修改.
+func (mx *MenuEx) GetStyle() *Style {
+	return mx.style
+}
+
+// SetStyle 替换整个样式表.
+//   - 注意: ItemHeight 不会被回写, 因为该值已在构造时同步给原生 Menu.
+func (mx *MenuEx) SetStyle(style *Style) *MenuEx {
+	if style == nil {
+		style = NewStyle()
+	}
+	mx.style = style
+	return mx
+}
+
+// AddItemSvg 是 AddItemIcon 的便捷封装, 内部用 xc.XImage_LoadSvgString() 把 SVG 字符串转成图片句柄.
+//
+// nID: 项ID.
+//
+// text: 文本内容.
+//
+// nParentID: 父项ID.
+//
+// svg: SVG 字符串.
+//
+// nFlags: 标识, Menu_Item_Flag_.
+func (mx *MenuEx) AddItemSvg(nID int32, text string, nParentID int32, svg string, nFlags xcc.Menu_Item_Flag_) *MenuEx {
+	hIcon := xc.XImage_LoadSvgString(svg)
+	mx.AddItemIcon(nID, text, nParentID, hIcon, nFlags)
+	return mx
+}
+
+// AddSeparator 在指定父项下添加一个分隔栏. nParentID 为空时添加到根.
+//
+// nParentID: 父项ID, 不填默认为 0.
+func (mx *MenuEx) AddSeparator(nParentID ...int32) *MenuEx {
+	pid := int32(0)
+	if len(nParentID) > 0 {
+		pid = nParentID[0]
+	}
+	mx.Menu.AddItem(-1, "", pid, xcc.Menu_Item_Flag_Separator)
+	return mx
+}
+
+// bindMenuEvent 将菜单绘制事件绑定到指定窗口或元素上.
+//
+// hWindowOrhEle: 窗口或元素句柄.
+func (mx *MenuEx) bindMenuEvent(hWindowOrhEle int) *MenuEx {
+	// 背景绘制
+	mx.Menu.AddEvent_Menu_Draw_Background(hWindowOrhEle, func(hWindowOrhEle, hDraw int, pInfo *xc.Menu_DrawBackground_, pbHandled *bool) int {
+		*pbHandled = true
+		var rc xc.RECT
+		xc.XWnd_GetClientRect(pInfo.HWindow, &rc)
+		// 绘制菜单背景
+		xc.XDraw_SetBrushColor(hDraw, mx.style.BackgroundColor)
+		xc.XDraw_FillRect(hDraw, &rc)
+		// 绘制菜单边框
+		xc.XDraw_SetBrushColor(hDraw, mx.style.BorderColor)
+		xc.XDraw_DrawRect(hDraw, &rc)
+		return 0
+	}, false)
+	// 菜单项绘制
+	mx.Menu.AddEvent_Menu_DrawItem(hWindowOrhEle, func(hWindowOrhEle, hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *bool) int {
+		*pbHandled = true
+		mx.drawItem(hDraw, pInfo)
+		return 0
+	}, false)
+	return mx
+}
+
+// drawItem 菜单项自绘逻辑.
+func (mx *MenuEx) drawItem(hDraw int, pInfo *xc.Menu_DrawItem_) {
+	// 分割栏
+	if pInfo.NState&xcc.MenuItem_State_Flag_Separator > 0 {
+		xc.XDraw_SetBrushColor(hDraw, mx.style.SeparatorColor)
+		xc.XDraw_DrawLine(hDraw, pInfo.RcItem.Left+3, pInfo.RcItem.Top+1, pInfo.RcItem.Right-3, pInfo.RcItem.Top+1)
+		return
+	}
+	// 鼠标停留时菜单项的背景
 	if pInfo.NState&xcc.MenuItem_State_Flag_Stay > 0 {
 		rc := xc.RECT{
 			Left:   pInfo.RcItem.Left + 1,
@@ -139,44 +231,34 @@ func onMenuDrawItem(hWindow, hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *boo
 			Right:  pInfo.RcItem.Right - 1,
 			Bottom: pInfo.RcItem.Bottom - 1,
 		}
-		xc.XDraw_SetBrushColor(hDraw, xc.RGBA(230, 230, 230, 255))
+		xc.XDraw_SetBrushColor(hDraw, mx.style.HoverColor)
 		xc.XDraw_FillRect(hDraw, &rc)
 	}
-
-	// 绘制右三角
+	// 三角形(指向子菜单)
 	if pInfo.NState&xcc.MenuItem_State_Flag_Popup > 0 {
 		var pt [3]xc.POINT
 		pt[0].X = pInfo.RcItem.Right - 12
 		pt[0].Y = pInfo.RcItem.Top + 10
-
 		pt[1].X = pInfo.RcItem.Right - 12
 		pt[1].Y = pInfo.RcItem.Top + 20
-
 		pt[2].X = pInfo.RcItem.Right - 7
 		pt[2].Y = pInfo.RcItem.Top + 15
-		xc.XDraw_SetBrushColor(hDraw, xc.RGBA(130, 130, 130, 255))
+		xc.XDraw_SetBrushColor(hDraw, mx.style.SubMenuArrowColor)
 		xc.XDraw_FillPolygon(hDraw, pt[:])
 	}
-
-	// 取菜单左侧区域宽度
+	// 文本
 	leftWidth := xc.XMenu_GetLeftWidth(pInfo.HMenu)
 	rc := pInfo.RcItem
 	rc.Left = leftWidth + 5
-
 	if pInfo.NState&xcc.MenuItem_State_Flag_Disable > 0 {
-		// 设置被禁用的菜单项文本颜色
-		xc.XDraw_SetBrushColor(hDraw, xc.RGBA(160, 160, 160, 255))
+		xc.XDraw_SetBrushColor(hDraw, mx.style.TextDisabledColor)
 	} else {
-		// 设置未禁用的菜单项文本颜色
-		xc.XDraw_SetBrushColor(hDraw, xc.RGBA(77, 77, 77, 255))
+		xc.XDraw_SetBrushColor(hDraw, mx.style.TextColor)
 	}
-	// 获取菜单项文本
 	text := common.UintPtrToString(pInfo.PText)
-	// 绘制菜单项文本
 	xc.XDraw_SetTextAlign(hDraw, xcc.TextAlignFlag_Vcenter|xcc.TextFormatFlag_NoWrap)
 	xc.XDraw_DrawText(hDraw, text, &rc)
-
-	// 绘制菜单项图标
+	// 图标
 	if pInfo.HIcon > 0 {
 		iconWidth := xc.XImage_GetHeight(pInfo.HIcon)
 		iconHeight := xc.XImage_GetWidth(pInfo.HIcon)
@@ -193,17 +275,124 @@ func onMenuDrawItem(hWindow, hDraw int, pInfo *xc.Menu_DrawItem_, pbHandled *boo
 			xc.XDraw_Image(hDraw, pInfo.HIcon, left, pInfo.RcItem.Top+top)
 		}
 	}
-	return 0
 }
 
-// 菜单被选择事件
-func onMenuSelect(hWindow int, nID int32, pbHandled *bool) int {
-	if nID == menuItemSelect {
-		selected := common.StringToBool(xc.XC_GetProperty(hWindow, "菜单项选中"))
-		xc.XC_SetProperty(hWindow, "菜单项选中", common.BoolToString(!selected))
+// Style 自绘菜单的样式配置.
+//
+// 通过 NewStyle() 创建一个带默认值的样式实例, 然后按需修改其中的字段即可.
+//
+// 颜色字段默认值: 文字偏深灰, 背景纯白, 边框淡灰.
+type Style struct {
+	// 整菜单项高度(像素). 0 表示使用菜单内部默认值.
+	ItemHeight int32
 
+	// 整菜单项文本显示区域宽度(像素), 不含左侧图标区. 0 表示不设置.
+	// 如果你需要统一多个菜单项的宽度, 可在添加项后使用 menu.SetItemWidth(id, w) 单独设置.
+	ItemWidth int32
+
+	// 背景填充色.
+	BackgroundColor uint32
+
+	// 边框颜色.
+	BorderColor uint32
+
+	// 鼠标停留时菜单项的背景填充色.
+	HoverColor uint32
+
+	// 分割栏颜色.
+	SeparatorColor uint32
+
+	// 菜单项文本颜色(未禁用时).
+	TextColor uint32
+
+	// 菜单项文本颜色(禁用时).
+	TextDisabledColor uint32
+
+	// 指向子菜单的三角形的颜色.
+	SubMenuArrowColor uint32
+}
+
+// NewStyle 返回一个使用默认颜色/样式的 Style.
+func NewStyle() *Style {
+	return &Style{
+		ItemHeight:        30,
+		ItemWidth:         0,
+		BackgroundColor:   xc.RGBA(255, 255, 255, 255),
+		BorderColor:       xc.RGBA(218, 220, 224, 255),
+		HoverColor:        xc.RGBA(230, 230, 230, 255),
+		SeparatorColor:    xc.RGBA(218, 220, 224, 255),
+		TextColor:         xc.RGBA(77, 77, 77, 255),
+		TextDisabledColor: xc.RGBA(160, 160, 160, 255),
+		SubMenuArrowColor: xc.RGBA(130, 130, 130, 255),
 	}
-	return 0
+}
+
+// DarkStyle 返回一个深色风格的样式.
+func DarkStyle() *Style {
+	return &Style{
+		ItemHeight:        30,
+		BackgroundColor:   xc.RGBA(43, 43, 43, 255),
+		BorderColor:       xc.RGBA(70, 70, 70, 255),
+		HoverColor:        xc.RGBA(70, 70, 70, 255),
+		SeparatorColor:    xc.RGBA(70, 70, 70, 255),
+		TextColor:         xc.RGBA(220, 220, 220, 255),
+		TextDisabledColor: xc.RGBA(120, 120, 120, 255),
+		SubMenuArrowColor: xc.RGBA(200, 200, 200, 255),
+	}
+}
+
+// SetItemHeight 设置菜单项高度.
+func (s *Style) SetItemHeight(h int32) *Style {
+	s.ItemHeight = h
+	return s
+}
+
+// SetItemWidth 设置菜单项文本区域宽度, 0 表示不设置.
+func (s *Style) SetItemWidth(w int32) *Style {
+	s.ItemWidth = w
+	return s
+}
+
+// SetBackgroundColor 设置背景填充色.
+func (s *Style) SetBackgroundColor(c uint32) *Style {
+	s.BackgroundColor = c
+	return s
+}
+
+// SetBorderColor 设置边框颜色.
+func (s *Style) SetBorderColor(c uint32) *Style {
+	s.BorderColor = c
+	return s
+}
+
+// SetHoverColor 设置鼠标停留时的背景色.
+func (s *Style) SetHoverColor(c uint32) *Style {
+	s.HoverColor = c
+	return s
+}
+
+// SetSeparatorColor 设置分割栏颜色.
+func (s *Style) SetSeparatorColor(c uint32) *Style {
+	s.SeparatorColor = c
+	return s
+}
+
+// SetTextColor 设置菜单项文本颜色(未禁用时).
+func (s *Style) SetTextColor(c uint32) *Style {
+	s.TextColor = c
+	return s
+}
+
+// SetTextDisabledColor 设置菜单项禁用时的文本颜色.
+func (s *Style) SetTextDisabledColor(c uint32) *Style {
+	s.TextDisabledColor = c
+	return s
+}
+
+// SetSubMenuArrowColor 设置指向子菜单的三角形的颜色.
+func (s *Style) SetSubMenuArrowColor(c uint32) *Style {
+	s.SubMenuArrowColor = c
+	return s
 }
 
 const (
