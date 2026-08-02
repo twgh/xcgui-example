@@ -30,7 +30,10 @@
     #shadow-container {
       width: 100%;
       height: 100%;
-      padding: 12px;
+      /* 内边距要 ≥ 阴影的实际延伸范围，才能让阴影完全不被裁剪。
+         阴影为 0 2px 12px：底部延伸约 14px(2px 偏移 + 12px 模糊)，
+         所以用 14px 保证最外圈淡影也完整可见。 */
+      padding: 14px;
       box-sizing: border-box; /* 确保 padding 不撑大容器 */
       position: relative; /* 让热区相对于此定位 */
     }
@@ -42,6 +45,10 @@
     #content {
       width: 100%;
       height: 100%;
+      /* 让 border 算进 100% 尺寸内。
+         否则 #content 的边框会把元素撑得比容器内容区更大，
+         向下多溢出约 1.5px，导致底边阴影被窗口边界裁剪。 */
+      box-sizing: border-box;
       background: white;
       border-radius: 8px;
 
@@ -233,9 +240,9 @@
       <div id="titlebar">
         <span>✨ 圆角+阴影窗口</span>
         <div id="window-controls">
-          <button id="btn-minimize" title="最小化" onclick="wnd.minimize()"></button>
-          <button id="btn-maximize" title="最大化" onclick="wnd.toggleMaximize()"></button>
-          <button id="btn-close" title="关闭" onclick="wnd.close()"></button>
+          <button id="btn-minimize" title="最小化" onclick="api.minimizeWindow()"></button>
+          <button id="btn-maximize" title="最大化" onclick="api.toggleWindowMaximize()"></button>
+          <button id="btn-close" title="关闭" onclick="api.closeWindow()"></button>
         </div>
       </div>
 
@@ -292,7 +299,7 @@
         startY = e.screenY;
 
         // 获取窗口矩形
-        const rc = await wnd.getRect();
+        const rc = await api.getWindowRect();
         startLeft = rc.Left;
         startTop = rc.Top;
         startWidth = rc.Right-rc.Left;
@@ -347,13 +354,13 @@
       }
 
       // 设置窗口尺寸
-      await wnd.setSize(limitedWidth, limitedHeight);
+      await api.setWindowSize(limitedWidth, limitedHeight);
 
       // 设置窗口位置
       if (newX !== null || newY !== null) {
         const finalX = newX !== null ? newX : startLeft;
         const finalY = newY !== null ? newY : startTop;
-        await wnd.setPos(finalX, finalY);
+        await api.moveWindow(finalX, finalY);
       }
     });
 

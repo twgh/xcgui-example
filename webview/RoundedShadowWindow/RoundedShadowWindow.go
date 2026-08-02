@@ -4,7 +4,8 @@
 package main
 
 // 这个窗口的标题栏区域的 css 是加了 `app-region: drag;` 的, 让标题栏区域成为了窗口非客户区, 可以进行拖动.
-// 窗口主体区域是使用 js 配合绑定的窗口移动函数实现拖动窗口移动位置, 如果用 `app-region: drag;` 的话会很简单, 但你在窗口上右键时会弹出那种标题栏上才会有的菜单, 就不好了.
+// 窗口主体区域是使用 js 配合绑定的移动窗口函数实现拖动窗口移动位置, 如果用 `app-region: drag;` 的话会更简单, 但你在窗口上右键时会弹出那种标题栏上才会有的菜单, 就不好了.
+// 还少实现一个功能, 就是当窗口最大化时, 拖动窗口主体移动时还原窗口到原大小, 因为没办法很好的封装进 window-drag.js 这个公共库, 所以想要这个功能就在后端增加绑定 IsMaxWindow 和 MaxWindow 函数, 然后让 AI 修改 window-drag.js 来实现.
 
 import (
 	"embed"
@@ -156,32 +157,32 @@ func (m *MainWindow) regXcEvents() {
 // 绑定窗口函数.
 func (m *MainWindow) bindWindowFuncs() {
 	// 绑定 最小化窗口函数
-	m.wv.Bind("wnd.minimize", func() {
+	m.wv.Bind("api.minimizeWindow", func() {
 		m.w.ShowWindow(xcc.SW_MINIMIZE)
 	})
 
 	// 绑定 切换最大化窗口函数
-	m.wv.Bind("wnd.toggleMaximize", func() {
+	m.wv.Bind("api.toggleWindowMaximize", func() {
 		m.w.MaxWindow(!m.w.IsMaxWindow())
 	})
 
 	// 绑定 关闭窗口函数
-	m.wv.Bind("wnd.close", func() {
+	m.wv.Bind("api.closeWindow", func() {
 		m.w.CloseWindow()
 	})
 
-	// 绑定 设置窗口位置函数
-	m.wv.Bind("wnd.setPos", func(x, y int32) {
+	// 绑定 移动窗口函数
+	m.wv.Bind("api.moveWindow", func(x, y int32) {
 		m.w.SetPosition(m.w.DpiConv(x), m.w.DpiConv(y))
 	})
 
 	// 绑定 设置窗口尺寸函数
-	m.wv.Bind("wnd.setSize", func(width, height int32) {
+	m.wv.Bind("api.setWindowSize", func(width, height int32) {
 		m.w.SetSize(width, height)
 	})
 
 	// 绑定 获取窗口矩形函数
-	m.wv.Bind("wnd.getRect", func() xc.RECT {
+	m.wv.Bind("api.getWindowRect", func() xc.RECT {
 		return m.w.GetRectEx()
 	})
 }
