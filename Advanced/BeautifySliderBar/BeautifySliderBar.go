@@ -135,16 +135,16 @@ func (t *BeautifySliderBar) onTrackPaint(hEle int, hDraw int, pbHandled *bool) i
 	var rc xc.RECT
 	xc.XEle_GetClientRect(hEle, &rc)
 	rcH := rc.Bottom - rc.Top
-
-	// 轨道垂直居中
+	rcW := rc.Right - rc.Left
 	trackH := t.trackHeight
 	trackTop := (rcH - trackH) / 2
 	trackBottom := trackTop + trackH
 	thumbSize := t.thumbSize
-	// 轨道水平留出滑块半径的边距
-	padding := thumbSize / 2
-	trackLeft := rc.Left + padding
-	trackRight := rc.Right - padding
+	// 轨道几乎占满元素宽度, 两端各留 2px: 滑块圆自身内缩 2px 绘制,
+	// 这样 pos=0 时圆的左缘正好贴住轨道起点, pos=max 时右缘贴住终点,
+	// 圆不会悬在轨道外半个身位(滑块按钮行程 = 元素宽 - 按钮宽)。
+	trackLeft := rc.Left + 2
+	trackRight := rc.Right - 2
 	roundRadius := trackH / 2
 
 	// 计算当前进度比例
@@ -154,7 +154,8 @@ func (t *BeautifySliderBar) onTrackPaint(hEle int, hDraw int, pbHandled *bool) i
 	if range_ > 0 {
 		ratio = float32(pos) / float32(range_)
 	}
-	splitX := trackLeft + int32(float32(trackRight-trackLeft)*ratio+0.5)
+	// 分界点跟随滑块圆心: 圆心 = 元素左缘 + 半径 + ratio*行程
+	splitX := rc.Left + thumbSize/2 + int32(float32(rcW-thumbSize)*ratio+0.5)
 
 	isEnabled := xc.XEle_IsEnable(hEle)
 
@@ -214,10 +215,10 @@ func (t *BeautifySliderBar) onThumbPaint(hEle int, hDraw int, pbHandled *bool) i
 	rcW := rc.Right - rc.Left
 	rcH := rc.Bottom - rc.Top
 
-	isEnabled := xc.XEle_IsEnable(hEle)
-
-	// 获取滑块按钮状态
+	// 注意: 禁用是作用在滑动条上的, 滑块按钮作为子元素自身仍是启用态,
+	// 必须检查滑动条的启用状态, 否则禁用时滑块还是正常样式。
 	state := xc.XBtn_GetState(hEle) // Common_State3_
+	isEnabled := xc.XEle_IsEnable(t.Handle)
 
 	// 选择颜色
 	var thumbFill, thumbBorder uint32
