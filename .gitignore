@@ -1,5 +1,6 @@
 # Binaries for programs and plugins
 *.exe~
+*.exe
 *.so
 *.dylib
 go.work
@@ -18,9 +19,12 @@ go.work.sum
 # Folder
 .idea/
 .codebuddy/
+.workbuddy/
 .vscode/
 .qoder/
 .lingma/
 test/
 scripts/
-.lib/
+
+# File
+!webview/AutomaticInstallWebView2Runtime/MicrosoftEdgeWebview2Setup.exe
