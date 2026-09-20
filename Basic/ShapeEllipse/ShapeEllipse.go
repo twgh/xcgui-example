@@ -47,7 +47,8 @@ func main() {
 	e4.SetBorderColor(xc.RGBA(180, 130, 0, 255))
 
 	// ---------------- 第二行: 粗边框圆环 ----------------
-	// 5. 圆环效果: 形状圆没有边框宽度 API, 用多个同心边框圆叠加出粗边框
+	// 5. 圆环效果: 形状圆没有边框宽度 API, 用多个同心边框圆叠加出粗边框,
+	// 这个效果并不好, 边框中间有空隙, 建议用背景对象 / Draw API 来实现.
 	for i := 0; i < 5; i++ {
 		ring := widget.NewShapeEllipse(int32(20+i), int32(175+i), int32(100-i*2), int32(100-i*2), w.Handle)
 		ring.EnableFill(false)
