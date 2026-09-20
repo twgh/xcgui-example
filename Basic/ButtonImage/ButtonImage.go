@@ -1,6 +1,5 @@
 // 1. 给窗口添加背景色
 // 2. 给按钮加上三种状态下的图片
-// 纯代码的要记好多api, 还是建议用设计器来做
 package main
 
 import (
@@ -33,12 +32,13 @@ func main() {
 	// 设置窗口透明类型
 	w.SetTransparentType(xcc.Window_Transparent_Shadow)
 	// 设置窗口阴影
-	w.SetShadowInfo(8, 255, 10, false, 0)
+	w.SetShadowInfo(8, 128, 10, false, xc.RGBA(0, 0, 0, 128))
 	// 给整个窗口添加背景色
 	w.AddBkFill(xcc.Window_State_Flag_Leave, xc.RGBA(51, 57, 60, 254))
 
 	// 创建最小化按钮
 	btnMin := widget.NewButton(397, 8, 30, 30, "", w.Handle)
+	// 设置按钮类型并自动修改样式和文本对齐方式
 	btnMin.SetTypeEx(xcc.Button_Type_Min)
 
 	// 创建关闭按钮
@@ -58,12 +58,12 @@ func main() {
 }
 
 // 给按钮加上三态图片
-func setBtnImg(btn *widget.Button, file []byte) {
+func setBtnImg(btn *widget.Button, imgData []byte) {
 	var img *imagex.Image
 	for i := int32(0); i < 3; i++ {
 		x := i * 31
 		// 图片_加载从内存, 指定区域位置及大小
-		img = imagex.NewByMemRect(file, x, 0, 30, 30)
+		img = imagex.NewByMemRect(imgData, x, 0, 30, 30)
 
 		if img.Handle == 0 {
 			log.Println("Error: hImg = 0")
