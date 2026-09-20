@@ -15,7 +15,7 @@ func main() {
 
 	// 三种方法:
 	// 1.调用 a.EnableDPI(true)
-	// 2.使用程序清单, 看这个: 程序清单方式启用DPI.rar
+	// 2.使用程序清单, 看这个: 给程序添加图标，版本信息，程序清单.md, 其生成的 syso 文件默认已启用DPI
 	// 3.自行调用 Windows 相关api
 	a.EnableDPI(true)
 
