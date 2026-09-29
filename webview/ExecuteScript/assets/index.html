@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExecuteScript 例子</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Microsoft YaHei", sans-serif; background: #f6f8fa; color: #24292f; padding: 24px; }
+  .card { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 20px 24px; max-width: 960px; }
+  h2 { margin-bottom: 8px; font-size: 18px; }
+  .tip { color: #57606a; font-size: 13px; margin-bottom: 12px; }
+  .row { display: flex; gap: 10px; margin: 12px 0; }
+  input { flex: 1; padding: 8px 10px; border: 1px solid #d0d7de; border-radius: 6px; font-size: 14px; }
+  button { padding: 8px 14px; border: none; border-radius: 6px; background: #1a7f37; color: #fff; font-size: 14px; cursor: pointer; white-space: nowrap; }
+  button:hover { background: #2da44e; }
+  .result { background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px; padding: 10px 12px; font-size: 13px; min-height: 110px; margin: 12px 0; }
+  .result div { padding: 3px 0; border-bottom: 1px dashed #d8dee4; }
+  a { font-size: 13px; color: #0969da; }
+  code { background: #eff1f3; border-radius: 4px; padding: 1px 5px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>Go 侧执行 JavaScript 并取回返回值</h2>
+  <p class="tip">点击窗口底部的炫彩按钮, Go 侧通过 <code>ExecuteScript</code> 读取输入框 / 执行计算, 并把结果写回下面的区域.
+    页面顶部的标记条由 Go 侧 <code>AddScriptToExecuteOnDocumentCreated</code> 注入的脚本生成, 每次加载新页面都会出现.</p>
+  <div class="row">
+    <input id="userInput" value="你好, xcgui ExecuteScript!">
+    <button onclick="pageRead()">页面自己的按钮(纯 JS 读取)</button>
+  </div>
+  <div id="pageResult" class="tip">这里显示页面 JS 自己读取输入框的结果.</div>
+  <div id="goResult" class="result"><div>这里显示 Go 侧写回的结果:</div></div>
+  <a href="page2.html">导航到第二页, 观察注入脚本是否依然生效</a>
+</div>
+<script>
+  function pageRead() {
+    document.getElementById('pageResult').textContent =
+      '页面 JS 读到输入框的值: ' + document.getElementById('userInput').value;
+  }
+</script>
+</body>
+</html>
