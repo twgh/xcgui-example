@@ -1,4 +1,4 @@
-// ExecuteScript
+// 执行JS
 package main
 
 // 演示 Go 侧执行页面 JavaScript 并取回返回值,
