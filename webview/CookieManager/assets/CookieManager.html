@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cookie 管理演示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background: #f6f7fb;
+      color: #333;
+      padding: 24px;
+    }
+
+    h2 {
+      margin-bottom: 8px;
+    }
+
+    p.tip {
+      color: #888;
+      font-size: 13px;
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .08);
+      margin-bottom: 16px;
+    }
+
+    .card h3 {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    pre#cookieView {
+      background: #1e1e2e;
+      color: #a6e3a1;
+      padding: 12px;
+      border-radius: 6px;
+      min-height: 44px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      font-size: 13px;
+    }
+
+    button {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 4px;
+      background: #4f7cff;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #3a63d8;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Cookie 管理演示页面</h2>
+  <p class="tip">
+    本页面由 go:embed 嵌入到程序中, 通过虚拟主机名 app.example 访问。<br>
+    点击炫彩工具栏上的按钮, Go 侧使用 ICoreWebView2CookieManager 对 cookie 进行创建/修改/查询/删除,
+    操作完成后会调用本页面的 renderCookie() 函数刷新显示。
+  </p>
+  <div class="card">
+    <h3>当前 document.cookie</h3>
+    <pre id="cookieView">(空)</pre>
+  </div>
+  <button onclick="renderCookie()">刷新显示</button>
+
+  <script>
+    // 渲染当前 document.cookie, 炫彩(Go)侧在增删改 cookie 后会调用此函数刷新显示.
+    function renderCookie() {
+      var view = document.getElementById('cookieView');
+      view.textContent = document.cookie || '(空)';
+    }
+    renderCookie();
+  </script>
+</body>
+
+</html>
