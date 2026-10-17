@@ -15,6 +15,7 @@ import (
 	"github.com/twgh/xcgui/app"
 	"github.com/twgh/xcgui/edge"
 	"github.com/twgh/xcgui/wapi"
+	"github.com/twgh/xcgui/wapi/com"
 	"github.com/twgh/xcgui/wapi/wutil"
 	"github.com/twgh/xcgui/window"
 	"github.com/twgh/xcgui/xc"
@@ -152,7 +153,7 @@ func (m *MainWindow) regWebViewEvents() {
 			}
 
 			file := new(edge.ICoreWebView2File)
-			err = obj.QueryInterface(wapi.NewGUIDPointer(edge.IID_ICoreWebView2File), unsafe.Pointer(&file))
+			err = obj.QueryInterface(com.NewGUIDPointer(edge.IID_ICoreWebView2File), unsafe.Pointer(&file))
 			if err != nil {
 				log.Println("QueryInterface 失败: " + err.Error())
 				continue

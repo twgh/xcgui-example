@@ -194,7 +194,7 @@ m.wv.Event_WebMessageReceived(func(sender *edge.ICoreWebView2, args *edge.ICoreW
         }
 
         file := new(edge.ICoreWebView2File)
-        err = obj.QueryInterface(wapi.NewGUIDPointer(edge.IID_ICoreWebView2File), unsafe.Pointer(&file))
+        err = obj.QueryInterface(com.NewGUIDPointer(edge.IID_ICoreWebView2File), unsafe.Pointer(&file))
         if err != nil {
             continue
         }
