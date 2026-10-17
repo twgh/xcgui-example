@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PermissionRequested 例子</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Microsoft YaHei", sans-serif; background: #f6f8fa; color: #24292f; padding: 24px; }
+  .card { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 20px 24px; max-width: 860px; }
+  h2 { margin-bottom: 10px; font-size: 18px; }
+  .tip { color: #57606a; font-size: 13px; margin-bottom: 14px; line-height: 1.7; }
+  button { padding: 9px 18px; border: none; border-radius: 6px; background: #0969da; color: #fff; font-size: 14px; cursor: pointer; }
+  button:hover { background: #218bff; }
+  .result { background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px; padding: 12px 14px; font-size: 14px; min-height: 90px; margin: 14px 0; line-height: 1.8; }
+  .note { color: #9a6700; background: #fff8c5; border: 1px solid #d4a72c66; border-radius: 6px; padding: 8px 12px; font-size: 12px; line-height: 1.7; }
+  code { background: #eff1f3; border-radius: 4px; padding: 1px 5px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>WebView2 权限请求演示(Event_PermissionRequested)</h2>
+  <p class="tip">点击下面的按钮, 页面会调用 <code>navigator.geolocation.getCurrentPosition</code> 请求地理位置权限,
+    Go 侧的 <code>Event_PermissionRequested</code> 事件会弹出消息框询问你允许还是拒绝, 授权结果会显示在下方.</p>
+  <button id="btnLoc" onclick="requestLocation()">请求地理位置权限</button>
+  <div id="result" class="result">这里显示授权结果.</div>
+  <p class="note">说明: 本页面通过虚拟主机名 <code>https://permission.example/</code> 加载, 来源是安全上下文,
+    所以地理位置 API 可用(NavigateToString 加载的 about:blank 页面则会被直接拒绝).
+    拿到具体位置还需要 Windows 系统开启定位服务; 若系统定位不可用, 页面会显示相应错误,
+    但 Go 侧的权限请求(允许/拒绝)流程是一样的.</p>
+</div>
+<script>
+  var errText = {
+    1: '权限被拒绝 (PERMISSION_DENIED)',
+    2: '位置不可用 (POSITION_UNAVAILABLE)',
+    3: '请求超时 (TIMEOUT)'
+  };
+
+  function requestLocation() {
+    var box = document.getElementById('result');
+    if (!navigator.geolocation) {
+      box.textContent = '当前环境不支持 Geolocation API';
+      return;
+    }
+    box.textContent = '已发起地理位置权限请求, 请留意 Go 侧弹出的询问窗口...';
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      box.innerHTML = '已获得授权, 成功获取到位置:<br>' +
+        '纬度: ' + pos.coords.latitude.toFixed(6) + '<br>' +
+        '经度: ' + pos.coords.longitude.toFixed(6) + '<br>' +
+        '精度: 约 ' + pos.coords.accuracy + ' 米';
+    }, function (err) {
+      box.textContent = '获取位置失败: ' + (errText[err.code] || err.message);
+    }, { enableHighAccuracy: false, timeout: 15000, maximumAge: 0 });
+  }
+</script>
+</body>
+</html>
